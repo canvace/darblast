@@ -1,4 +1,9 @@
-darblast
-========
+Canvace Development Environment
+===============================
 
-The Canvace Visual Development Environment
+www.canvace.com
+
+```bash
+$ npm install -g canvace
+$ canvace
+```
