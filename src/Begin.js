@@ -6,7 +6,6 @@ try {
 }
 
 var fs = require('fs');
-var path = require('path');
 
 var users = (function () {
 	var content;
@@ -74,7 +73,7 @@ var users = (function () {
 			if (process.argv[3] !== 'port') {
 				showHelp(true);
 			} else {
-				config.port = parseInt(process.argv[4]);
+				config.port = parseInt(process.argv[4], 10);
 				fs.writeFileSync(JSON.stringify(config), 'ascii');
 			}
 			break;
@@ -108,7 +107,7 @@ var consolidate = require('consolidate');
 
 var app = express();
 app.enable('strict routing');
-app.use(express.static(__dirname + '/static'));
+app.use(express['static'](__dirname + '/static'));
 app.use(express.bodyParser());
 app.set('views', __dirname + '/views');
 app.engine('handlebars', consolidate.handlebars);
@@ -122,17 +121,3 @@ if (users !== null) {
 app.get('/', function (request, response) {
 	response.render('main.handlebars');
 });
-
-(function (port) {
-	if (isFinite(port)) {
-		app.listen(port, function () {
-			console.log('Canvace Development Environment running on port ' + port);
-			require('openurl').open('http://localhost:' + port + '/');
-		});
-	} else {
-		app.listen(80, function () {
-			console.log('Canvace Development Environment running on port 80');
-			require('openurl').open('http://localhost/');
-		});
-	}
-}(parseInt(config.port, 10)));
