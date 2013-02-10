@@ -69,17 +69,21 @@ module.exports = function (grunt) {
 				(function process(itemPath, destPath) {
 					var name = path.basename(itemPath);
 					(function remove(path) {
-						var stat = fs.statSync(path);
-						if (stat.isFile()) {
-							fs.unlinkSync(path);
-						} else if (stat.isDirectory()) {
-							fs.readdirSync(path).forEach(remove);
+						if (fs.existsSync(path)) {
+							var stat = fs.statSync(path);
+							if (stat.isFile()) {
+								fs.unlinkSync(path);
+							} else if (stat.isDirectory()) {
+								fs.readdirSync(path).forEach(function (subItem) {
+									remove(path + '/' + subItem);
+								});
+								fs.rmdirSync(path);
+							}
 						}
 					}(destPath + '/' + name));
 					var stat = fs.statSync(itemPath);
 					if (stat.isFile()) {
-						var data = fs.readFileSync(itemPath);
-						fs.writeFileSync(destPath + '/' + name);
+						fs.writeFileSync(destPath + '/' + name, fs.readFileSync(itemPath));
 					} else if (stat.isDirectory()) {
 						fs.mkdirSync(destPath + '/' + name);
 						fs.readdirSync(itemPath).forEach(function (subItem) {
