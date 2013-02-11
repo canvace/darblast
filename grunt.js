@@ -68,24 +68,38 @@ module.exports = function (grunt) {
 			for (var i in this.file.src) {
 				(function process(itemPath, destPath) {
 					var name = path.basename(itemPath);
-					(function remove(path) {
-						if (fs.existsSync(path)) {
-							var stat = fs.statSync(path);
-							if (stat.isFile()) {
-								fs.unlinkSync(path);
-							} else if (stat.isDirectory()) {
-								fs.readdirSync(path).forEach(function (subItem) {
-									remove(path + '/' + subItem);
-								});
-								fs.rmdirSync(path);
+					function removeOther() {
+						(function remove(path) {
+							if (fs.existsSync(path)) {
+								var stat = fs.statSync(path);
+								if (stat.isFile()) {
+									fs.unlinkSync(path);
+								} else if (stat.isDirectory()) {
+									fs.readdirSync(path).forEach(function (subItem) {
+										remove(path + '/' + subItem);
+									});
+									fs.rmdirSync(path);
+								}
 							}
-						}
-					}(destPath + '/' + name));
+						}(destPath + '/' + name));
+					}
 					var stat = fs.statSync(itemPath);
+					var otherStat;
+					try {
+						otherStat = fs.statSync(destPath + '/' + name);
+					} catch (e) {
+						otherStat = null;
+					}
 					if (stat.isFile()) {
-						fs.writeFileSync(destPath + '/' + name, fs.readFileSync(itemPath));
+						if (!otherStat || (!otherStat.isFile() || (stat.mtime.getTime() > otherStat.mtime.getTime()))) {
+							removeOther();
+							fs.writeFileSync(destPath + '/' + name, fs.readFileSync(itemPath));
+						}
 					} else if (stat.isDirectory()) {
-						fs.mkdirSync(destPath + '/' + name);
+						if (!otherStat || (!otherStat.isDirectory() || (stat.mtime.getTime() > otherStat.mtime.getTime()))) {
+							removeOther();
+							fs.mkdirSync(destPath + '/' + name);
+						}
 						fs.readdirSync(itemPath).forEach(function (subItem) {
 							process(itemPath + '/' + subItem, destPath + '/' + name);
 						});
