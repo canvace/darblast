@@ -62,8 +62,8 @@ module.exports = function (grunt) {
 		var fs = require('fs');
 		var path = require('path');
 		return function () {
-			if (typeof this.src === 'string') {
-				this.src = [this.src];
+			if (typeof this.file.src === 'string') {
+				this.file.src = [this.file.src];
 			}
 			for (var i in this.file.src) {
 				(function process(itemPath, destPath) {
