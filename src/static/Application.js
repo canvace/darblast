@@ -17,10 +17,10 @@ Ext.application({
 				}, {
 					xtype: 'splitbutton',
 					icon: 'resources/images/tools/stamp.png',
-					items: [{
-						icon: 'resources/images/tools/stamptiles.png'
+					menu: [{
+						icon: 'resources/images/tools/stamp_tiles.png'
 					}, {
-						icon: 'resources/images/tools/stampentities.png'
+						icon: 'resources/images/tools/stamp_entities.png'
 					}]
 				}, {
 					xtype: 'splitbutton',
