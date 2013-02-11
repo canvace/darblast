@@ -18,9 +18,9 @@ Ext.application({
 					xtype: 'splitbutton',
 					icon: 'resources/images/tools/stamp.png',
 					menu: [{
-						icon: 'resources/images/tools/stamp_tiles.png'
+						icon: 'resources/images/tools/stamp_tile.png'
 					}, {
-						icon: 'resources/images/tools/stamp_entities.png'
+						icon: 'resources/images/tools/stamp_entity.png'
 					}]
 				}, {
 					xtype: 'splitbutton',
