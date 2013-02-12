@@ -30,29 +30,38 @@ module.exports = function (grunt) {
 				node: true
 			}
 		},
-		concat: {
-			dist: {
+		min: {
+			client: {
+				src: [
+					'src/static/MultiSet.js',
+					'src/static/Canvace.js',
+					'src/static/Buckets.js',
+					'src/static/Hierarchy.js',
+					'src/static/View.js',
+					'src/static/ToolGroup.js',
+					'src/static/Tools.js',
+					'src/static/Application.js'
+				],
+				dest: 'bin/static/app.js'
+			},
+			server: {
 				src: [
 					'src/Begin.js',
 					'src/End.js'
-				],
-				dest: 'src/canvace.js'
-			}
-		},
-		min: {
-			dist: {
-				src: [
-					'src/canvace.js'
 				],
 				dest: 'bin/canvace.js'
 			}
 		},
 		copy: {
-			dist: {
+			client: {
 				src: [
-					'src/static',
-					'src/views'
+					'src/static/extjs',
+					'src/static/resources'
 				],
+				dest: 'bin/static'
+			},
+			server: {
+				src: 'src/views',
 				dest: 'bin'
 			}
 		}
@@ -109,5 +118,5 @@ module.exports = function (grunt) {
 		};
 	}()));
 
-	grunt.registerTask('default', 'lint concat min copy');
+	grunt.registerTask('default', 'lint min copy');
 };
