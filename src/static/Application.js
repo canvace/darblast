@@ -6,7 +6,10 @@ Ext.application({
 			items: [{
 				xtype: 'box',
 				region: 'center',
-				html: '<canvas id="canvas"></canvas>'
+				html: '<canvas id="canvas"></canvas>',
+				style: {
+					overflow: 'hidden'
+				}
 			}, {
 				xtype: 'toolbar',
 				region: 'west',
@@ -106,9 +109,42 @@ Ext.application({
 					}]
 				}]
 			}, {
-				region: 'east'
+				xtype: 'panel',
+				region: 'east',
+				collapsible: true,
+				split: true,
+				header: false,
+				title: 'Layer Controls',
+				layout: 'vbox',
+				items: [{
+					xtype: 'toolbar',
+					defaults: {
+						scale: 'large'
+					},
+					items: [{
+						icon: 'resources/images/tools/bug.png'
+					}, {
+						icon: 'resources/images/tools/save.png'
+					}, {
+						icon: 'resources/images/tools/exit.png'
+					}]
+				}]
 			}, {
-				region: 'south'
+				xtype: 'tabpanel',
+				region: 'south',
+				collapsible: true,
+				split: true,
+				title: 'Lower Panel',
+				header: false,
+				items: [{
+					title: 'Stage'
+				}, {
+					title: 'Images'
+				}, {
+					title: 'Tiles'
+				}, {
+					title: 'Entities'
+				}]
 			}]
 		});
 	}
