@@ -23,99 +23,68 @@ Ext.application({
 					icon: 'resources/images/tools/drag.png',
 					tooltip: 'Drag Tool',
 					pressed: true
+				}, new ToolGroup('resources/images/tools/stamp.png', 'Stamp Tools', [{
+					text: 'Stamp Tile Tool',
+					icon: 'resources/images/tools/stamp_tile.png'
 				}, {
-					xtype: 'splitbutton',
-					toggleGroup: 'tool',
-					icon: 'resources/images/tools/stamp.png',
-					tooltip: 'Stamp Tools',
-					menuAlign: 'tl-tr?',
-					menu: [{
-						text: 'Stamp Tile Tool',
-						icon: 'resources/images/tools/stamp_tile.png'
-					}, {
-						text: 'Stamp Entity Tool',
-						icon: 'resources/images/tools/stamp_entity.png'
-					}]
+					text: 'Stamp Entity Tool',
+					icon: 'resources/images/tools/stamp_entity.png'
+				}]), new ToolGroup('resources/images/tools/fill.png', 'Fill Tools', [{
+					text: 'Fill Area Tool',
+					icon: 'resources/images/tools/fill_area.png'
 				}, {
-					xtype: 'splitbutton',
-					toggleGroup: 'tool',
-					icon: 'resources/images/tools/fill.png',
-					tooltip: 'Fill Tools',
-					menuAlign: 'tl-tr?',
-					menu: [{
-						text: 'Fill Area Tool',
-						icon: 'resources/images/tools/fill_area.png'
-					}, {
-						text: 'Fill Selection Command',
-						icon: 'resources/images/tools/fill_selection.png'
-					}]
-				}, {
+					text: 'Fill Selection Command',
+					icon: 'resources/images/tools/fill_selection.png'
+				}]), {
 					toggleGroup: 'tool',
 					icon: 'resources/images/tools/move_entity.png',
 					tooltip: 'Move Entity Tool'
+				}, new ToolGroup('resources/images/tools/erase.png', 'Erase Tools', [{
+					text: 'Erase Tiles Tool',
+					icon: 'resources/images/tools/erase_tiles.png'
 				}, {
-					xtype: 'splitbutton',
-					toggleGroup: 'tool',
-					icon: 'resources/images/tools/erase.png',
-					tooltip: 'Erase Tools',
-					menuAlign: 'tl-tr?',
-					menu: [{
-						text: 'Erase Tiles Tool',
-						icon: 'resources/images/tools/erase_tiles.png'
-					}, {
-						text: 'Erase Entities Tool',
-						icon: 'resources/images/tools/erase_entities.png'
-					}, {
-						text: 'Wipe Command',
-						icon: 'resources/images/tools/wipe_tiles.png'
-					}]
+					text: 'Erase Entities Tool',
+					icon: 'resources/images/tools/erase_entities.png'
 				}, {
-					xtype: 'splitbutton',
-					toggleGroup: 'tool',
-					icon: 'resources/images/tools/select.png',
-					tooltip: 'Select Tools',
-					menuAlign: 'tl-tr?',
-					menu: [{
-						text: 'Drag-Select Tool',
-						icon: 'resources/images/tools/drag_select.png'
-					}, {
-						text: 'Flood-Select Tool',
-						icon: 'resources/images/tools/flood_select.png'
-					}]
+					text: 'Wipe Command',
+					icon: 'resources/images/tools/wipe_tiles.png'
+				}]), new ToolGroup('resources/images/tools/select.png', 'Select Tools', [{
+					text: 'Drag-Select Tool',
+					icon: 'resources/images/tools/drag_select.png'
 				}, {
-					xtype: 'splitbutton',
-					toggleGroup: 'tool',
-					icon: 'resources/images/tools/clipboard.png',
-					tooltip: 'Clipboard Tools',
-					menuAlign: 'tl-tr?',
-					menu: [{
-						text: 'Cut Tiles Command',
-						icon: 'resources/images/tools/cut_tiles.png'
-					}, {
-						text: 'Copy Tiles Command',
-						icon: 'resources/images/tools/copy_tiles.png'
-					}, {
-						text: 'Paste Tiles Tool',
-						icon: 'resources/images/tools/paste_tiles.png'
-					}, {
-						text: 'Cut Entities Tool',
-						icon: 'resources/images/tools/cut_entities.png'
-					}, {
-						text: 'Copy Entities Tool',
-						icon: 'resources/images/tools/copy_entities.png'
-					}, {
-						text: 'Paste Entities Tool',
-						icon: 'resources/images/tools/paste_entity.png'
-					}]
-				}]
+					text: 'Flood-Select Tool',
+					icon: 'resources/images/tools/flood_select.png'
+				}]), new ToolGroup('resources/images/tools/clipboard.png', 'Clipboard Tools', [{
+					text: 'Cut Tiles Command',
+					icon: 'resources/images/tools/cut_tiles.png'
+				}, {
+					text: 'Copy Tiles Command',
+					icon: 'resources/images/tools/copy_tiles.png'
+				}, {
+					text: 'Paste Tiles Tool',
+					icon: 'resources/images/tools/paste_tiles.png'
+				}, {
+					text: 'Cut Entities Tool',
+					icon: 'resources/images/tools/cut_entities.png'
+				}, {
+					text: 'Copy Entities Tool',
+					icon: 'resources/images/tools/copy_entities.png'
+				}, {
+					text: 'Paste Entities Tool',
+					icon: 'resources/images/tools/paste_entity.png'
+				}])]
 			}, {
 				xtype: 'panel',
 				region: 'east',
 				collapsible: true,
 				split: true,
 				header: false,
+				width: 250,
 				title: 'Layer Controls',
-				layout: 'vbox',
+				layout: {
+					type: 'vbox',
+					align: 'stretch'
+				},
 				items: [{
 					xtype: 'toolbar',
 					defaults: {
@@ -136,16 +105,48 @@ Ext.application({
 				split: true,
 				title: 'Lower Panel',
 				header: false,
+				height: 200,
 				items: [{
 					title: 'Stage'
 				}, {
-					title: 'Images'
+					title: 'Images',
+					layout: 'border',
+					items: [{
+						xtype: 'toolbar',
+						region: 'north',
+						items: [{
+							tooltip: 'Load images...'
+						}, {
+							tooltip: 'Load image sheet...'
+						}, {
+							tooltip: 'Delete selected images...'
+						}, {
+							tooltip: 'Delete selected label...'
+						}]
+					}, {
+						xtype: 'treepanel',
+						region: 'west',
+						store: {
+							root: {
+								text: 'Labels',
+								expanded: true
+							}
+						}
+					}, {
+						region: 'center'
+					}]
 				}, {
 					title: 'Tiles'
 				}, {
 					title: 'Entities'
 				}]
 			}]
+		});
+		Ext.get('canvas').set({
+			width: screen.availWidth,
+			height: screen.availHeight
+		}).setStyle({
+			backgroundColor: 'white'
 		});
 	}
 });
