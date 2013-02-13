@@ -1,4 +1,7 @@
-installJSONHandler('/stage/:stageId/images/all', 'get', function (request, response) {
+installJSONHandler([
+	'/images/all',
+	'/stage/:stageId/images/all'
+], 'get', function (request, response) {
 	this.readdir('images', function (ids) {
 		var labelMap = {};
 		var count = ids.length;
@@ -13,14 +16,37 @@ installJSONHandler('/stage/:stageId/images/all', 'get', function (request, respo
 	});
 });
 
-installJSONHandler('/stage/:stageId/images/:imageId', 'get', function () {
+installJSONHandler([
+	'/images/:imageId',
+	'/stage/:stageId/images/:imageId'
+], 'get', function (request, response) {
+	response.type(this.getJSONSync('images/' + request.params.imageId + '/info').type);
+	response.send(this.readFileSync('images/' + request.params.imageId + '/data'));
+});
+
+installJSONHandler([
+	'/images',
+	'/stage/:stageId/images'
+], 'post', function () {
 	// TODO
 });
 
-installJSONHandler('/stage/:stageId/images', 'post', function () {
+installJSONHandler([
+	'/images/:imageId',
+	'/stage/:stageId/images/:imageId'
+], 'put', function () {
 	// TODO
 });
 
-installJSONHandler('/stage/:stageId/images/:imageId', 'put', function () {
-	// TODO
+installJSONHandler([
+	'/images/:imageId',
+	'/stage/:stageId/images/:imageId'
+], 'delete', function (request, response) {
+	var path = 'images/' + request.params.imageId;
+	if (this.getJSONSync(path + '/info').refCount > 0) {
+		response.json(403, 'The image is still in use');
+	} else {
+		this.deleteTreeSync(path);
+		response.json(true);
+	}
 });
