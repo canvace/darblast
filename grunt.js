@@ -3,20 +3,20 @@ module.exports = function (grunt) {
 		concat: {
 			client: {
 				src: [
-					'src/static/Application.js',
-					'src/static/Buckets.js',
-					'src/static/Canvace.js',
-					'src/static/Hierarchy.js',
 					'src/static/MultiSet.js',
+					'src/static/Canvace.js',
+					'src/static/Buckets.js',
+					'src/static/View.js',
+					'src/static/Hierarchy.js',
 					'src/static/ToolGroup.js',
 					'src/static/Tools.js',
-					'src/static/View.js'
+					'src/static/Application.js'
 				],
 				dest: 'src/static/app.js'
 			}
 		},
 		lint: {
-			client: 'src/static./app.js',
+			client: 'src/static/app.js',
 			server: [
 				'src/Begin.js',
 				'src/End.js'
