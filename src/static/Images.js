@@ -4,11 +4,12 @@ function Images() {
 
 	var createHandlers = new EventHandlers();
 	var updateHandlers = new EventHandlers();
+	var hierarchyHandlers = new EventHandlers();
 	var deleteHandlers = new EventHandlers();
 
 	var objects = {};
 
-	Canvace.Ajax.get('images/all', function (labelMap) {
+	function fetch(labelMap) {
 		for (var id in labelMap) {
 			set[id] = {
 				id: id,
@@ -26,12 +27,13 @@ function Images() {
 			};
 		}
 		hierarchy = new Hierarchy(labelMap);
-	});
+	}
+
+	Canvace.Ajax.get('images/all', fetch);
 
 	function ImageObject(id) {
-		var data = set[id];
 		this.getLabels = function () {
-			return Ext.Object.merge({}, data.labels);
+			return Ext.Object.merge({}, set[id].labels);
 		};
 		this.onUpdate = function (handler) {
 			return updateHandlers.registerHandler(id, handler);
@@ -47,8 +49,22 @@ function Images() {
 		};
 	}
 
-	new Poller('image', function () {
-		// TODO
+	new Poller('image', function (message) {
+		switch (message.method) {
+		case 'create':
+		case 'update':
+			fetch(message.labelMap);
+			hierarchyHandlers.fire(0);
+			break;
+		case 'delete':
+			if (message.id in set) {
+				deleteHandlers.fire(message.id);
+				delete set[message.id];
+				delete objects[message.id];
+				// TODO update hierarchy
+			}
+			break;
+		}
 	});
 
 	this.getHierarchy = function () {
