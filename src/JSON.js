@@ -1,10 +1,12 @@
 function JSONHandler(request, response) {
+	var thisObject = this;
+
 	this.readdir = function (path, callback) {
 		fs.readdir(request.session.projectPath + path, function (error, entries) {
 			if (error) {
 				response.type('json').send(404, error.toString());
 			} else {
-				callback(entries);
+				callback.call(thisObject, entries);
 			}
 		});
 	};
@@ -25,7 +27,7 @@ function JSONHandler(request, response) {
 					response.type('json').send(404, e.toString());
 					return;
 				}
-				callback(data);
+				callback.call(thisObject, data);
 			}
 		});
 	};
@@ -39,7 +41,7 @@ function JSONHandler(request, response) {
 			if (error) {
 				response.type('json').send(404);
 			} else {
-				callback();
+				callback.call(thisObject);
 			}
 		});
 	};

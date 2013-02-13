@@ -1,9 +1,16 @@
 installJSONHandler('/stage/:stageId/images/all', 'get', function (request, response) {
-	var labelMap = {};
-	this.readdirSync('images').forEach(function (id) {
-		labelMap[id] = this.getJSONSync('images/' + id + '/info').labels;
+	this.readdir('images', function (ids) {
+		var labelMap = {};
+		var count = ids.length;
+		ids.forEach(function (id) {
+			this.getJSON('images/' + id + '/info', function (data) {
+				labelMap[id] = data.labels;
+				if (!--count) {
+					response.json(labelMap);
+				}
+			});
+		}, this);
 	});
-	response.json(labelMap);
 });
 
 installJSONHandler('/stage/:stageId/images/:imageId', 'get', function () {
