@@ -4,6 +4,7 @@ module.exports = function (grunt) {
 			client: {
 				src: [
 					'src/static/MultiSet.js',
+					'src/static/EventHandlers.js',
 					'src/static/Hierarchy.js',
 					'src/static/Canvace.js',
 					'src/static/Poller.js',
