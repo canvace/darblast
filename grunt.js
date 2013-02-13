@@ -16,14 +16,20 @@ module.exports = function (grunt) {
 					'src/static/Application.js'
 				],
 				dest: 'src/static/app.js'
+			},
+			server: {
+				src: [
+					'src/Begin.js',
+					'src/Response.js',
+					'src/Images.js',
+					'src/End.js'
+				],
+				dest: 'src/canvace.js'
 			}
 		},
 		lint: {
 			client: 'src/static/app.js',
-			server: [
-				'src/Begin.js',
-				'src/End.js'
-			]
+			server: 'src/canvace.js'
 		},
 		jshint: {
 			client: {
@@ -84,10 +90,7 @@ module.exports = function (grunt) {
 				dest: 'bin/static/app.js'
 			},
 			server: {
-				src: [
-					'src/Begin.js',
-					'src/End.js'
-				],
+				src: 'src/canvace.js',
 				dest: 'bin/canvace.js'
 			}
 		},
