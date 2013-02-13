@@ -22,7 +22,7 @@ function MultiSet() {
 		for (var i in elements) {
 			add(elements[i]);
 		}
-	})(arguments);
+	}(arguments));
 
 	this.add = add;
 
@@ -39,7 +39,7 @@ function MultiSet() {
 							return false;
 						}
 					};
-				})(id)) === false) {
+				}(id))) === false) {
 					return true;
 				}
 			}

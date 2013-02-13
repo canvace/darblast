@@ -1,3 +1,5 @@
+/*global ToolGroup: false */
+
 Ext.application({
 	name: 'Canvace Development Environment',
 	launch: function () {

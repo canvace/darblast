@@ -59,7 +59,7 @@ function View(matrix, x0, y0) {
 			[0, 0, 1],
 			[1, 0, 1],
 			[0, 1, 1],
-			[1, 1, 1],
+			[1, 1, 1]
 		];
 		return function (i, j, k) {
 			var result = {
@@ -90,7 +90,7 @@ function View(matrix, x0, y0) {
 			[0, 0, 1],
 			[1, 0, 1],
 			[0, 1, 1],
-			[1, 1, 1],
+			[1, 1, 1]
 		];
 		return function (di, dj, dk, fill) {
 			var canvas = document.createElement('canvas');
@@ -112,16 +112,17 @@ function View(matrix, x0, y0) {
 			var context = canvas.getContext('2d');
 			context.translate(-left, -top);
 			(function (drawLine) {
-				for (var k = 0; k <= dk; k++) {
-					for (var i = 0; i <= di; i++) {
+				var i, j, k;
+				for (k = 0; k <= dk; k++) {
+					for (i = 0; i <= di; i++) {
 						drawLine(i, 0, k, i, dj, k);
 					}
-					for (var j = 0; j <= dj; j++) {
+					for (j = 0; j <= dj; j++) {
 						drawLine(0, j, k, di, j, k);
 					}
 				}
-				for (var i = 0; i <= di; i++) {
-					for (var j = 0; j <= dj; j++) {
+				for (i = 0; i <= di; i++) {
+					for (j = 0; j <= dj; j++) {
 						drawLine(i, j, 0, i, j, dk);
 					}
 				}
@@ -152,7 +153,7 @@ function View(matrix, x0, y0) {
 			y: y0
 		};
 	};
-	this.drag = function () {
+	this.drag = function (dx, dy) {
 		x0 += dx;
 		y0 += dy;
 	};

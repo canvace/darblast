@@ -68,10 +68,10 @@ function Hierarchy(images) {
 				walk(node[name] = {}, newPath);
 			}
 		}
-	})(root, []);
+	}(root, []));
 
 	this.Root = function (name) {
-		return new (function Node(name, node, inheritedLabels) {
+		return (function makeNode(name, node, inheritedLabels) {
 			var allLabels = inheritedLabels.concat(labels[name] || []);
 			this.getName = function () {
 				return name;
@@ -84,9 +84,9 @@ function Hierarchy(images) {
 			};
 			this.forEachChild = function (callback) {
 				for (var name in node) {
-					callback(new Node(name, node[name], allLabels));
+					callback(makeNode(name, node[name], allLabels));
 				}
 			};
-		})(name, root, []);
+		}(name, root, []));
 	};
 }
