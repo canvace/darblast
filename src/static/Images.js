@@ -15,9 +15,11 @@ function Images() {
 				labels: labelMap[id],
 				image: (function (id) {
 					var image = new Image();
-					image.addEventListener('load', function () {
+					function loaded() {
 						// TODO
-					}, false);
+					}
+					image.addEventListener('load', loaded, false);
+					image.addEventListener('error', loaded, false);
 					image.src = 'images/' + id;
 					return image;
 				}(id))

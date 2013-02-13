@@ -20,7 +20,8 @@ module.exports = function (grunt) {
 			server: {
 				src: [
 					'src/Begin.js',
-					'src/Response.js',
+					'src/JSON.js',
+					'src/Stage.js',
 					'src/Images.js',
 					'src/End.js'
 				],
@@ -102,8 +103,16 @@ module.exports = function (grunt) {
 				],
 				dest: 'bin/static'
 			},
+			client_debug: {
+				src: 'src/static/app.js',
+				dest: 'bin/static'
+			},
 			server: {
 				src: 'src/views',
+				dest: 'bin'
+			},
+			server_debug: {
+				src: 'src/canvace.js',
 				dest: 'bin'
 			}
 		}
@@ -160,5 +169,6 @@ module.exports = function (grunt) {
 		};
 	}()));
 
-	grunt.registerTask('default', 'concat lint min copy');
+	grunt.registerTask('default', 'concat lint min copy:client copy:server');
+	grunt.registerTask('debug', 'concat lint copy:client_debug copy:server_debug');
 };
