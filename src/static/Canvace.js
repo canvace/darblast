@@ -17,7 +17,7 @@ var Canvace = (function () {
 				url: url,
 				method: method,
 				callback: function (response) {
-					callback(JSON.parse(response.responseText));
+					callback && callback(JSON.parse(response.responseText));
 				}
 			};
 			if (arguments.length > 2) {
