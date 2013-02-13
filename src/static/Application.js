@@ -142,11 +142,22 @@ Ext.application({
 				}]
 			}]
 		});
+
+		var width = screen.availWidth;
+		var height = screen.availHeight;
+
 		Ext.get('canvas').set({
-			width: screen.availWidth,
-			height: screen.availHeight
+			width: width,
+			height: height
 		}).setStyle({
 			backgroundColor: 'white'
 		});
+
+		var images = new Images();
+		var view = new View();
+		var buckets = new Buckets(width, height);
+		var tools = new Tools();
+
+		(function () {}(images, view, buckets, tools));
 	}
 });
