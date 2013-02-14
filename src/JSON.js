@@ -4,7 +4,7 @@ function JSONHandler(request, response) {
 	this.readFile = function (path, callback) {
 		fs.readFile(request.session.projectPath + path, function (error, data) {
 			if (error) {
-				response.type('json').send(404, error.toString());
+				response.json(404, error.toString());
 			} else {
 				callback.call(thisObject, data);
 			}
@@ -18,7 +18,7 @@ function JSONHandler(request, response) {
 	this.unlink = function (path, callback) {
 		fs.unlink(request.session.projectPath + path, function (error) {
 			if (error) {
-				response.type('json').send(404, error.toString());
+				response.json(404, error.toString());
 			} else {
 				callback.call(thisObject);
 			}
@@ -32,7 +32,7 @@ function JSONHandler(request, response) {
 	this.readdir = function (path, callback) {
 		fs.readdir(request.session.projectPath + path, function (error, entries) {
 			if (error) {
-				response.type('json').send(404, error.toString());
+				response.json(404, error.toString());
 			} else {
 				callback.call(thisObject, entries);
 			}
@@ -44,23 +44,60 @@ function JSONHandler(request, response) {
 	};
 
 	this.deleteTree = function (path, callback) {
-		// TODO
+		(function remove(path, callback) {
+			var stat = fs.statSync(path);
+			if (stat.isDirectory()) {
+				fs.readdir(path, function (entries) {
+					var count = entries.length;
+					entries.forEach(function (entry) {
+						remove(path + '/' + entry, function () {
+							if (!--count) {
+								fs.rmdir(path, function (error) {
+									if (error) {
+										response.json(404, error.toString());
+									} else {
+										callback();
+									}
+								});
+							}
+						});
+					});
+				});
+			} else {
+				fs.unlink(path, function (error) {
+					if (error) {
+						response.json(404, error.toString());
+					} else {
+						callback();
+					}
+				});
+			}
+		}(request.session.projectPath + path, callback));
 	};
 
 	this.deleteTreeSync = function (path) {
-		// TODO
+		(function remove(path) {
+			if (fs.statSync(path).isDirectory()) {
+				fs.readdirSync(path).forEach(function (entry) {
+					remove(path + '/' + entry);
+				});
+				fs.rmdirSync(path);
+			} else {
+				fs.unlinkSync(path);
+			}
+		}(request.session.projectPath + path));
 	};
 
 	this.getJSON = function (path, callback) {
 		fs.readFile(request.session.projectPath + path, 'ascii', function (error, content) {
 			if (error) {
-				response.type('json').send(404, error.toString());
+				response.json(404, error.toString());
 			} else {
 				var data;
 				try {
 					data = JSON.parse(content);
 				} catch (e) {
-					response.type('json').send(404, e.toString());
+					response.json(404, e.toString());
 					return;
 				}
 				callback.call(thisObject, data);
@@ -75,7 +112,7 @@ function JSONHandler(request, response) {
 	this.putJSON = function (path, data, callback) {
 		fs.writeFile(request.session.projectPath + path, JSON.stringify(data), function (error) {
 			if (error) {
-				response.type('json').send(404);
+				response.json(404, error.toString());
 			} else {
 				callback.call(thisObject);
 			}
@@ -94,12 +131,12 @@ function installJSONHandler(urls, method, handler) {
 	for (var i in urls) {
 		app[method](urls[i], function (request, response) {
 			if (!request.session || !request.session.projectPath) {
-				response.type('text').send(400, 'Bad request');
+				response.json(400, 'Bad request');
 			} else {
 				try {
 					handler.call(new JSONHandler(request, response), request, response);
 				} catch (e) {
-					response.type('json').send(404, e.toString());
+					response.json(404, e.toString());
 				}
 			}
 		});
