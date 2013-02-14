@@ -4,6 +4,23 @@ Ext.application({
 		Ext.create('Ext.container.Viewport', {
 			layout: 'border',
 			items: [{
+				xtype: 'toolbar',
+				region: 'north',
+				layout: {
+					type: 'hbox',
+					pack: 'end'
+				},
+				defaults: {
+					scale: 'large'
+				},
+				items: [{
+					icon: 'resources/images/tools/bug.png'
+				}, {
+					icon: 'resources/images/tools/save.png'
+				}, {
+					icon: 'resources/images/tools/exit.png'
+				}]
+			}, {
 				xtype: 'box',
 				region: 'center',
 				html: '<canvas id="canvas"></canvas>',
@@ -85,23 +102,12 @@ Ext.application({
 					type: 'vbox',
 					align: 'stretch'
 				},
-				items: [{
-					xtype: 'toolbar',
-					defaults: {
-						scale: 'large'
-					},
-					items: [{
-						icon: 'resources/images/tools/bug.png'
-					}, {
-						icon: 'resources/images/tools/save.png'
-					}, {
-						icon: 'resources/images/tools/exit.png'
-					}]
-				}]
+				items: []
 			}, {
 				xtype: 'tabpanel',
 				region: 'south',
 				collapsible: true,
+				collapsed: true,
 				split: true,
 				title: 'Lower Panel',
 				header: false,
