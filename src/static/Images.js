@@ -9,27 +9,36 @@ function Images() {
 
 	var objects = {};
 
-	function fetch(labelMap) {
-		for (var id in labelMap) {
-			set[id] = {
-				id: id,
-				labels: labelMap[id],
-				image: (function (id) {
-					var image = new Image();
-					function loaded() {
-						// TODO
-					}
-					image.addEventListener('load', loaded, false);
-					image.addEventListener('error', loaded, false);
-					image.src = 'images/' + id;
-					return image;
-				}(id))
-			};
+	function loadImage(id, labels, callback) {
+		var image = new Image();
+
+		function loaded() {
+			callback && callback(image);
 		}
-		hierarchy = new Hierarchy(labelMap);
+
+		image.addEventListener('load', loaded, false);
+		image.addEventListener('error', loaded, false);
+		image.src = 'images/' + id;
+
+		set[id] = {
+			id: id,
+			labels: labels,
+			image: image
+		};
 	}
 
-	Canvace.Ajax.get('images/all', fetch);
+	Canvace.Ajax.get('images/all', function (labelMap) {
+		var count = 0;
+		for (var id in labelMap) {
+			count++;
+			loadImage(id, labelMap, function () {
+				if (!--count) {
+					// TODO
+				}
+			});
+		}
+		hierarchy = new Hierarchy(labelMap);
+	});
 
 	function ImageObject(id) {
 		this.getLabels = function () {
@@ -52,9 +61,34 @@ function Images() {
 	new Poller('image', function (message) {
 		switch (message.method) {
 		case 'create':
+			(function () {
+				for (var id in message.labelMap) {
+					loadImage(id, message.labelMap[id], (function (id) {
+						return function () {
+							createHandlers.fire(0, function (handler) {
+								handler(id);
+							});
+						};
+					}(id)));
+				}
+				// TODO update hierarchy
+				hierarchyHandlers.fire(0);
+			}());
+			break;
 		case 'update':
-			fetch(message.labelMap);
-			hierarchyHandlers.fire(0);
+			(function () {
+				for (var id in message.labelMap) {
+					loadImage(id, message.labelMap[id], (function (id) {
+						return function () {
+							updateHandlers.fire(id, function (handler) {
+								handler(id);
+							});
+						};
+					}(id)));
+				}
+				// TODO update hierarchy
+				hierarchyHandlers.fire(0);
+			}());
 			break;
 		case 'delete':
 			if (message.id in set) {
@@ -62,6 +96,7 @@ function Images() {
 				delete set[message.id];
 				delete objects[message.id];
 				// TODO update hierarchy
+				hierarchyHandlers.fire(0);
 			}
 			break;
 		}
