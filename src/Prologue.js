@@ -102,6 +102,8 @@ var users = (function () {
 	}
 }());
 
+var ReadWriteLock = require('rwlock');
+
 var express = require('express');
 var consolidate = require('consolidate');
 

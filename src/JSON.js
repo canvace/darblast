@@ -2,12 +2,15 @@ function JSONHandler(request, response) {
 	var thisObject = this;
 
 	this.readFile = function (path, callback) {
-		fs.readFile(request.session.projectPath + path, function (error, data) {
-			if (error) {
-				response.json(404, error.toString());
-			} else {
-				callback.call(thisObject, data);
-			}
+		fileLock.readLock(request.session.projectPath + path, function (release) {
+			fs.readFile(request.session.projectPath + path, function (error, data) {
+				release();
+				if (error) {
+					response.json(404, error.toString());
+				} else {
+					callback.call(thisObject, data);
+				}
+			});
 		});
 	};
 
@@ -16,12 +19,15 @@ function JSONHandler(request, response) {
 	};
 
 	this.unlink = function (path, callback) {
-		fs.unlink(request.session.projectPath + path, function (error) {
-			if (error) {
-				response.json(404, error.toString());
-			} else {
-				callback.call(thisObject);
-			}
+		fileLock.writeLock(request.session.projectPath + path, function (release) {
+			fs.unlink(request.session.projectPath + path, function (error) {
+				release();
+				if (error) {
+					response.json(404, error.toString());
+				} else {
+					callback.call(thisObject);
+				}
+			});
 		});
 	};
 
@@ -30,12 +36,15 @@ function JSONHandler(request, response) {
 	};
 
 	this.readdir = function (path, callback) {
-		fs.readdir(request.session.projectPath + path, function (error, entries) {
-			if (error) {
-				response.json(404, error.toString());
-			} else {
-				callback.call(thisObject, entries);
-			}
+		fileLock.readLock(request.session.projectPath + path, function (release) {
+			fs.readdir(request.session.projectPath + path, function (error, entries) {
+				release();
+				if (error) {
+					response.json(404, error.toString());
+				} else {
+					callback.call(thisObject, entries);
+				}
+			});
 		});
 	};
 
@@ -45,37 +54,41 @@ function JSONHandler(request, response) {
 
 	this.deleteTree = function (path, callback) {
 		(function remove(path, callback) {
-			var stat = fs.statSync(path);
-			if (stat.isDirectory()) {
-				fs.readdir(path, function (error, entries) {
-					if (error) {
-						response.json(404, error.toString());
-					} else {
-						var count = entries.length;
-						entries.forEach(function (entry) {
-							remove(path + '/' + entry, function () {
-								if (!--count) {
-									fs.rmdir(path, function (error) {
-										if (error) {
-											response.json(404, error.toString());
-										} else {
-											callback();
-										}
-									});
-								}
+			fileLock.writeLock(path, function (release) {
+				var stat = fs.statSync(path);
+				if (stat.isDirectory()) {
+					fs.readdir(path, function (error, entries) {
+						if (error) {
+							response.json(404, error.toString());
+						} else {
+							var count = entries.length;
+							entries.forEach(function (entry) {
+								remove(path + '/' + entry, function () {
+									if (!--count) {
+										fs.rmdir(path, function (error) {
+											release();
+											if (error) {
+												response.json(404, error.toString());
+											} else {
+												callback.call(thisObject);
+											}
+										});
+									}
+								});
 							});
-						});
-					}
-				});
-			} else {
-				fs.unlink(path, function (error) {
-					if (error) {
-						response.json(404, error.toString());
-					} else {
-						callback();
-					}
-				});
-			}
+						}
+					});
+				} else {
+					fs.unlink(path, function (error) {
+						release();
+						if (error) {
+							response.json(404, error.toString());
+						} else {
+							callback.call(thisObject);
+						}
+					});
+				}
+			});
 		}(request.session.projectPath + path, callback));
 	};
 
@@ -93,19 +106,22 @@ function JSONHandler(request, response) {
 	};
 
 	this.getJSON = function (path, callback) {
-		fs.readFile(request.session.projectPath + path, 'ascii', function (error, content) {
-			if (error) {
-				response.json(404, error.toString());
-			} else {
-				var data;
-				try {
-					data = JSON.parse(content);
-				} catch (e) {
-					response.json(404, e.toString());
-					return;
+		fileLock.readLock(request.session.projectPath + path, function (release) {
+			fs.readFile(request.session.projectPath + path, 'ascii', function (error, content) {
+				release();
+				if (error) {
+					response.json(404, error.toString());
+				} else {
+					var data;
+					try {
+						data = JSON.parse(content);
+					} catch (e) {
+						response.json(404, e.toString());
+						return;
+					}
+					callback.call(thisObject, data);
 				}
-				callback.call(thisObject, data);
-			}
+			});
 		});
 	};
 
@@ -114,12 +130,15 @@ function JSONHandler(request, response) {
 	};
 
 	this.putJSON = function (path, data, callback) {
-		fs.writeFile(request.session.projectPath + path, JSON.stringify(data), function (error) {
-			if (error) {
-				response.json(404, error.toString());
-			} else {
-				callback.call(thisObject);
-			}
+		fileLock.writeLock(request.session.projectPath + path, function (release) {
+			fs.writeFile(request.session.projectPath + path, JSON.stringify(data), function (error) {
+				release();
+				if (error) {
+					response.json(404, error.toString());
+				} else {
+					callback.call(thisObject);
+				}
+			});
 		});
 	};
 
