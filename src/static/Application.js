@@ -1,6 +1,5 @@
-Ext.application({
-	name: 'Canvace Development Environment',
-	launch: function () {
+(function () {
+	function initialize() {
 		Ext.create('Ext.container.Viewport', {
 			layout: 'border',
 			items: [{
@@ -166,4 +165,35 @@ Ext.application({
 
 		(function () {}(images, view, buckets, tools));
 	}
-});
+
+	Ext.application({
+		name: 'Canvace Development Environment',
+		launch: function () {
+			var startDialog = Ext.create('Ext.window.Window', {
+				layout: 'vbox',
+				title: 'Canvace Development Environment',
+				resizable: false,
+				items: [{
+					xtype: 'panel',
+					items: []
+				}, {
+					xtype: 'panel',
+					layout: {
+						type: 'hbox',
+						pack: 'begin'
+					},
+					items: [{
+						xtype: 'button',
+						text: 'Start!',
+						modal: true,
+						handler: function () {
+							startDialog.close();
+							initialize();
+						}
+					}]
+				}]
+			});
+			startDialog.show();
+		}
+	});
+}());

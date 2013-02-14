@@ -19,11 +19,11 @@ module.exports = function (grunt) {
 			},
 			server: {
 				src: [
-					'src/Begin.js',
+					'src/Prologue.js',
 					'src/JSON.js',
 					'src/Stage.js',
 					'src/Images.js',
-					'src/End.js'
+					'src/Epilogue.js'
 				],
 				dest: 'src/canvace.js'
 			}
