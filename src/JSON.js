@@ -47,21 +47,25 @@ function JSONHandler(request, response) {
 		(function remove(path, callback) {
 			var stat = fs.statSync(path);
 			if (stat.isDirectory()) {
-				fs.readdir(path, function (entries) {
-					var count = entries.length;
-					entries.forEach(function (entry) {
-						remove(path + '/' + entry, function () {
-							if (!--count) {
-								fs.rmdir(path, function (error) {
-									if (error) {
-										response.json(404, error.toString());
-									} else {
-										callback();
-									}
-								});
-							}
+				fs.readdir(path, function (error, entries) {
+					if (error) {
+						response.json(404, error.toString());
+					} else {
+						var count = entries.length;
+						entries.forEach(function (entry) {
+							remove(path + '/' + entry, function () {
+								if (!--count) {
+									fs.rmdir(path, function (error) {
+										if (error) {
+											response.json(404, error.toString());
+										} else {
+											callback();
+										}
+									});
+								}
+							});
 						});
-					});
+					}
 				});
 			} else {
 				fs.unlink(path, function (error) {
