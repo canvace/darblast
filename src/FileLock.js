@@ -19,10 +19,4 @@ var fileLock = new (function () {
 			lock.writeLock(path, callback);
 		});
 	};
-
-	this.criticalSection = function (path, callback) {
-		normalize(path, function (path) {
-			lock.criticalSection(path, callback);
-		});
-	};
 })();
