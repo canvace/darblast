@@ -21,7 +21,7 @@ module.exports = function (grunt) {
 				src: [
 					'src/Prologue.js',
 					'src/FileLock.js',
-					'src/JSON.js',
+					'src/Handler.js',
 					'src/Stage.js',
 					'src/Images.js',
 					'src/Epilogue.js'

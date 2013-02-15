@@ -1,4 +1,4 @@
-function JSONHandler(request, response) {
+function Handler(request, response) {
 	var thisObject = this;
 
 	this.readLock = function (path, callback) {
@@ -202,7 +202,7 @@ function installHandler(urls, method, handler) {
 				response.json(400, 'Bad request');
 			} else {
 				try {
-					handler.call(new JSONHandler(request, response), request, response);
+					handler.call(new Handler(request, response), request, response);
 				} catch (e) {
 					response.json(404, e.toString());
 				}
