@@ -7,11 +7,13 @@ installHandler('/stage/:stageId', 'get', function () {
 });
 
 installHandler('/stage/:stageId/info', 'get', function (request, response) {
-	this.getJSONLock('stages/' + request.params.stageId, function (data) {
-		response.json({
-			matrix: data.matrix,
-			x0: data.x0,
-			y0: data.y0
+	this.getJSON('info', function (projectInfo) {
+		this.getJSONLock('stages/' + request.params.stageId, function (stageInfo) {
+			response.json({
+				matrix: projectInfo.matrix,
+				x0: stageInfo.x0,
+				y0: stageInfo.y0
+			});
 		});
 	});
 });
@@ -25,7 +27,7 @@ installHandler('/stage/:stageId', 'put', function () {
 });
 
 installHandler('/stage/:stageId', 'delete', function (request, response) {
-	this.deleteTree('stages/' + request.params.stageId, function () {
+	this.unlink('stages/' + request.params.stageId, function () {
 		response.json(true);
 	});
 });
