@@ -125,5 +125,9 @@ if (users !== null) {
 }
 
 app.get('/', function (request, response) {
+
+	// FIXME this is temporary
+	request.session.projectPath = 'C:/Users/Alberto/Documents/Darblast_NG/projects/test/';
+
 	response.render('main.handlebars');
 });
