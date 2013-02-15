@@ -105,7 +105,11 @@ module.exports = function (grunt) {
 				dest: 'bin/static'
 			},
 			client_debug: {
-				src: 'src/static/app.js',
+				src: [
+					'src/static/extjs',
+					'src/static/resources',
+					'src/static/app.js'
+				],
 				dest: 'bin/static'
 			},
 			server: {
@@ -113,7 +117,10 @@ module.exports = function (grunt) {
 				dest: 'bin'
 			},
 			server_debug: {
-				src: 'src/canvace.js',
+				src: [
+					'src/views',
+					'src/canvace.js'
+				],
 				dest: 'bin'
 			}
 		}

@@ -2,12 +2,12 @@ app.get('/stage/:stageId/', function (request, response) {
 	response.render('main.handlebars');
 });
 
-installJSONHandler('/stage/:stageId', 'get', function () {
+installHandler('/stage/:stageId', 'get', function () {
 	// TODO
 });
 
-installJSONHandler('/stage/:stageId/info', 'get', function (request, response) {
-	this.getJSON('stages/' + request.params.stageId, function (data) {
+installHandler('/stage/:stageId/info', 'get', function (request, response) {
+	this.getJSONLock('stages/' + request.params.stageId, function (data) {
 		response.json({
 			matrix: data.matrix,
 			x0: data.x0,
@@ -16,18 +16,16 @@ installJSONHandler('/stage/:stageId/info', 'get', function (request, response) {
 	});
 });
 
-installJSONHandler('/stage/', 'post', function (request, response) {
-	var projectInfo = this.getJSONSync('info');
-	var stageId = projectInfo.stageCounter++;
-	this.putJSONSync('info', projectInfo);
+installHandler('/stage/', 'post', function () {
 	// TODO
 });
 
-installJSONHandler('/stage/:stageId', 'put', function () {
+installHandler('/stage/:stageId', 'put', function () {
 	// TODO
 });
 
-installJSONHandler('/stage/:stageId', 'delete', function (request, response) {
-	this.deleteTreeSync('stages/' + request.params.stageId);
-	response.json(true);
+installHandler('/stage/:stageId', 'delete', function (request, response) {
+	this.deleteTree('stages/' + request.params.stageId, function () {
+		response.json(true);
+	});
 });

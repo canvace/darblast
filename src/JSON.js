@@ -1,7 +1,25 @@
 function JSONHandler(request, response) {
 	var thisObject = this;
 
+	this.readLock = function (path, callback) {
+		fileLock.readLock(request.session.projectPath + path, callback);
+	};
+
+	this.writeLock = function (path, callback) {
+		fileLock.readLock(request.session.projectPath + path, callback);
+	};
+
 	this.readFile = function (path, callback) {
+		fs.readFile(request.session.projectPath + path, function (error, data) {
+			if (error) {
+				response.json(404, error.toString());
+			} else {
+				callback.call(thisObject, data);
+			}
+		});
+	};
+
+	this.readFileLock = function (path, callback) {
 		fileLock.readLock(request.session.projectPath + path, function (release) {
 			fs.readFile(request.session.projectPath + path, function (error, data) {
 				release();
@@ -14,11 +32,17 @@ function JSONHandler(request, response) {
 		});
 	};
 
-	this.readFileSync = function (path) {
-		return fs.readFileSync(request.session.projectPath + path);
+	this.unlink = function (path, callback) {
+		fs.unlink(request.session.projectPath + path, function (error) {
+			if (error) {
+				response.json(404, error.toString());
+			} else {
+				callback.call(thisObject);
+			}
+		});
 	};
 
-	this.unlink = function (path, callback) {
+	this.unlinkLock = function (path, callback) {
 		fileLock.writeLock(request.session.projectPath + path, function (release) {
 			fs.unlink(request.session.projectPath + path, function (error) {
 				release();
@@ -31,11 +55,17 @@ function JSONHandler(request, response) {
 		});
 	};
 
-	this.unlinkSync = function (path) {
-		fs.unlinkSync(path);
+	this.readdir = function (path, callback) {
+		fs.readdir(request.session.projectPath + path, function (error, entries) {
+			if (error) {
+				response.json(404, error.toString());
+			} else {
+				callback.call(thisObject, entries);
+			}
+		});
 	};
 
-	this.readdir = function (path, callback) {
+	this.readdirLock = function (path, callback) {
 		fileLock.readLock(request.session.projectPath + path, function (release) {
 			fs.readdir(request.session.projectPath + path, function (error, entries) {
 				release();
@@ -46,10 +76,6 @@ function JSONHandler(request, response) {
 				}
 			});
 		});
-	};
-
-	this.readdirSync = function (path) {
-		return fs.readdirSync(request.session.projectPath + path);
 	};
 
 	this.deleteTree = function (path, callback) {
@@ -106,6 +132,23 @@ function JSONHandler(request, response) {
 	};
 
 	this.getJSON = function (path, callback) {
+		fs.readFile(request.session.projectPath + path, 'ascii', function (error, content) {
+			if (error) {
+				response.json(404, error.toString());
+			} else {
+				var data;
+				try {
+					data = JSON.parse(content);
+				} catch (e) {
+					response.json(404, e.toString());
+					return;
+				}
+				callback.call(thisObject, data);
+			}
+		});
+	};
+
+	this.getJSONLock = function (path, callback) {
 		fileLock.readLock(request.session.projectPath + path, function (release) {
 			fs.readFile(request.session.projectPath + path, 'ascii', function (error, content) {
 				release();
@@ -125,11 +168,17 @@ function JSONHandler(request, response) {
 		});
 	};
 
-	this.getJSONSync = function (path) {
-		return JSON.parse(fs.readFileSync(request.session.projectPath + path, 'ascii'));
+	this.putJSON = function (path, data, callback) {
+		fs.writeFile(request.session.projectPath + path, JSON.stringify(data), function (error) {
+			if (error) {
+				response.json(404, error.toString());
+			} else {
+				callback.call(thisObject);
+			}
+		});
 	};
 
-	this.putJSON = function (path, data, callback) {
+	this.putJSONLock = function (path, data, callback) {
 		fileLock.writeLock(request.session.projectPath + path, function (release) {
 			fs.writeFile(request.session.projectPath + path, JSON.stringify(data), function (error) {
 				release();
@@ -141,13 +190,9 @@ function JSONHandler(request, response) {
 			});
 		});
 	};
-
-	this.putJSONSync = function (path, data) {
-		fs.writeFileSync(request.session.projectPath + path, JSON.stringify(data), 'ascii');
-	};
 }
 
-function installJSONHandler(urls, method, handler) {
+function installHandler(urls, method, handler) {
 	if (typeof urls === 'string') {
 		urls = [urls];
 	}
