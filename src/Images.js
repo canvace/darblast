@@ -73,51 +73,58 @@
 			labels = [];
 		}
 
-		this.writeLock('info', function (releaseProjectInfo) {
+		var ids = [];
+
+		function storeImage(file, id, callback) {
+			this.mkdir('images', id, function () {
+				this.writeLock('images/' + id, function (release) {
+					this.putJSON('images/' + id + '/info', {
+						refCount: 0,
+						type: file.type,
+						labels: labels
+					}, function () {
+						fs.readFile(file.path, function (data) {
+							this.writeFile('images/' + id + '/data', data);
+							release();
+							ids.push(id);
+							callback();
+						});
+					});
+				});
+			});
+		}
+
+		function storeImages(imageId) {
+			if (util.isArray(request.files.images)) {
+				var count = 0;
+				this.writeLock('images', function (release) {
+					for (var i in request.files.images) {
+						count++;
+						storeImage.call(this, request.files.images[i], imageId++, function () {
+							if (!--count) {
+								release();
+								response.json(ids);
+							}
+						});
+					}
+				});
+			} else {
+				this.writeLock('images', function (release) {
+					storeImage.call(this, request.files.images, imageId, function () {
+						release();
+						response.json([imageId]);
+					});
+				});
+			}
+		}
+
+		this.writeLock('info', function (release) {
 			this.getJSON('info', function (projectInfo) {
-				var imageId = projectInfo.imageCounter;
+				var firstId = projectInfo.imageCounter;
 				projectInfo.imageCounter += util.isArray(request.files.images) ? request.files.images.length : 1;
 				this.putJSON('info', projectInfo, function () {
-					releaseProjectInfo();
-					var ids = [];
-					var handler = this;
-					(function (store) {
-						if (util.isArray(request.files.images)) {
-							var count = 0;
-							for (var i in request.files.images) {
-								count++;
-								store(request.files.images[i], imageId++, function () {
-									if (!--count) {
-										response.json(ids);
-									}
-								});
-							}
-						} else {
-							store(request.files.images, imageId, function () {
-								response.json(ids);
-							});
-						}
-					}(function (file, imageId, callback) {
-						handler.writeLock('images', function (releaseImages) {
-							fs.mkdir('images/' + imageId, function () {
-								handler.writeLock('images/' + imageId, function (releaseImage) {
-									handler.putJSON('images/' + imageId + '/info', {
-										refCount: 0,
-										type: file.type,
-										labels: labels
-									}, function () {
-										fs.readFile(file.path, function (data) {
-											handler.writeFile('images/' + imageId + '/data', data);
-											releaseImage();
-											releaseImages();
-											ids.push(imageId);
-											callback();
-										});
-									});
-								});
-							});
-						});
-					}));
+					release();
+					storeImages.call(this, firstId);
 				});
 			});
 		});

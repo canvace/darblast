@@ -55,6 +55,29 @@ function Handler(request, response) {
 		});
 	};
 
+	this.mkdir = function (path, name, callback) {
+		fs.mkdir(request.session.projectPath + path + '/' + name, function (error) {
+			if (error) {
+				response.json(404, error.toString());
+			} else {
+				callback.call(thisObject);
+			}
+		});
+	};
+
+	this.mkdirLock = function (path, name, callback) {
+		fileLock.writeLock(request.session.projectPath + path, function (release) {
+			fs.mkdir(request.session.projectPath + path + '/' + name, function (error) {
+				release();
+				if (error) {
+					response.json(404, error.toString());
+				} else {
+					callback.call(thisObject);
+				}
+			});
+		});
+	};
+
 	this.readdir = function (path, callback) {
 		fs.readdir(request.session.projectPath + path, function (error, entries) {
 			if (error) {

@@ -6,6 +6,7 @@ try {
 }
 
 var fs = require('fs');
+var path = require('path');
 
 var users = (function () {
 	var content;
