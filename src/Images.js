@@ -1,5 +1,27 @@
 (function () {
-	var util = require('util');
+	function installImageHandler(urls, method, handler) {
+		return installHandler(function (request, response) {
+			var handler = new Handler(request, response);
+
+			handler.globalReadLock = function (callback) {
+				handler.readLock('images', callback);
+			};
+
+			handler.globalWriteLock = function (callback) {
+				handler.writeLock('images', callback);
+			};
+
+			handler.individualReadLock = function (id, callback) {
+				handler.readLock('images/' + id, callback);
+			};
+
+			handler.individualWriteLock = function (id, callback) {
+				handler.writeLock('images/' + id, callback);
+			};
+
+			return handler;
+		}, urls, method, handler);
+	}
 
 	function sanitizeLabels(labels) {
 		labels = labels.split(',');
@@ -22,33 +44,36 @@
 		return newArray;
 	}
 
-	installHandler([
+	installImageHandler([
 		'/images/all',
 		'/stage/:stageId/images/all'
 	], 'get', function (request, response) {
-		this.readLock('images', function (releaseImages) {
+		this.globalReadLock(function (releaseImages) {
 			this.readdir('images', function (ids) {
 				var labelMap = {};
 				var count = ids.length;
 				ids.forEach(function (id) {
-					this.getJSONLock('images/' + id + '/info', function (data) {
-						labelMap[id] = data.labels;
-						if (!--count) {
-							releaseImages();
-							response.json(labelMap);
-						}
+					this.individualReadLock(id, function (releaseImage) {
+						this.getJSON('images/' + id + '/info', function (data) {
+							releaseImage();
+							labelMap[id] = data.labels;
+							if (!--count) {
+								releaseImages();
+								response.json(labelMap);
+							}
+						});
 					});
 				}, this);
 			});
 		});
 	});
 
-	installHandler([
+	installImageHandler([
 		'/images/:imageId',
 		'/stage/:stageId/images/:imageId'
 	], 'get', function (request, response) {
-		this.readLock('images/' + request.params.imageId, function (release) {
-			this.getJSONLock('images/' + request.params.imageId + '/info', function (info) {
+		this.individualReadLock(request.params.imageId, function (release) {
+			this.getJSON('images/' + request.params.imageId + '/info', function (info) {
 				this.readFile('images/' + request.params.imageId + '/data', function (data) {
 					release();
 					response.type(info.type).send(data);
@@ -57,7 +82,7 @@
 		});
 	});
 
-	installHandler([
+	installImageHandler([
 		'/images',
 		'/stage/:stageId/images'
 	], 'post', function (request, response) {
@@ -87,7 +112,7 @@
 							this.writeFile('images/' + id + '/data', data);
 							release();
 							ids.push(id);
-							callback();
+							callback.call(this);
 						});
 					});
 				});
@@ -130,7 +155,7 @@
 		});
 	});
 
-	installHandler([
+	installImageHandler([
 		'/images/:imageId',
 		'/stage/:stageId/images/:imageId'
 	], 'put', function (request, response) {
@@ -145,7 +170,7 @@
 		});
 	});
 
-	installHandler([
+	installImageHandler([
 		'/images/:imageId',
 		'/stage/:stageId/images/:imageId'
 	], 'delete', function (request, response) {

@@ -6,7 +6,7 @@ function Handler(request, response) {
 	};
 
 	this.writeLock = function (path, callback) {
-		fileLock.readLock(request.session.projectPath + path, callback);
+		fileLock.writeLock(request.session.projectPath + path, callback);
 	};
 
 	this.readFile = function (path, callback) {
@@ -16,19 +16,6 @@ function Handler(request, response) {
 			} else {
 				callback.call(thisObject, data);
 			}
-		});
-	};
-
-	this.readFileLock = function (path, callback) {
-		fileLock.readLock(request.session.projectPath + path, function (release) {
-			fs.readFile(request.session.projectPath + path, function (error, data) {
-				release();
-				if (error) {
-					response.json(404, error.toString());
-				} else {
-					callback.call(thisObject, data);
-				}
-			});
 		});
 	};
 
@@ -42,19 +29,6 @@ function Handler(request, response) {
 		});
 	};
 
-	this.unlinkLock = function (path, callback) {
-		fileLock.writeLock(request.session.projectPath + path, function (release) {
-			fs.unlink(request.session.projectPath + path, function (error) {
-				release();
-				if (error) {
-					response.json(404, error.toString());
-				} else {
-					callback.call(thisObject);
-				}
-			});
-		});
-	};
-
 	this.mkdir = function (path, name, callback) {
 		fs.mkdir(request.session.projectPath + path + '/' + name, function (error) {
 			if (error) {
@@ -62,19 +36,6 @@ function Handler(request, response) {
 			} else {
 				callback.call(thisObject);
 			}
-		});
-	};
-
-	this.mkdirLock = function (path, name, callback) {
-		fileLock.writeLock(request.session.projectPath + path, function (release) {
-			fs.mkdir(request.session.projectPath + path + '/' + name, function (error) {
-				release();
-				if (error) {
-					response.json(404, error.toString());
-				} else {
-					callback.call(thisObject);
-				}
-			});
 		});
 	};
 
@@ -88,70 +49,40 @@ function Handler(request, response) {
 		});
 	};
 
-	this.readdirLock = function (path, callback) {
-		fileLock.readLock(request.session.projectPath + path, function (release) {
-			fs.readdir(request.session.projectPath + path, function (error, entries) {
-				release();
-				if (error) {
-					response.json(404, error.toString());
-				} else {
-					callback.call(thisObject, entries);
-				}
-			});
-		});
-	};
-
 	this.deleteTree = function (path, callback) {
 		(function remove(path, callback) {
-			fileLock.writeLock(path, function (release) {
-				var stat = fs.statSync(path);
-				if (stat.isDirectory()) {
-					fs.readdir(path, function (error, entries) {
-						if (error) {
-							response.json(404, error.toString());
-						} else {
-							var count = entries.length;
-							entries.forEach(function (entry) {
-								remove(path + '/' + entry, function () {
-									if (!--count) {
-										fs.rmdir(path, function (error) {
-											release();
-											if (error) {
-												response.json(404, error.toString());
-											} else {
-												callback.call(thisObject);
-											}
-										});
-									}
-								});
+			var stat = fs.statSync(path);
+			if (stat.isDirectory()) {
+				fs.readdir(path, function (error, entries) {
+					if (error) {
+						response.json(404, error.toString());
+					} else {
+						var count = entries.length;
+						entries.forEach(function (entry) {
+							remove(path + '/' + entry, function () {
+								if (!--count) {
+									fs.rmdir(path, function (error) {
+										if (error) {
+											response.json(404, error.toString());
+										} else {
+											callback.call(thisObject);
+										}
+									});
+								}
 							});
-						}
-					});
-				} else {
-					fs.unlink(path, function (error) {
-						release();
-						if (error) {
-							response.json(404, error.toString());
-						} else {
-							callback.call(thisObject);
-						}
-					});
-				}
-			});
-		}(request.session.projectPath + path, callback));
-	};
-
-	this.deleteTreeSync = function (path) {
-		(function remove(path) {
-			if (fs.statSync(path).isDirectory()) {
-				fs.readdirSync(path).forEach(function (entry) {
-					remove(path + '/' + entry);
+						});
+					}
 				});
-				fs.rmdirSync(path);
 			} else {
-				fs.unlinkSync(path);
+				fs.unlink(path, function (error) {
+					if (error) {
+						response.json(404, error.toString());
+					} else {
+						callback.call(thisObject);
+					}
+				});
 			}
-		}(request.session.projectPath + path));
+		}(request.session.projectPath + path, callback));
 	};
 
 	this.getJSON = function (path, callback) {
@@ -171,26 +102,6 @@ function Handler(request, response) {
 		});
 	};
 
-	this.getJSONLock = function (path, callback) {
-		fileLock.readLock(request.session.projectPath + path, function (release) {
-			fs.readFile(request.session.projectPath + path, 'ascii', function (error, content) {
-				release();
-				if (error) {
-					response.json(404, error.toString());
-				} else {
-					var data;
-					try {
-						data = JSON.parse(content);
-					} catch (e) {
-						response.json(404, e.toString());
-						return;
-					}
-					callback.call(thisObject, data);
-				}
-			});
-		});
-	};
-
 	this.putJSON = function (path, data, callback) {
 		fs.writeFile(request.session.projectPath + path, JSON.stringify(data), function (error) {
 			if (error) {
@@ -200,22 +111,9 @@ function Handler(request, response) {
 			}
 		});
 	};
-
-	this.putJSONLock = function (path, data, callback) {
-		fileLock.writeLock(request.session.projectPath + path, function (release) {
-			fs.writeFile(request.session.projectPath + path, JSON.stringify(data), function (error) {
-				release();
-				if (error) {
-					response.json(404, error.toString());
-				} else {
-					callback.call(thisObject);
-				}
-			});
-		});
-	};
 }
 
-function installHandler(urls, method, handler) {
+function installHandler(Handler, urls, method, handler) {
 	if (typeof urls === 'string') {
 		urls = [urls];
 	}

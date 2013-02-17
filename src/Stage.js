@@ -27,7 +27,7 @@ installHandler('/stage/:stageId', 'put', function () {
 });
 
 installHandler('/stage/:stageId', 'delete', function (request, response) {
-	this.unlink('stages/' + request.params.stageId, function () {
+	this.unlinkLock('stages/' + request.params.stageId, function () {
 		response.json(true);
 	});
 });
