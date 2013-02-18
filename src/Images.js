@@ -101,18 +101,26 @@
 		var ids = [];
 
 		function storeImage(file, id, callback) {
-			this.mkdir('images', id, function () {
-				this.writeLock('images/' + id, function (release) {
-					this.putJSON('images/' + id + '/info', {
-						refCount: 0,
-						type: file.type,
-						labels: labels
-					}, function () {
-						fs.readFile(file.path, function (data) {
-							this.writeFile('images/' + id + '/data', data);
-							release();
-							ids.push(id);
-							callback.call(this);
+			this.globalWriteLock(function (releaseImages) {
+				this.mkdir('images/' + id, function () {
+					this.individualWriteLock(id, function (releaseImage) {
+						releaseImages();
+						this.putJSON('images/' + id + '/info', {
+							refCount: 0,
+							type: file.type,
+							labels: labels
+						}, function () {
+							fs.readFile(file.path, function (error, data) {
+								if (error) {
+									this.error();
+								} else {
+									this.writeFile('images/' + id + '/data', data, function () {
+										releaseImage();
+										ids.push(id);
+										callback.call(this);
+									});
+								}
+							});
 						});
 					});
 				});
@@ -122,23 +130,17 @@
 		function storeImages(imageId) {
 			if (util.isArray(request.files.images)) {
 				var count = 0;
-				this.writeLock('images', function (release) {
-					for (var i in request.files.images) {
-						count++;
-						storeImage.call(this, request.files.images[i], imageId++, function () {
-							if (!--count) {
-								release();
-								response.json(ids);
-							}
-						});
-					}
-				});
-			} else {
-				this.writeLock('images', function (release) {
-					storeImage.call(this, request.files.images, imageId, function () {
-						release();
-						response.json([imageId]);
+				for (var i in request.files.images) {
+					count++;
+					storeImage.call(this, request.files.images[i], imageId++, function () {
+						if (!--count) {
+							response.json(ids);
+						}
 					});
+				}
+			} else {
+				storeImage.call(this, request.files.images, imageId, function () {
+					response.json([imageId]);
 				});
 			}
 		}
@@ -159,7 +161,7 @@
 		'/images/:imageId',
 		'/stage/:stageId/images/:imageId'
 	], 'put', function (request, response) {
-		this.writeLock('images/' + request.params.imageId + '/info', function (release) {
+		this.individualWriteLock(request.params.imageId, function (release) {
 			this.getJSON('images/' + request.params.imageId + '/info', function (info) {
 				info.labels = sanitizeLabels(request.query.labels);
 				this.putJSON('images/' + request.params.imageId + '/info', info, function () {
@@ -174,14 +176,18 @@
 		'/images/:imageId',
 		'/stage/:stageId/images/:imageId'
 	], 'delete', function (request, response) {
-		this.writeLock('images/' + request.params.imageId, function (release) {
-			this.getJSONLock('images/' + request.params.imageId + '/info', function (info) {
-				release();
+		this.individualReadLock(request.params.imageId, function (releaseImage) {
+			this.getJSON('images/' + request.params.imageId + '/info', function (info) {
 				if (info.refCount > 0) {
+					releaseImage();
 					response.json(403, 'The image is still in use');
 				} else {
-					this.deleteTree('images/' + request.params.imageId, function () {
-						response.json(true);
+					this.globalWriteLock(function (releaseImages) {
+						this.deleteTree('images/' + request.params.imageId, function () {
+							releaseImage();
+							releaseImages();
+							response.json(true);
+						});
 					});
 				}
 			});

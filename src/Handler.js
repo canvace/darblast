@@ -1,17 +1,44 @@
 function Handler(request, response) {
 	var thisObject = this;
 
+	var pendingLocks = new MultiSet();
+
+	function removePendingLocks() {
+		pendingLocks.fastForEach(function (release) {
+			release();
+		});
+		pendingLocks.clear();
+	}
+
+	this.error = function (error) {
+		removePendingLocks();
+		response.json(404, error.toString());
+	};
+
 	this.readLock = function (path, callback) {
-		fileLock.readLock(request.session.projectPath + path, callback);
+		fileLock.readLock(request.session.projectPath + path, function (release) {
+			var remove = pendingLocks.add(release);
+			callback.call(thisObject, function () {
+				remove();
+				release();
+			});
+		});
 	};
 
 	this.writeLock = function (path, callback) {
-		fileLock.writeLock(request.session.projectPath + path, callback);
+		fileLock.writeLock(request.session.projectPath + path, function (release) {
+			var remove = pendingLocks.add(release);
+			callback.call(thisObject, function () {
+				remove();
+				release();
+			});
+		});
 	};
 
 	this.readFile = function (path, callback) {
 		fs.readFile(request.session.projectPath + path, function (error, data) {
 			if (error) {
+				removePendingLocks();
 				response.json(404, error.toString());
 			} else {
 				callback.call(thisObject, data);
@@ -22,6 +49,7 @@ function Handler(request, response) {
 	this.unlink = function (path, callback) {
 		fs.unlink(request.session.projectPath + path, function (error) {
 			if (error) {
+				removePendingLocks();
 				response.json(404, error.toString());
 			} else {
 				callback.call(thisObject);
@@ -29,9 +57,10 @@ function Handler(request, response) {
 		});
 	};
 
-	this.mkdir = function (path, name, callback) {
-		fs.mkdir(request.session.projectPath + path + '/' + name, function (error) {
+	this.mkdir = function (path, callback) {
+		fs.mkdir(request.session.projectPath + path, function (error) {
 			if (error) {
+				removePendingLocks();
 				response.json(404, error.toString());
 			} else {
 				callback.call(thisObject);
@@ -42,6 +71,7 @@ function Handler(request, response) {
 	this.readdir = function (path, callback) {
 		fs.readdir(request.session.projectPath + path, function (error, entries) {
 			if (error) {
+				removePendingLocks();
 				response.json(404, error.toString());
 			} else {
 				callback.call(thisObject, entries);
@@ -55,6 +85,7 @@ function Handler(request, response) {
 			if (stat.isDirectory()) {
 				fs.readdir(path, function (error, entries) {
 					if (error) {
+						removePendingLocks();
 						response.json(404, error.toString());
 					} else {
 						var count = entries.length;
@@ -63,6 +94,7 @@ function Handler(request, response) {
 								if (!--count) {
 									fs.rmdir(path, function (error) {
 										if (error) {
+											removePendingLocks();
 											response.json(404, error.toString());
 										} else {
 											callback.call(thisObject);
@@ -76,6 +108,7 @@ function Handler(request, response) {
 			} else {
 				fs.unlink(path, function (error) {
 					if (error) {
+						removePendingLocks();
 						response.json(404, error.toString());
 					} else {
 						callback.call(thisObject);
@@ -88,12 +121,14 @@ function Handler(request, response) {
 	this.getJSON = function (path, callback) {
 		fs.readFile(request.session.projectPath + path, 'ascii', function (error, content) {
 			if (error) {
+				removePendingLocks();
 				response.json(404, error.toString());
 			} else {
 				var data;
 				try {
 					data = JSON.parse(content);
 				} catch (e) {
+					removePendingLocks();
 					response.json(404, e.toString());
 					return;
 				}
@@ -105,6 +140,7 @@ function Handler(request, response) {
 	this.putJSON = function (path, data, callback) {
 		fs.writeFile(request.session.projectPath + path, JSON.stringify(data), function (error) {
 			if (error) {
+				removePendingLocks();
 				response.json(404, error.toString());
 			} else {
 				callback.call(thisObject);

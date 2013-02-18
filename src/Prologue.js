@@ -104,6 +104,7 @@ var users = (function () {
 	}
 }());
 
+var MultiSet = require('multiset');
 var ReadWriteLock = require('rwlock');
 
 var express = require('express');
