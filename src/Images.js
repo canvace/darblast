@@ -213,9 +213,11 @@
 	});
 
 	installHandler([
-		'/poll/image',
+		'/poll/image/:pollId',
 		'/stage/:stageId/poll/image/:pollId'
 	], 'get', function (request, response) {
+		request.connection.setKeepAlive(true);
+		request.connection.setTimeout(0);
 		if (!channel.poll(request.params.pollId, function (data) {
 			response.json(data);
 		})) {

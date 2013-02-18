@@ -29,6 +29,4 @@ function PollChannel() {
 	};
 
 	this.broadcast = channel.broadcast;
-
-	return channel;
 }
