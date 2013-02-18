@@ -1,6 +1,8 @@
 (function () {
+	var channel = new PollChannel();
+
 	function installImageHandler(urls, method, handler) {
-		return installHandler(function (request, response) {
+		return installCustomHandler(function (request, response) {
 			var handler = new Handler(request, response);
 
 			handler.globalReadLock = function (callback) {
@@ -165,6 +167,11 @@
 			this.getJSON('images/' + request.params.imageId + '/info', function (info) {
 				info.labels = sanitizeLabels(request.query.labels);
 				this.putJSON('images/' + request.params.imageId + '/info', info, function () {
+					channel.broadcast({
+						method: 'update',
+						id: request.params.imageId,
+						labels: info.labels
+					});
 					release();
 					response.json(true);
 				});
@@ -184,6 +191,10 @@
 				} else {
 					this.globalWriteLock(function (releaseImages) {
 						this.deleteTree('images/' + request.params.imageId, function () {
+							channel.broadcast({
+								method: 'delete',
+								id: request.params.imageId
+							});
 							releaseImage();
 							releaseImages();
 							response.json(true);
@@ -192,5 +203,30 @@
 				}
 			});
 		});
+	});
+
+	installHandler([
+		'/poll/image',
+		'/stage/:stageId/poll/image'
+	], 'post', function (request, response) {
+		response.json(channel.createPoll());
+	});
+
+	installHandler([
+		'/poll/image',
+		'/stage/:stageId/poll/image/:pollId'
+	], 'get', function (request, response) {
+		if (!channel.poll(request.params.pollId, function (data) {
+			response.json(data);
+		})) {
+			response.json(404, 'Invalid poll ID');
+		}
+	});
+
+	installHandler([
+		'/poll/image/:pollId',
+		'/stage/:stageId/poll/image/:pollId'
+	], 'delete', function (request, response) {
+		response.json(channel.deletePoll(request.params.pollId));
 	});
 }());

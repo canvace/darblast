@@ -4,7 +4,7 @@ app.get('/stage/:stageId/', function (request, response) {
 
 (function () {
 	function installStageHandler(urls, method, handler) {
-		return installHandler(function (request, response) {
+		return installCustomHandler(function (request, response) {
 			var handler = new Handler(request, response);
 
 			handler.globalReadLock = function (callback) {

@@ -106,6 +106,7 @@ var users = (function () {
 
 var MultiSet = require('multiset');
 var ReadWriteLock = require('rwlock');
+var Channel = require('broadcast');
 
 var express = require('express');
 var consolidate = require('consolidate');

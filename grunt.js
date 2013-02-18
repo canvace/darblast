@@ -20,6 +20,7 @@ module.exports = function (grunt) {
 			server: {
 				src: [
 					'src/Prologue.js',
+					'src/PollChannel.js',
 					'src/FileLock.js',
 					'src/Handler.js',
 					'src/Stage.js',

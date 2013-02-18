@@ -11,6 +11,8 @@ function Handler(request, response) {
 		pendingLocks.clear();
 	}
 
+	this.removePendingLocks = removePendingLocks;
+
 	this.error = function (error) {
 		removePendingLocks();
 		response.json(404, error.toString());
@@ -150,7 +152,7 @@ function Handler(request, response) {
 	};
 }
 
-function installHandler(Handler, urls, method, handler) {
+function installCustomHandler(Handler, urls, method, handler) {
 	if (typeof urls === 'string') {
 		urls = [urls];
 	}
@@ -167,4 +169,8 @@ function installHandler(Handler, urls, method, handler) {
 			}
 		});
 	}
+}
+
+function installHandler(urls, method, handler) {
+	return installCustomHandler(Handler, urls, method, handler);
 }
