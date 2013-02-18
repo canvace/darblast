@@ -1,6 +1,7 @@
 function Handler(request, response) {
 	var thisObject = this;
 
+	var fileLock = new FileLock();
 	var pendingLocks = new MultiSet();
 
 	function removePendingLocks() {

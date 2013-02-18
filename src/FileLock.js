@@ -1,4 +1,4 @@
-var fileLock = new (function () {
+function FileLock() {
 	var normalize = (function () {
 		var cache = {};
 		return function normalize(pathToNormalize, callback) {
@@ -19,4 +19,4 @@ var fileLock = new (function () {
 			lock.writeLock(path, callback);
 		});
 	};
-})();
+}
