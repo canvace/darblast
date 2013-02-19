@@ -1,4 +1,5 @@
-/bin/
+/bin/*
+!/bin/package.json
 /src/canvace.js
 /src/static/app.js
 /projects/

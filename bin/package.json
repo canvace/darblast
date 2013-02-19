@@ -1,0 +1,45 @@
+{
+	"name": "canvace",
+	"version": "1.0.0",
+	"description": "Canvace's visual development environment.",
+	"keywords": [
+		"canvace",
+		"visual",
+		"environment",
+		"application",
+		"game",
+		"stage",
+		"level",
+		"design",
+		"project",
+		"sencha",
+		"extjs"
+	],
+	"homepage": "http://www.canvace.com/",
+	"bugs": "https://github.com/canvace/darblast/issues",
+	"author": "Alberto La Rocca <alberto.larocca@canvace.com> (https://github.com/71104)",
+	"contributors": [
+		"Daniele Cocca <daniele.cocca@canvace.com> (https://github.com/jmc-88)"
+	],
+	"files": [
+		"canvace.js",
+		"static",
+		"views"
+	],
+	"main": "canvace",
+	"bin": {
+		"canvace": "./canvace.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/canvace/darblast.git"
+	},
+	"dependencies": [
+		"express": "*",
+		"consolidate": "*",
+		"handlebars": "*",
+		"multiset": "1",
+		"rwlock": "2",
+		"broadcast": "1"
+	]
+}
