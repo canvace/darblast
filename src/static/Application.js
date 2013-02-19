@@ -3,23 +3,6 @@
 		Ext.create('Ext.container.Viewport', {
 			layout: 'border',
 			items: [{
-				xtype: 'toolbar',
-				region: 'north',
-				layout: {
-					type: 'hbox',
-					pack: 'end'
-				},
-				defaults: {
-					scale: 'large'
-				},
-				items: [{
-					icon: 'resources/images/tools/bug.png'
-				}, {
-					icon: 'resources/images/tools/save.png'
-				}, {
-					icon: 'resources/images/tools/exit.png'
-				}]
-			}, {
 				xtype: 'box',
 				region: 'center',
 				html: '<canvas id="canvas"></canvas>',
@@ -29,12 +12,20 @@
 			}, {
 				xtype: 'toolbar',
 				region: 'west',
-				layout: 'vbox',
+				dock: 'left',
 				defaults: {
 					scale: 'large',
 					allowDepress: false
 				},
 				items: [{
+					icon: 'resources/images/tools/save.png',
+					tooltip: 'Save'
+				}, {
+					icon: 'resources/images/tools/bug.png',
+					tooltip: 'Report a bug...'
+				}, {
+					xtype: 'tbseparator'
+				}, {
 					toggleGroup: 'tool',
 					icon: 'resources/images/tools/drag.png',
 					tooltip: 'Drag Tool',
@@ -169,6 +160,7 @@
 	Ext.application({
 		name: 'Canvace Development Environment',
 		launch: function () {
+			initialize();
 			var startDialog = Ext.create('Ext.window.Window', {
 				layout: 'vbox',
 				title: 'Canvace Development Environment',
@@ -188,7 +180,6 @@
 						modal: true,
 						handler: function () {
 							startDialog.close();
-							initialize();
 						}
 					}]
 				}]
