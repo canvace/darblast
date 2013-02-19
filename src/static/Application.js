@@ -1,5 +1,8 @@
 (function () {
-	function initialize() {
+	var width = screen.availWidth;
+	var height = screen.availHeight;
+
+	function initGUI() {
 		Ext.create('Ext.container.Viewport', {
 			layout: 'border',
 			items: [{
@@ -141,35 +144,35 @@
 			}]
 		});
 
-		var width = screen.availWidth;
-		var height = screen.availHeight;
-
 		Ext.get('canvas').set({
 			width: width,
 			height: height
 		}).setStyle({
 			backgroundColor: 'white'
 		});
+	}
 
-		var images = new Images();
-		var view = new View();
-		var buckets = new Buckets(width, height);
-		var tools = new Tools();
-
-		(function () {}(images, view, buckets, tools));
+	function loadStage() {
+		history.pushState(null, 'Canvace Development Environment', '/stage/test/');
+		Canvace.Ajax.get('info', function (data) {
+			var images = new Images();
+			var view = new View(data.matrix, data.x0, data.y0);
+			var buckets = new Buckets(width, height);
+			var tools = new Tools();
+			(function () {}(images, view, buckets, tools)); // XXX turn off grunt's unused variable warning temporarily
+		});
 	}
 
 	Ext.application({
 		name: 'Canvace Development Environment',
 		launch: function () {
-			initialize();
+			initGUI();
 			var startDialog = Ext.create('Ext.window.Window', {
 				layout: 'vbox',
 				title: 'Canvace Development Environment',
+				modal: true,
 				resizable: false,
-				items: [{
-					items: []
-				}, {
+				items: {
 					layout: {
 						type: 'hbox',
 						pack: 'begin'
@@ -177,12 +180,12 @@
 					items: [{
 						xtype: 'button',
 						text: 'Start!',
-						modal: true,
 						handler: function () {
 							startDialog.close();
+							loadStage();
 						}
 					}]
-				}]
+				}
 			});
 			startDialog.show();
 		}
