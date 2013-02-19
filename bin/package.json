@@ -34,12 +34,12 @@
 		"type": "git",
 		"url": "https://github.com/canvace/darblast.git"
 	},
-	"dependencies": [
+	"dependencies": {
 		"express": "*",
 		"consolidate": "*",
 		"handlebars": "*",
 		"multiset": "1",
 		"rwlock": "2",
 		"broadcast": "1"
-	]
+	}
 }
