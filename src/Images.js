@@ -117,6 +117,11 @@
 									this.error();
 								} else {
 									this.writeFile('images/' + id + '/data', data, function () {
+										channel.broadcast({
+											method: 'create',
+											id: id,
+											labels: labels
+										});
 										releaseImage();
 										ids.push(id);
 										callback.call(this);
