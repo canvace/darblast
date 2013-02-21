@@ -3,32 +3,8 @@ app.get('/stage/:stageId/', function (request, response) {
 });
 
 (function () {
-	function installStageHandler(urls, method, handler) {
-		return installCustomHandler(function (request, response) {
-			var handler = new Handler(request, response);
-
-			handler.globalReadLock = function (callback) {
-				handler.readLock('stages', callback);
-			};
-
-			handler.globalWriteLock = function (callback) {
-				handler.writeLock('stages', callback);
-			};
-
-			handler.individualReadLock = function (id, callback) {
-				handler.readLock('stages/' + id, callback);
-			};
-
-			handler.individualWriteLock = function (id, callback) {
-				handler.writeLock('stages/' + id, callback);
-			};
-
-			return handler;
-		}, urls, method, handler);
-	}
-
-	installStageHandler('/stages', 'get', function (request, response) {
-		this.globalReadLock(function (release) {
+	installHandler('/stages', 'get', function (request, response) {
+		this.stages.globalReadLock(function (release) {
 			this.readdir('stages', function (entries) {
 				release();
 				response.json(entries);
@@ -36,13 +12,13 @@ app.get('/stage/:stageId/', function (request, response) {
 		});
 	});
 
-	installStageHandler('/stage/', 'post', function () {
+	installHandler('/stage/', 'post', function () {
 		// TODO
 	});
 
-	installStageHandler('/stage/:stageId', 'get', function (request, response) {
+	installHandler('/stage/:stageId', 'get', function (request, response) {
 		this.getJSON('info', function (project) {
-			this.individualReadLock(request.params.stageId, function (release) {
+			this.stages.individualReadLock(request.params.stageId, function (release) {
 				this.getJSON('stages/' + request.params.stageId, function (stage) {
 					release();
 					response.json({
@@ -58,11 +34,11 @@ app.get('/stage/:stageId/', function (request, response) {
 		});
 	});
 
-	installStageHandler('/stage/:stageId', 'put', function (request, response) {
+	installHandler('/stage/:stageId', 'put', function (request, response) {
 		var map = {};
 		var instances = [];
 		// TODO
-		this.individualWriteLock('stages/' + request.params.stageId, function (release) {
+		this.stages.individualWriteLock('stages/' + request.params.stageId, function (release) {
 			this.getJSON('stages/' + request.params.stageId, function (stage) {
 				this.putJSON('stages/' + request.params.stageId, {
 					name: stage.name,
@@ -78,9 +54,9 @@ app.get('/stage/:stageId/', function (request, response) {
 		});
 	});
 
-	installStageHandler('/stage/:stageId', 'delete', function (request, response) {
-		this.globalWriteLock(function (releaseStages) {
-			this.individualWriteLock(request.params.stageId, function (releaseStage) {
+	installHandler('/stage/:stageId', 'delete', function (request, response) {
+		this.stages.globalWriteLock(function (releaseStages) {
+			this.stages.individualWriteLock(request.params.stageId, function (releaseStage) {
 				this.unlink('stages/' + request.params.stageId, function () {
 					releaseStage();
 					releaseStages();

@@ -20,7 +20,7 @@ var Handler = (function () {
 			response.json(404, error.toString());
 		};
 
-		this.readLock = function (path, callback) {
+		function readLock(path, callback) {
 			fileLock.readLock(request.session.projectPath + path, function (release) {
 				var remove = pendingLocks.add(release);
 				callback.call(thisObject, function () {
@@ -28,9 +28,9 @@ var Handler = (function () {
 					release();
 				});
 			});
-		};
+		}
 
-		this.writeLock = function (path, callback) {
+		function writeLock(path, callback) {
 			fileLock.writeLock(request.session.projectPath + path, function (release) {
 				var remove = pendingLocks.add(release);
 				callback.call(thisObject, function () {
@@ -38,7 +38,30 @@ var Handler = (function () {
 					release();
 				});
 			});
-		};
+		}
+
+		this.readLock = readLock;
+		this.writeLock = writeLock;
+
+		function SpecificLocks(directory) {
+			this.globalReadLock = function (callback) {
+				readLock(directory, callback);
+			};
+			this.globalWriteLock = function (callback) {
+				writeLock(directory, callback);
+			};
+			this.individualReadLock = function (id, callback) {
+				readLock(directory + '/' + id, callback);
+			};
+			this.individualWriteLock = function (id, callback) {
+				writeLock(directory + '/' + id, callback);
+			};
+		}
+
+		this.stages = new SpecificLocks('stages');
+		this.images = new SpecificLocks('images');
+		this.tiles = new SpecificLocks('tiles');
+		this.entities = new SpecificLocks('entities');
 
 		this.readFile = function (path, callback) {
 			fs.readFile(request.session.projectPath + path, function (error, data) {
@@ -155,7 +178,7 @@ var Handler = (function () {
 	};
 }());
 
-function installCustomHandler(Handler, urls, method, handler) {
+function installHandler(urls, method, handler) {
 	if (typeof urls === 'string') {
 		urls = [urls];
 	}
@@ -172,8 +195,4 @@ function installCustomHandler(Handler, urls, method, handler) {
 			}
 		});
 	}
-}
-
-function installHandler(urls, method, handler) {
-	return installCustomHandler(Handler, urls, method, handler);
 }
