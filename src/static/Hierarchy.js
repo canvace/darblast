@@ -1,11 +1,11 @@
-function Hierarchy(images) {
+function Hierarchy(labelMap) {
 	var sets = {};
-	for (var id in images) {
-		for (var i in images[id]) {
-			if (!(images[id][i] in sets)) {
-				sets[images[id][i]] = [];
+	for (var id in labelMap) {
+		for (var i in labelMap[id]) {
+			if (!(labelMap[id][i] in sets)) {
+				sets[labelMap[id][i]] = [];
 			}
-			sets[images[id][i]].push(id);
+			sets[labelMap[id][i]].push(id);
 		}
 	}
 

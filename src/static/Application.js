@@ -115,8 +115,6 @@
 					header: false,
 					height: 200,
 					items: [{
-						title: 'Stage'
-					}, {
 						title: 'Images',
 						layout: 'border',
 						items: [{
@@ -129,14 +127,14 @@
 							}, {
 								tooltip: 'Delete selected images...'
 							}, {
-								tooltip: 'Delete selected label...'
+								tooltip: 'Delete selected category...'
 							}]
 						}, {
 							xtype: 'treepanel',
 							region: 'west',
 							store: {
 								root: {
-									text: 'Labels',
+									text: 'Categories',
 									expanded: true
 								}
 							}
