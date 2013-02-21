@@ -18,7 +18,7 @@ function Images() {
 
 		image.addEventListener('load', loaded, false);
 		image.addEventListener('error', loaded, false);
-		image.src = 'images/' + id;
+		image.src = 'image/' + id;
 
 		set[id] = {
 			id: id,
@@ -27,7 +27,7 @@ function Images() {
 		};
 	}
 
-	Canvace.Ajax.get('images/all', function (labelMap) {
+	Canvace.Ajax.get('images', function (labelMap) {
 		var count = 0;
 		for (var id in labelMap) {
 			count++;
@@ -48,13 +48,13 @@ function Images() {
 			return updateHandlers.registerHandler(id, handler);
 		};
 		this.setLabels = function (labels, callback) {
-			Canvace.Ajax.put('images/' + id + '/labels', labels, callback);
+			Canvace.Ajax.put('image/' + id + '/labels', labels, callback);
 		};
 		this.onDelete = function (handler) {
 			return deleteHandlers.registerHandler(id, handler);
 		};
 		this._delete = function (callback) {
-			Canvace.Ajax._delete('images/' + id, callback);
+			Canvace.Ajax._delete('image/' + id, callback);
 		};
 	}
 

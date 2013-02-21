@@ -47,8 +47,8 @@
 	}
 
 	installImageHandler([
-		'/images/all',
-		'/stage/:stageId/images/all'
+		'/images',
+		'/stage/:stageId/images'
 	], 'get', function (request, response) {
 		this.globalReadLock(function (releaseImages) {
 			this.readdir('images', function (ids) {
@@ -71,8 +71,8 @@
 	});
 
 	installImageHandler([
-		'/images/:imageId',
-		'/stage/:stageId/images/:imageId'
+		'/image/:imageId',
+		'/stage/:stageId/image/:imageId'
 	], 'get', function (request, response) {
 		this.individualReadLock(request.params.imageId, function (release) {
 			this.getJSON('images/' + request.params.imageId + '/info', function (info) {
@@ -85,8 +85,8 @@
 	});
 
 	installImageHandler([
-		'/images',
-		'/stage/:stageId/images'
+		'/image/',
+		'/stage/:stageId/image/'
 	], 'post', function (request, response) {
 		var labels;
 		if ('labels' in request.query) {
@@ -165,8 +165,8 @@
 	});
 
 	installImageHandler([
-		'/images/:imageId',
-		'/stage/:stageId/images/:imageId'
+		'/image/:imageId',
+		'/stage/:stageId/image/:imageId'
 	], 'put', function (request, response) {
 		this.individualWriteLock(request.params.imageId, function (release) {
 			this.getJSON('images/' + request.params.imageId + '/info', function (info) {
@@ -185,8 +185,8 @@
 	});
 
 	installImageHandler([
-		'/images/:imageId',
-		'/stage/:stageId/images/:imageId'
+		'/image/:imageId',
+		'/stage/:stageId/image/:imageId'
 	], 'delete', function (request, response) {
 		this.individualReadLock(request.params.imageId, function (releaseImage) {
 			this.getJSON('images/' + request.params.imageId + '/info', function (info) {

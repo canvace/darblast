@@ -16,7 +16,7 @@ var Canvace = (function () {
 			var settings = {
 				url: url,
 				method: method,
-				callback: function (response) {
+				success: function (response) {
 					callback && callback(JSON.parse(response.responseText));
 				}
 			};

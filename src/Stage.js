@@ -27,35 +27,35 @@ app.get('/stage/:stageId/', function (request, response) {
 		}, urls, method, handler);
 	}
 
-	installStageHandler('/stage/:stageId', 'get', function (request, response) {
-		this.individualReadLock(request.params.stageId, function (release) {
-			this.getJSON('stages/' + request.params.stageId, function (data) {
+	installStageHandler('/stages', 'get', function (request, response) {
+		this.globalReadLock(function (release) {
+			this.readdir('stages', function (entries) {
 				release();
-				response.json({
-					map: data.map,
-					instances: data.instances
-				});
-			});
-		});
-	});
-
-	installStageHandler('/stage/:stageId/info', 'get', function (request, response) {
-		this.readLock('info', function (releaseProject) {
-			this.getJSON('info', function (projectInfo) {
-				releaseProject();
-				this.getJSON('stages/' + request.params.stageId, function (stageInfo) {
-					response.json({
-						matrix: projectInfo.matrix,
-						x0: stageInfo.x0,
-						y0: stageInfo.y0
-					});
-				});
+				response.json(entries);
 			});
 		});
 	});
 
 	installStageHandler('/stage/', 'post', function () {
 		// TODO
+	});
+
+	installStageHandler('/stage/:stageId', 'get', function (request, response) {
+		this.getJSON('info', function (project) {
+			this.individualReadLock(request.params.stageId, function (release) {
+				this.getJSON('stages/' + request.params.stageId, function (stage) {
+					release();
+					response.json({
+						matrix: project.matrix,
+						name: stage.name,
+						x0: stage.x0,
+						y0: stage.y0,
+						map: stage.map,
+						instances: stage.instances
+					});
+				});
+			});
+		});
 	});
 
 	installStageHandler('/stage/:stageId', 'put', function () {
