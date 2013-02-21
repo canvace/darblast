@@ -58,8 +58,24 @@ app.get('/stage/:stageId/', function (request, response) {
 		});
 	});
 
-	installStageHandler('/stage/:stageId', 'put', function () {
+	installStageHandler('/stage/:stageId', 'put', function (request, response) {
+		var map = {};
+		var instances = [];
 		// TODO
+		this.individualWriteLock('stages/' + request.params.stageId, function (release) {
+			this.getJSON('stages/' + request.params.stageId, function (stage) {
+				this.putJSON('stages/' + request.params.stageId, {
+					name: stage.name,
+					x0: request.query.x0 || stage.x0,
+					y0: request.query.y0 || stage.y0,
+					map: map,
+					instances: instances
+				}, function () {
+					release();
+					response.json(true);
+				});
+			});
+		});
 	});
 
 	installStageHandler('/stage/:stageId', 'delete', function (request, response) {
