@@ -71,7 +71,7 @@ function Hierarchy(labelMap) {
 	}(root, []));
 
 	this.Root = function (name) {
-		return (function makeNode(name, node, inheritedLabels) {
+		return new (function Node(name, node, inheritedLabels) {
 			var allLabels = inheritedLabels.concat(labels[name] || []);
 			this.getName = function () {
 				return name;
@@ -84,9 +84,9 @@ function Hierarchy(labelMap) {
 			};
 			this.forEachChild = function (callback) {
 				for (var name in node) {
-					callback(makeNode(name, node[name], allLabels));
+					callback(new Node(name, node[name], allLabels));
 				}
 			};
-		}(name, root, []));
+		})(name, root, []);
 	};
 }

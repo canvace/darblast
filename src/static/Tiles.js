@@ -21,5 +21,16 @@ function Tiles(poller, view, images) {
 		};
 	}
 
-	return Elements.call(this, 'tiles', Tile, poller, view, images);
+	Elements.call(this, 'tiles', Tile, poller, view, images);
+
+	this.create = function (i0, j0, iSpan, jSpan) {
+		Canvace.Ajax.post('tiles/', {
+			layout: {
+				i0: parseInt(i0, 10),
+				j0: parseInt(j0, 10),
+				iSpan: parseInt(iSpan, 10),
+				jSpan: parseInt(jSpan, 10)
+			}
+		});
+	};
 }

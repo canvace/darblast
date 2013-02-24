@@ -34,6 +34,9 @@ function Images(poller, ready) {
 				}
 			});
 		}
+		if (!count) {
+			ready && ready();
+		}
 		hierarchy = new Hierarchy(labels);
 	});
 

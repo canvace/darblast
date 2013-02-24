@@ -26,5 +26,9 @@ function Entities(poller, view, images) {
 		};
 	}
 
-	return Elements.call(this, 'entities', Entity, poller, view, images);
+	Elements.call(this, 'entities', Entity, poller, view, images);
+
+	this.create = function () {
+		Canvace.Ajax.post('entities/');
+	};
 }

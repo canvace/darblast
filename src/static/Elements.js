@@ -6,8 +6,22 @@ function Elements(type, Element, poller, view, images) {
 			(function (id) {
 				Canvace.Ajax.get(type + '/' + id, function (element) {
 					elements[id] = element;
-					Canvace.Ajax.get(type + '/' + id + '/frames/', function (frames) {
-						element.frames = frames;
+					Canvace.Ajax.get(type + '/' + id + '/frames/', function (frameIds) {
+						element.frames = [];
+						for (var i in frameIds) {
+							(function (frameId) {
+								Canvace.Ajax.get(type + '/' + id + '/frames/' + frameIds[i], function (frameData) {
+									var frame = {
+										frameId: frameId,
+										imageId: frameData.id
+									};
+									if ('duration' in frameData) {
+										frame.duration = frameData.duration;
+									}
+									element.frames.push(frame);
+								});
+							}(frameIds[i]));
+						}
 					});
 					Canvace.Ajax.get(type + '/' + id + '/properties/', function (properties) {
 						element.properties = properties;

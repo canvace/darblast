@@ -28,6 +28,7 @@ module.exports = function (grunt) {
 					'src/PollChannel.js',
 					'src/Stage.js',
 					'src/Images.js',
+					'src/Tiles.js',
 					'src/Epilogue.js'
 				],
 				dest: 'src/canvace.js'
