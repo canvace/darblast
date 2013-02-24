@@ -164,14 +164,27 @@
 		this.tiles.individualWriteLock(request.params.tileId, function (release) {
 			this.getJSON('tiles/' + request.params.tileId, function (tile) {
 				if (request.params.frameId in tile.frames) {
+					var duration;
 					if (request.query.duration !== false) {
-						tile.frames[request.params.frameId].duration = request.query.duration;
+						duration = tile.frames[request.params.frameId].duration = parseInt(request.query.duration, 10);
 					} else {
 						delete tile.frames[request.params.frameId].duration;
 					}
 					this.putJSON('tiles/' + request.params.tileId, tile, function () {
 						release();
 						response.json(true);
+						if (request.query.duration !== false) {
+							frameBroadcaster.broadcast('update', {
+								tileId: request.params.tileId,
+								frameId: request.params.frameId,
+								duration: duration
+							});
+						} else {
+							frameBroadcaster.broadcast('update', {
+								tileId: request.params.tileId,
+								frameId: request.params.frameId
+							});
+						}
 					});
 				} else {
 					release();
