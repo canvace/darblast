@@ -185,7 +185,7 @@ function installHandler(urls, method, handler) {
 	for (var i in urls) {
 		app[method](urls[i], function (request, response) {
 			if (!request.session || !request.session.projectPath) {
-				response.json(400, 'Bad request');
+				response.json(400, 'Invalid request, no stage selected');
 			} else {
 				try {
 					handler.call(new Handler(request, response), request, response);
