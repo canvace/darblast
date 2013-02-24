@@ -1,6 +1,4 @@
 (function () {
-	var channel = new PollChannel();
-
 	function sanitizeLabels(labels) {
 		labels = labels.split(',');
 		var label;
@@ -23,8 +21,8 @@
 	}
 
 	installHandler([
-		'/images',
-		'/stage/:stageId/images'
+		'/images/',
+		'/stages/:stageId/images/'
 	], 'get', function (request, response) {
 		this.images.globalReadLock(function (releaseImages) {
 			this.readdir('images', function (ids) {
@@ -47,8 +45,8 @@
 	});
 
 	installHandler([
-		'/image/:imageId',
-		'/stage/:stageId/image/:imageId'
+		'/images/:imageId',
+		'/stages/:stageId/images/:imageId'
 	], 'get', function (request, response) {
 		this.images.individualReadLock(request.params.imageId, function (release) {
 			this.getJSON('images/' + request.params.imageId + '/info', function (info) {
@@ -61,8 +59,8 @@
 	});
 
 	installHandler([
-		'/image/',
-		'/stage/:stageId/image/'
+		'/images/',
+		'/stages/:stageId/images/'
 	], 'post', function (request, response) {
 		var labels;
 		if ('labels' in request.query) {
@@ -93,8 +91,7 @@
 									this.error();
 								} else {
 									this.writeFile('images/' + id + '/data', data, function () {
-										channel.broadcast({
-											method: 'create',
+										pollChannel.broadcast('images', 'create', {
 											id: id,
 											labels: labels
 										});
@@ -141,15 +138,14 @@
 	});
 
 	installHandler([
-		'/image/:imageId',
-		'/stage/:stageId/image/:imageId'
+		'/images/:imageId',
+		'/stages/:stageId/images/:imageId'
 	], 'put', function (request, response) {
 		this.images.individualWriteLock(request.params.imageId, function (release) {
 			this.getJSON('images/' + request.params.imageId + '/info', function (info) {
 				info.labels = sanitizeLabels(request.query.labels);
 				this.putJSON('images/' + request.params.imageId + '/info', info, function () {
-					channel.broadcast({
-						method: 'update',
+					pollChannel.broadcast('images', 'update', {
 						id: request.params.imageId,
 						labels: info.labels
 					});
@@ -161,8 +157,8 @@
 	});
 
 	installHandler([
-		'/image/:imageId',
-		'/stage/:stageId/image/:imageId'
+		'/images/:imageId',
+		'/stages/:stageId/images/:imageId'
 	], 'delete', function (request, response) {
 		this.images.individualReadLock(request.params.imageId, function (releaseImage) {
 			this.getJSON('images/' + request.params.imageId + '/info', function (info) {
@@ -172,8 +168,7 @@
 				} else {
 					this.images.globalWriteLock(function (releaseImages) {
 						this.deleteTree('images/' + request.params.imageId, function () {
-							channel.broadcast({
-								method: 'delete',
+							pollChannel.broadcast('images', 'delete', {
 								id: request.params.imageId
 							});
 							releaseImage();
@@ -184,32 +179,5 @@
 				}
 			});
 		});
-	});
-
-	installHandler([
-		'/poll/image',
-		'/stage/:stageId/poll/image'
-	], 'post', function (request, response) {
-		response.json(channel.createPoll());
-	});
-
-	installHandler([
-		'/poll/image/:pollId',
-		'/stage/:stageId/poll/image/:pollId'
-	], 'get', function (request, response) {
-		request.connection.setKeepAlive(true);
-		request.connection.setTimeout(0);
-		if (!channel.poll(request.params.pollId, function (data) {
-			response.json(data);
-		})) {
-			response.json(404, 'Invalid poll ID');
-		}
-	});
-
-	installHandler([
-		'/poll/image/:pollId',
-		'/stage/:stageId/poll/image/:pollId'
-	], 'delete', function (request, response) {
-		response.json(channel.deletePoll(request.params.pollId));
 	});
 }());

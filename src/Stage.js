@@ -12,11 +12,11 @@ app.get('/stage/:stageId/', function (request, response) {
 		});
 	});
 
-	installHandler('/stage/', 'post', function () {
+	installHandler('/stages/', 'post', function () {
 		// TODO
 	});
 
-	installHandler('/stage/:stageId', 'get', function (request, response) {
+	installHandler('/stages/:stageId', 'get', function (request, response) {
 		this.getJSON('info', function (project) {
 			this.stages.individualReadLock(request.params.stageId, function (release) {
 				this.getJSON('stages/' + request.params.stageId, function (stage) {
@@ -34,7 +34,7 @@ app.get('/stage/:stageId/', function (request, response) {
 		});
 	});
 
-	installHandler('/stage/:stageId', 'put', function (request, response) {
+	installHandler('/stages/:stageId', 'put', function (request, response) {
 		function sanitizeMap(tileIds) {
 			var tiles = {};
 			tileIds.forEach(function (id) {
@@ -121,7 +121,7 @@ app.get('/stage/:stageId/', function (request, response) {
 		});
 	});
 
-	installHandler('/stage/:stageId', 'delete', function (request, response) {
+	installHandler('/stages/:stageId', 'delete', function (request, response) {
 		this.stages.globalWriteLock(function (releaseStages) {
 			this.stages.individualWriteLock(request.params.stageId, function (releaseStage) {
 				this.unlink('stages/' + request.params.stageId, function () {

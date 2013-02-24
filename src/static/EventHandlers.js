@@ -1,17 +1,17 @@
 function EventHandlers() {
 	var handlers = {};
 	var triggers = {};
-	this.registerHandler = function (id, handler) {
-		if (!(id in handlers)) {
-			handlers[id] = new MultiSet();
+	this.registerHandler = function (key, handler) {
+		if (!(key in handlers)) {
+			handlers[key] = new MultiSet();
 		}
-		return handlers[id].add(handler);
+		return handlers[key].add(handler);
 	};
-	this.registerTrigger = function (id, trigger) {
-		if (!(id in triggers)) {
-			triggers[id] = new MultiSet();
+	this.registerTrigger = function (key, trigger) {
+		if (!(key in triggers)) {
+			triggers[key] = new MultiSet();
 		}
-		return triggers[id].add(trigger);
+		return triggers[key].add(trigger);
 	};
 	function fireSet(set, firer) {
 		if (firer) {
@@ -24,24 +24,24 @@ function EventHandlers() {
 			});
 		}
 	}
-	this.fire = function (id, firer) {
-		if (id in handlers) {
-			fireSet(handlers[id], firer);
+	this.fire = function (key, firer) {
+		if (key in handlers) {
+			fireSet(handlers[key], firer);
 		}
-		if (id in triggers) {
-			var set = triggers[id];
-			delete triggers[id];
+		if (key in triggers) {
+			var set = triggers[key];
+			delete triggers[key];
 			fireSet(set, firer);
 		}
 	};
 	this.fireAll = function (firer) {
-		var id;
-		for (id in handlers) {
-			fireSet(handlers[id], firer);
+		var key;
+		for (key in handlers) {
+			fireSet(handlers[key], firer);
 		}
-		for (id in triggers) {
-			var set = triggers[id];
-			delete triggers[id];
+		for (key in triggers) {
+			var set = triggers[key];
+			delete triggers[key];
 			fireSet(set, firer);
 		}
 	};

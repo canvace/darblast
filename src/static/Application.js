@@ -159,13 +159,17 @@
 	}
 
 	function loadStage() {
-		history.pushState(null, 'Canvace Development Environment', '/stage/0/');
-		Canvace.Ajax.get('../0', function (data) {
-			var images = new Images();
-			var view = new View(data.matrix, data.x0, data.y0);
-			var buckets = new Buckets(width, height);
-			var tools = new Tools();
-			(function () {}(images, view, buckets, tools)); // XXX turn off grunt's unused variable warning temporarily
+		history.pushState(null, 'Canvace Development Environment', '/stages/0/');
+		Canvace.Ajax.get('../0', function (stage) {
+			var poller = new Poller();
+			var view = new View(stage.matrix, stage.x0, stage.y0);
+			var images = new Images(poller, function () {
+				var tiles = new Tiles(poller, view, images);
+				var entities = new Entities(poller, view, images);
+				var buckets = new Buckets(width, height);
+				var tools = new Tools();
+				(function () {}(images, tiles, entities, view, buckets, tools)); // XXX turn off grunt's unused variable warning temporarily
+			});
 		});
 	}
 

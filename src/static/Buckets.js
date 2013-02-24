@@ -95,9 +95,7 @@ function Buckets(width, height) {
 		return eraser[k] && eraser[k][i] && eraser[k][i][j] && eraser[k][i][j]() || false;
 	};
 
-	this.addEntity = function (i, j, k, entity) {
-		return addElement(i, j, k, entity);
-	};
+	this.addEntity = addElement;
 
 	this.forEach = function (x0, y0, action) {
 		var i = Math.floor(-y0 / height);

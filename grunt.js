@@ -9,6 +9,9 @@ module.exports = function (grunt) {
 					'src/static/Canvace.js',
 					'src/static/Poller.js',
 					'src/static/Images.js',
+					'src/static/Elements.js',
+					'src/static/Tiles.js',
+					'src/static/Entities.js',
 					'src/static/Buckets.js',
 					'src/static/View.js',
 					'src/static/ToolGroup.js',
@@ -20,9 +23,9 @@ module.exports = function (grunt) {
 			server: {
 				src: [
 					'src/Prologue.js',
-					'src/PollChannel.js',
 					'src/FileLock.js',
 					'src/Handler.js',
+					'src/PollChannel.js',
 					'src/Stage.js',
 					'src/Images.js',
 					'src/Epilogue.js'
