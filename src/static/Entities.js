@@ -1,4 +1,4 @@
-function Entities(poller, view, images) {
+function Entities(ready) {
 	function Entity(Element, id, entity) {
 		Element.call(this, id);
 
@@ -26,7 +26,7 @@ function Entities(poller, view, images) {
 		};
 	}
 
-	Elements.call(this, 'entities', Entity, poller, view, images);
+	Elements.call(this, 'entities', Entity, ready);
 
 	this.create = function () {
 		Canvace.Ajax.post('entities/');

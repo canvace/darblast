@@ -161,14 +161,15 @@
 	function loadStage() {
 		history.pushState(null, 'Canvace Development Environment', '/stages/0/');
 		Canvace.Ajax.get('../0', function (stage) {
-			var poller = new Poller();
-			var view = new View(stage.matrix, stage.x0, stage.y0);
-			var images = new Images(poller, function () {
-				var tiles = new Tiles(poller, view, images);
-				var entities = new Entities(poller, view, images);
-				var buckets = new Buckets(width, height);
-				var tools = new Tools();
-				(function () {}(images, tiles, entities, view, buckets, tools)); // XXX turn off grunt's unused variable warning temporarily
+			Canvace.poller = new Poller();
+			Canvace.view = new View(stage.matrix, stage.x0, stage.y0);
+			Canvace.images = new Images(function () {
+				Canvace.tiles = new Tiles(function () {
+					Canvace.entities = new Entities(function () {
+						Canvace.buckets = new Buckets(width, height);
+						Canvace.tools = new Tools();
+					});
+				});
 			});
 		});
 	}

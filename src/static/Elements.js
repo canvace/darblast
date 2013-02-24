@@ -1,34 +1,48 @@
-function Elements(type, Element, poller, view, images) {
+function Elements(type, Element, ready) {
 	var elements = {};
 
+	function loadElement(id, callback) {
+		Canvace.Ajax.get(type + '/' + id, function (element) {
+			var loader = new Canvace.Loader(function () {
+				callback(element);
+			});
+			loader.get(type + '/' + id + '/frames/', function (frameIds) {
+				for (var i in frameIds) {
+					(function (frameId) {
+						loader.get(type + '/' + id + '/frames/' + frameIds[i], function (frameData) {
+							var frame = {
+								frameId: frameId,
+								imageId: frameData.id
+							};
+							if ('duration' in frameData) {
+								frame.duration = frameData.duration;
+							}
+							element.frames.push(frame);
+						});
+					}(frameIds[i]));
+				}
+				loader.allQueued();
+			});
+			loader.get(type + '/' + id + '/properties/', function (properties) {
+				element.properties = properties;
+			});
+			loader.allQueued();
+		});
+	}
+
 	Canvace.Ajax.get(type + '/', function (ids) {
+		var loader = new Canvace.Loader(ready);
 		for (var i in ids) {
 			(function (id) {
-				Canvace.Ajax.get(type + '/' + id, function (element) {
-					elements[id] = element;
-					Canvace.Ajax.get(type + '/' + id + '/frames/', function (frameIds) {
-						element.frames = [];
-						for (var i in frameIds) {
-							(function (frameId) {
-								Canvace.Ajax.get(type + '/' + id + '/frames/' + frameIds[i], function (frameData) {
-									var frame = {
-										frameId: frameId,
-										imageId: frameData.id
-									};
-									if ('duration' in frameData) {
-										frame.duration = frameData.duration;
-									}
-									element.frames.push(frame);
-								});
-							}(frameIds[i]));
-						}
-					});
-					Canvace.Ajax.get(type + '/' + id + '/properties/', function (properties) {
-						element.properties = properties;
+				loader.queue(function (callback) {
+					loadElement(id, function (element) {
+						elements[id] = element;
+						callback();
 					});
 				});
 			}(ids[i]));
 		}
+		loader.allQueued();
 	});
 
 	var createHandlers = new EventHandlers();
@@ -70,7 +84,7 @@ function Elements(type, Element, poller, view, images) {
 		};
 
 		this.project = function (i, j, k) {
-			return view.projectElement(element, i, j, k);
+			return Canvace.view.projectElement(element, i, j, k);
 		};
 
 		function Frame(frame) {
@@ -112,7 +126,7 @@ function Elements(type, Element, poller, view, images) {
 		};
 		this.getDimensions = function () {
 			if (element.frames.length) {
-				var image = images.getImage(element.frames[0].imageId);
+				var image = Canvace.images.getImage(element.frames[0].imageId);
 				return {
 					width: image.width,
 					height: image.height
@@ -166,18 +180,22 @@ function Elements(type, Element, poller, view, images) {
 		};
 	}
 
-	poller.poll(type, 'create', function (parameters) {
+	Canvace.poller.poll(type, 'create', function (parameters) {
 		var element = (elements[parameters.id] = parameters.descriptor);
 		element.frames = [];
 		element.properties = {};
 		createHandlers.fire(0);
 	});
 
-	poller.poll(type, 'update', function () {
-		// TODO
+	Canvace.poller.poll(type, 'update', function (parameters) {
+		if (parameters.id in elements) {
+			// TODO
+		} else {
+			// TODO
+		}
 	});
 
-	poller.poll(type, 'delete', function (parameters) {
+	Canvace.poller.poll(type, 'delete', function (parameters) {
 		deleteHandlers.fire(parameters.id);
 		delete elements[parameters.id];
 	});

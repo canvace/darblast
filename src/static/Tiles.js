@@ -1,4 +1,4 @@
-function Tiles(poller, view, images) {
+function Tiles(ready) {
 	function Tile(Element, id, tile) {
 		Element.call(this, id);
 
@@ -21,7 +21,7 @@ function Tiles(poller, view, images) {
 		};
 	}
 
-	Elements.call(this, 'tiles', Tile, poller, view, images);
+	Elements.call(this, 'tiles', Tile, ready);
 
 	this.create = function (i0, j0, iSpan, jSpan) {
 		Canvace.Ajax.post('tiles/', {

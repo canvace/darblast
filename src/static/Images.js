@@ -1,4 +1,4 @@
-function Images(poller, ready) {
+function Images(ready) {
 	var images = {};
 	var labels = {};
 
@@ -69,7 +69,7 @@ function Images(poller, ready) {
 		};
 	}
 
-	poller.poll('images', 'create', function (parameters) {
+	Canvace.poller.poll('images', 'create', function (parameters) {
 		for (var id in parameters.labelMap) {
 			loadImage(id, parameters.labelMap[id], (function (id) {
 				return function () {
@@ -83,7 +83,7 @@ function Images(poller, ready) {
 		hierarchyHandlers.fire(0);
 	});
 
-	poller.poll('images', 'update', function (parameters) {
+	Canvace.poller.poll('images', 'update', function (parameters) {
 		for (var id in parameters.labelMap) {
 			loadImage(id, parameters.labelMap[id], (function (id) {
 				return function () {
@@ -97,7 +97,7 @@ function Images(poller, ready) {
 		hierarchyHandlers.fire(0);
 	});
 
-	poller.poll('images', 'delete', function (parameters) {
+	Canvace.poller.poll('images', 'delete', function (parameters) {
 		if (parameters.id in images) {
 			deleteHandlers.fire(parameters.id);
 			delete images[parameters.id];
