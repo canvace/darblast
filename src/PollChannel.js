@@ -40,11 +40,13 @@ var pollChannel = new (function () {
 		}
 	});
 
-	this.broadcast = function (key, method, parameters) {
-		channel.broadcast({
-			key: key,
-			method: method,
-			parameters: parameters
-		});
+	this.Broadcaster = function (key) {
+		return function (method, parameters) {
+			channel.broadcast({
+				key: key,
+				method: method,
+				parameters: parameters
+			});
+		};
 	};
 })();
