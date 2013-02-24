@@ -23,13 +23,17 @@ function Tiles(ready) {
 
 	Elements.call(this, 'tiles', Tile, ready);
 
-	this.create = function (i0, j0, iSpan, jSpan) {
+	this.create = function (iSpan, jSpan, i0, j0) {
 		Canvace.Ajax.post('tiles/', {
 			layout: {
-				i0: parseInt(i0, 10),
-				j0: parseInt(j0, 10),
-				iSpan: parseInt(iSpan, 10),
-				jSpan: parseInt(jSpan, 10)
+				ref: {
+					i: parseInt(i0, 10),
+					j: parseInt(j0, 10)
+				},
+				span: {
+					i: parseInt(iSpan, 10),
+					j: parseInt(jSpan, 10)
+				}
 			}
 		});
 	};

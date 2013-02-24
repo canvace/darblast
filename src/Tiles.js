@@ -17,15 +17,57 @@
 	installHandler([
 		'/tiles/',
 		'/stages/:stageId/tiles/'
-	], 'post', function () {
-		// TODO
+	], 'post', function (request, response) {
+		this.writeLock('info', function (release) {
+			this.getJSON('info', function (project) {
+				var id = project.tileCounter++;
+				this.putJSON('info', project, function () {
+					release();
+					this.tiles.globalWriteLock(function (release) {
+						var tile = {
+							solid: false,
+							layout: {
+								ref: {
+									i: parseInt(request.query.layout.ref.i, 10),
+									j: parseInt(request.query.layout.ref.j, 10)
+								},
+								span: {
+									i: parseInt(request.query.layout.span.i, 10),
+									j: parseInt(request.query.layout.span.j, 10)
+								}
+							},
+							used: false,
+							offset: {
+								x: 0,
+								y: 0
+							},
+							frames: [],
+							properties: {}
+						};
+						tile['static'] = true;
+						this.putJSON('tiles/' + id, tile, function () {
+							release();
+							response.json(id);
+							broadcaster.broadcast('create', {
+								id: id
+							});
+						});
+					});
+				});
+			});
+		});
 	});
 
 	installHandler([
 		'/tiles/:tileId',
 		'/stages/:stageId/tiles/:tileId'
-	], 'get', function () {
-		// TODO
+	], 'get', function (request, response) {
+		this.tiles.individualReadLock(request.params.tileId, function (release) {
+			this.getJSON('tiles/' + request.params.tileId, function (tile) {
+				release();
+				response.json(tile);
+			});
+		});
 	});
 
 	installHandler([
@@ -118,8 +160,25 @@
 	installHandler([
 		'/tiles/:tileId/frames/:frameId',
 		'/stages/:stageId/tiles/:tileId/frames/:frameId'
-	], 'put', function () {
-		// TODO
+	], 'put', function (request, response) {
+		this.tiles.individualWriteLock(request.params.tileId, function (release) {
+			this.getJSON('tiles/' + request.params.tileId, function (tile) {
+				if (request.params.frameId in tile.frames) {
+					if (request.query.duration !== false) {
+						tile.frames[request.params.frameId].duration = request.query.duration;
+					} else {
+						delete tile.frames[request.params.frameId].duration;
+					}
+					this.putJSON('tiles/' + request.params.tileId, tile, function () {
+						release();
+						response.json(true);
+					});
+				} else {
+					release();
+					response.json(404, 'Invalid frame ID: ' + request.params.frameId);
+				}
+			});
+		});
 	});
 
 	installHandler([
