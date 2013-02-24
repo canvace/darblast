@@ -7,6 +7,7 @@ module.exports = function (grunt) {
 					'src/static/EventHandlers.js',
 					'src/static/Hierarchy.js',
 					'src/static/Canvace.js',
+					'src/static/Loader.js',
 					'src/static/Poller.js',
 					'src/static/Images.js',
 					'src/static/Elements.js',

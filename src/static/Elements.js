@@ -3,7 +3,7 @@ function Elements(type, Element, ready) {
 
 	function loadElement(id, callback) {
 		Canvace.Ajax.get(type + '/' + id, function (element) {
-			var loader = new Canvace.Loader(function () {
+			var loader = new Loader(function () {
 				callback(element);
 			});
 			loader.get(type + '/' + id + '/frames/', function (frameIds) {
@@ -31,7 +31,7 @@ function Elements(type, Element, ready) {
 	}
 
 	Canvace.Ajax.get(type + '/', function (ids) {
-		var loader = new Canvace.Loader(ready);
+		var loader = new Loader(ready);
 		for (var i in ids) {
 			(function (id) {
 				loader.queue(function (callback) {
