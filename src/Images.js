@@ -27,19 +27,23 @@
 		this.images.globalReadLock(function (releaseImages) {
 			this.readdir('images', function (ids) {
 				var labelMap = {};
-				var count = ids.length;
-				ids.forEach(function (id) {
-					this.images.individualReadLock(id, function (releaseImage) {
-						this.getJSON('images/' + id + '/info', function (data) {
-							releaseImage();
-							labelMap[id] = data.labels;
-							if (!--count) {
-								releaseImages();
-								response.json(labelMap);
-							}
+				if (ids.length) {
+					var count = ids.length;
+					ids.forEach(function (id) {
+						this.images.individualReadLock(id, function (releaseImage) {
+							this.getJSON('images/' + id + '/info', function (data) {
+								releaseImage();
+								labelMap[id] = data.labels;
+								if (!--count) {
+									releaseImages();
+									response.json(labelMap);
+								}
+							});
 						});
-					});
-				}, this);
+					}, this);
+				} else {
+					response.json({});
+				}
 			});
 		});
 	});
