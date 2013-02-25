@@ -1,4 +1,11 @@
 (function () {
+	Ext.Loader.setConfig({
+		enabled: true,
+		paths: {
+			'Ext.ux': '/extjs/ux/'
+		}
+	});
+
 	var width = screen.availWidth;
 	var height = screen.availHeight;
 
@@ -7,11 +14,7 @@
 			layout: 'fit',
 			items: [{
 				layout: 'border',
-				/*
-				bbar: {
-					xtype: 'statusbar'
-				},
-				*/
+				bbar: Ext.create('Ext.ux.statusbar.StatusBar', {}),
 				items: [{
 					region: 'center',
 					layout: 'fit',
@@ -121,7 +124,39 @@
 							xtype: 'toolbar',
 							region: 'north',
 							items: [{
-								tooltip: 'Load images...'
+								tooltip: 'Load images...',
+								handler: function () {
+									var form = Ext.create('Ext.form.Panel', {
+										url: 'images/',
+										items: []
+									});
+									var dialog = Ext.create('Ext.window.Window', {
+										title: 'Load new images',
+										modal: true,
+										resizable: false,
+										draggable: false,
+										layout: 'fit',
+										bbar: {
+											xtype: 'toolbar',
+											layout: {
+												pack: 'center'
+											},
+											items: [{
+												text: 'OK',
+												handler: function () {
+													form.submit();
+													dialog.close();
+												}
+											}, {
+												text: 'Cancel',
+												handler: function () {
+													dialog.close();
+												}
+											}]
+										},
+										items: form
+									}).show();
+								}
 							}, {
 								tooltip: 'Load image sheet...'
 							}, {
