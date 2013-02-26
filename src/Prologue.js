@@ -8,6 +8,7 @@ try {
 var fs = require('fs');
 var path = require('path');
 var util = require('util');
+var io = require('socket.io');
 
 var users = (function () {
 	var content;
@@ -106,7 +107,6 @@ var users = (function () {
 
 var MultiSet = require('multiset');
 var ReadWriteLock = require('rwlock');
-var Channel = require('broadcast');
 
 var express = require('express');
 var consolidate = require('consolidate');
