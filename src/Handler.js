@@ -1,6 +1,13 @@
 var Handler = (function () {
 	var fileLock = new FileLock();
 
+	var rooms = {};
+	var nextRoomName = 0;
+
+	io.of('/poll').on('connection', function (socket) {
+		socket.emit('room', 0);
+	});
+
 	return function (request, response) {
 		var thisObject = this;
 
@@ -174,6 +181,13 @@ var Handler = (function () {
 					callback.call(thisObject);
 				}
 			});
+		};
+
+		this.broadcast = function (key, method, parameters) {
+			if (!(request.session.projectPath in rooms)) {
+				rooms[request.session.projectPath] = nextRoomName++;
+			}
+			io.of('/poll')['in'](rooms[request.session.projectPath]).emit(key + '/' + method, parameters);
 		};
 	};
 }());

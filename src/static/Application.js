@@ -196,13 +196,14 @@
 	function loadStage() {
 		history.pushState(null, 'Canvace Development Environment', '/stages/0/');
 		Canvace.Ajax.get('../0', function (stage) {
-			Canvace.poller = new Poller();
-			Canvace.view = new View(stage.matrix, stage.x0, stage.y0);
-			Canvace.images = new Images(function () {
-				Canvace.tiles = new Tiles(function () {
-					Canvace.entities = new Entities(function () {
-						Canvace.buckets = new Buckets(width, height);
-						Canvace.tools = new Tools();
+			Canvace.poller = new Poller(function () {
+				Canvace.view = new View(stage.matrix, stage.x0, stage.y0);
+				Canvace.images = new Images(function () {
+					Canvace.tiles = new Tiles(function () {
+						Canvace.entities = new Entities(function () {
+							Canvace.buckets = new Buckets(width, height);
+							Canvace.tools = new Tools();
+						});
 					});
 				});
 			});

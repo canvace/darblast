@@ -1,26 +1,22 @@
-function Poller() {
-	var handlers = {};
+/*global io: false */
 
-	Canvace.Ajax.post('poll', function (id) {
-		(function poll() {
-			Canvace.Ajax.get('poll/' + id, function (data) {
-				if ((data.key in handlers) && (data.method in handlers[data.key])) {
-					handlers[data.key][data.method].fastForEach(function (handler) {
-						handler(data.parameters);
-					});
-				}
-				poll();
-			});
-		}());
+function Poller(ready) {
+	var thisObject = this;
+
+	var socket = io.connect('/poll');
+	socket.on('room', function (name) {
+		socket.join(name);
+
+		thisObject.poll = function (key, method, callback, scope) {
+			if (scope) {
+				socket.on(key + '/' + method, function (parameters) {
+					callback.call(scope, parameters);
+				});
+			} else {
+				socket.on(key + '/' + method, callback);
+			}
+		};
+
+		ready();
 	});
-
-	this.poll = function (key, method, callback) {
-		if (!(key in handlers)) {
-			handlers[key] = {};
-		}
-		if (!(method in handlers[key])) {
-			handlers[key][method] = new MultiSet();
-		}
-		return handlers[key][method].add(callback);
-	};
 }

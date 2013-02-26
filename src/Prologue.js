@@ -8,7 +8,6 @@ try {
 var fs = require('fs');
 var path = require('path');
 var util = require('util');
-var io = require('socket.io');
 
 var users = (function () {
 	var content;
@@ -126,6 +125,9 @@ if (users !== null) {
 		return (username in users) && (users[username] === password);
 	}));
 }
+
+var server = require('http').createServer(app);
+var io = require('socket.io').listen(server);
 
 app.get('/', function (request, response) {
 
