@@ -1,6 +1,7 @@
 (function () {
 	var broadcaster = new pollChannel.Broadcaster('tiles');
-	var frameBroadcaster = new pollChannel.Broadcaster('tiles-frames');
+	var frameBroadcaster = new pollChannel.Broadcaster('tiles/frames');
+	var propertyBroadcaster = new pollChannel.Broadcaster('tiles/properties');
 
 	installHandler([
 		'/tiles/',
@@ -222,6 +223,49 @@
 				} else {
 					releaseTile();
 					response.json(404, 'Invalid frame ID: ' + request.params.frameId);
+				}
+			});
+		});
+	});
+
+	installHandler([
+		'/tiles/:tileId/properties/:name',
+		'/stages/:stageId/tiles/:tilesId/properties/:name'
+	], 'get', function (request, response) {
+		this.individualReadLock(request.params.tileId, function (release) {
+			this.getJSON('tiles/' + request.params.tileId, function (tile) {
+				release();
+				response.json(tile.properties[request.params.name]);
+			});
+		});
+	});
+
+	installHandler([
+		'/tiles/:tileId/properties/:name',
+		'/stages/:stageId/tiles/:tilesId/properties/:name'
+	], 'put', function () {
+		// TODO
+	});
+
+	installHandler([
+		'/tiles/:tileId/properties/:name',
+		'/stages/:stageId/tiles/:tilesId/properties/:name'
+	], 'delete', function (request, response) {
+		this.individualWriteLock(request.params.tileId, function (release) {
+			this.getJSON('tiles/' + request.params.tileId, function (tile) {
+				var found = request.params.name in tile.properties;
+				if (found) {
+					delete tile.properties[request.params.name];
+					this.putJSON('tiles/' + request.params.tileId, tile, function () {
+						propertyBroadcaster.broadcast('delete', {
+							name: request.params.name
+						});
+						release();
+						response.json(true);
+					});
+				} else {
+					release();
+					response.json(false);
 				}
 			});
 		});

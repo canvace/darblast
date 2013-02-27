@@ -200,7 +200,25 @@ function Elements(type, Element, ready) {
 		delete elements[parameters.id];
 	});
 
-	// TODO frames and properties pollers
+	Canvace.poller.poll(type + '/frames', 'create', function () {
+		// TODO
+	});
+
+	Canvace.poller.poll(type + '/frames', 'update', function () {
+		// TODO
+	});
+
+	Canvace.poller.poll(type + '/frames', 'delete', function () {
+		// TODO
+	});
+
+	Canvace.poller.poll(type + '/properties', 'put', function () {
+		// TODO
+	});
+
+	Canvace.poller.poll(type + '/properties', 'delete', function () {
+		// TODO
+	});
 
 	this.onCreate = function (handler) {
 		return createHandlers.registerHandler(0, handler);
