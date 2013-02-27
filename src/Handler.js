@@ -23,20 +23,30 @@ var Handler = (function () {
 		function readLock(path, callback) {
 			fileLock.readLock(request.session.projectPath + path, function (release) {
 				var remove = pendingLocks.add(release);
-				callback.call(thisObject, function () {
-					remove();
-					release();
-				});
+				try {
+					callback.call(thisObject, function () {
+						remove();
+						release();
+					});
+				} catch (e) {
+					removePendingLocks();
+					response.json(404, e.toString());
+				}
 			});
 		}
 
 		function writeLock(path, callback) {
 			fileLock.writeLock(request.session.projectPath + path, function (release) {
 				var remove = pendingLocks.add(release);
-				callback.call(thisObject, function () {
-					remove();
-					release();
-				});
+				try {
+					callback.call(thisObject, function () {
+						remove();
+						release();
+					});
+				} catch (e) {
+					removePendingLocks();
+					response.json(404, e.toString());
+				}
 			});
 		}
 
@@ -69,7 +79,12 @@ var Handler = (function () {
 					removePendingLocks();
 					response.json(404, error.toString());
 				} else {
-					callback.call(thisObject, data);
+					try {
+						callback.call(thisObject, data);
+					} catch (e) {
+						removePendingLocks();
+						response.json(404, e.toString());
+					}
 				}
 			});
 		};
@@ -80,7 +95,12 @@ var Handler = (function () {
 					removePendingLocks();
 					response.json(404, error.toString());
 				} else {
-					callback.call(thisObject);
+					try {
+						callback.call(thisObject);
+					} catch (e) {
+						removePendingLocks();
+						response.json(404, e.toString());
+					}
 				}
 			});
 		};
@@ -91,7 +111,12 @@ var Handler = (function () {
 					removePendingLocks();
 					response.json(404, error.toString());
 				} else {
-					callback.call(thisObject);
+					try {
+						callback.call(thisObject);
+					} catch (e) {
+						removePendingLocks();
+						response.json(404, e.toString());
+					}
 				}
 			});
 		};
@@ -102,7 +127,12 @@ var Handler = (function () {
 					removePendingLocks();
 					response.json(404, error.toString());
 				} else {
-					callback.call(thisObject, entries);
+					try {
+						callback.call(thisObject, entries);
+					} catch (e) {
+						removePendingLocks();
+						response.json(404, e.toString());
+					}
 				}
 			});
 		};
@@ -125,7 +155,12 @@ var Handler = (function () {
 												removePendingLocks();
 												response.json(404, error.toString());
 											} else {
-												callback.call(thisObject);
+												try {
+													callback.call(thisObject);
+												} catch (e) {
+													removePendingLocks();
+													response.json(404, e.toString());
+												}
 											}
 										});
 									}
@@ -139,7 +174,12 @@ var Handler = (function () {
 							removePendingLocks();
 							response.json(404, error.toString());
 						} else {
-							callback.call(thisObject);
+							try {
+								callback.call(thisObject);
+							} catch (e) {
+								removePendingLocks();
+								response.json(404, e.toString());
+							}
 						}
 					});
 				}
@@ -152,15 +192,12 @@ var Handler = (function () {
 					removePendingLocks();
 					response.json(404, error.toString());
 				} else {
-					var data;
 					try {
-						data = JSON.parse(content);
+						callback.call(thisObject, JSON.parse(content));
 					} catch (e) {
 						removePendingLocks();
 						response.json(404, e.toString());
-						return;
 					}
-					callback.call(thisObject, data);
 				}
 			});
 		};
@@ -171,7 +208,12 @@ var Handler = (function () {
 					removePendingLocks();
 					response.json(404, error.toString());
 				} else {
-					callback.call(thisObject);
+					try {
+						callback.call(thisObject);
+					} catch (e) {
+						removePendingLocks();
+						response.json(404, e.toString());
+					}
 				}
 			});
 		};
