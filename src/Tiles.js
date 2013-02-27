@@ -253,7 +253,7 @@
 				if (found) {
 					delete tile.properties[request.params.name];
 					this.putJSON('tiles/' + request.params.tileId, tile, function () {
-						propertyBroadcaster.broadcast('delete', {
+						this.broadcast('tiles/properties', 'delete', {
 							name: request.params.name
 						});
 						release();
