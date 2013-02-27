@@ -1,12 +1,8 @@
 var Handler = (function () {
 	var fileLock = new FileLock();
 
-	var rooms = {};
-	var nextRoomName = 0;
-
-	io.of('/poll').on('connection', function (socket) {
-		socket.emit('room', 0);
-	});
+	var projects = {};
+	var nextProjectId = 0;
 
 	return function (request, response) {
 		var thisObject = this;
@@ -183,11 +179,17 @@ var Handler = (function () {
 			});
 		};
 
-		this.broadcast = function (key, method, parameters) {
-			if (!(request.session.projectPath in rooms)) {
-				rooms[request.session.projectPath] = nextRoomName++;
+		function getProjectId() {
+			if (!(request.session.projectPath in projects)) {
+				projects[request.session.projectPath] = nextProjectId++;
 			}
-			io.of('/poll')['in'](rooms[request.session.projectPath]).emit(key + '/' + method, parameters);
+			return projects[request.session.projectPath];
+		}
+
+		this.getProjectId = getProjectId;
+
+		this.broadcast = function (key, method, parameters) {
+			io.of('/poll/' + getProjectId()).emit(key + '/' + method, parameters);
 		};
 	};
 }());
