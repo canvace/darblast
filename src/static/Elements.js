@@ -212,12 +212,18 @@ function Elements(type, Element, ready) {
 		// TODO
 	});
 
-	Canvace.poller.poll(type + '/properties', 'put', function () {
-		// TODO
+	Canvace.poller.poll(type + '/properties', 'put', function (parameters) {
+		elements[parameters.id][parameters.name] = parameters.value;
+		putPropertyHandlers.fire(parameters.id, function (handler) {
+			handler(parameters.name, parameters.value);
+		});
 	});
 
-	Canvace.poller.poll(type + '/properties', 'delete', function () {
-		// TODO
+	Canvace.poller.poll(type + '/properties', 'delete', function (parameters) {
+		delete elements[parameters.id][parameters.name];
+		deletePropertyHandlers.fire(parameters.id, function (handler) {
+			handler(parameters.name);
+		});
 	});
 
 	this.onCreate = function (handler) {

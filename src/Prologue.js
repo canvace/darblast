@@ -134,5 +134,5 @@ app.get('/', function (request, response) {
 	// FIXME this is temporary
 	request.session.projectPath = 'C:/Users/Alberto/Documents/Darblast_NG/projects/test/';
 
-	response.render('start.handlebars');
+	response.render('main.handlebars');
 });

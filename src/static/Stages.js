@@ -31,11 +31,17 @@ function Stages(ready) {
 			return deleteHandlers.registerHandler(id, handler);
 		};
 
-		this.load = function () {
-			// TODO
+		this.load = function (callback) {
+			Canvace.Ajax.get('stages/' + id, callback);
 		};
-		this.save = function () {
-			// TODO
+		this.save = function (data, callback) {
+			Canvace.Ajax.put('stages/' + id, {
+				x0: data.x0,
+				y0: data.y0,
+				map: data.map,
+				marks: data.marks,
+				instances: data.instances
+			}, callback);
 		};
 
 		this.getProperty = function (name) {

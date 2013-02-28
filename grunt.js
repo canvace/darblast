@@ -30,6 +30,7 @@ module.exports = function (grunt) {
 					'src/Stages.js',
 					'src/Images.js',
 					'src/Tiles.js',
+					'src/Entities.js',
 					'src/Epilogue.js'
 				],
 				dest: 'src/canvace.js'

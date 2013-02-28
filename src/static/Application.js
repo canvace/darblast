@@ -113,7 +113,7 @@ Ext.Loader.setConfig({
 					split: true,
 					header: false,
 					width: 250,
-					title: 'Project, Stages, Layers',
+					title: 'Stages, Layers',
 					layout: 'fit',
 					items: {
 						xtype: 'tabpanel',
@@ -221,13 +221,13 @@ Ext.Loader.setConfig({
 	}
 
 	function loadStage(projectId, id) {
-		Canvace.Ajax.get('stages/' + id, function (stage) {
-			Canvace.poller = new Poller(projectId);
-			Canvace.view = new View(stage.matrix, stage.x0, stage.y0);
+		Canvace.poller = new Poller(projectId);
+		Canvace.stages = new Stages(function () {
 			Canvace.images = new Images(function () {
 				Canvace.tiles = new Tiles(function () {
 					Canvace.entities = new Entities(function () {
-						Canvace.stages = new Stages(function () {
+						Canvace.Ajax.get('stages/' + id, function (stage) {
+							Canvace.view = new View(stage.matrix, stage.x0, stage.y0);
 							Canvace.buckets = new Buckets(width, height);
 							Canvace.tools = new Tools();
 						});
