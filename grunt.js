@@ -13,6 +13,7 @@ module.exports = function (grunt) {
 					'src/static/Elements.js',
 					'src/static/Tiles.js',
 					'src/static/Entities.js',
+					'src/static/Stages.js',
 					'src/static/Buckets.js',
 					'src/static/View.js',
 					'src/static/ToolGroup.js',
@@ -26,7 +27,7 @@ module.exports = function (grunt) {
 					'src/Prologue.js',
 					'src/FileLock.js',
 					'src/Handler.js',
-					'src/Stage.js',
+					'src/Stages.js',
 					'src/Images.js',
 					'src/Tiles.js',
 					'src/Epilogue.js'

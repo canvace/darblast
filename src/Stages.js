@@ -8,8 +8,34 @@
 		});
 	});
 
-	installHandler('/stages/', 'post', function () {
-		// TODO
+	installHandler('/stages/', 'post', function (request, response) {
+		if (/^[\w \.]+$/.test(request.body.name)) {
+			this.stages.globalWriteLock(function (release) {
+				this.exists('stages/' + request.body.name, function (exists) {
+					if (exists) {
+						release();
+						response.json(404, 'A stage with the specified name already exists.');
+					} else {
+						this.putJSON('stages/' + request.body.name, {
+							x0: 0,
+							y0: 0,
+							map: {},
+							marks: {},
+							instances: [],
+							properties: {}
+						}, function () {
+							this.broadcast('stages', 'create', {
+								id: request.body.name
+							});
+							release();
+							response.json(true);
+						});
+					}
+				});
+			});
+		} else {
+			response.json(400, 'The specified stage name \"' + request.body.name + '\" contains invalid characters.');
+		}
 	});
 
 	installHandler('/stages/:stageId', 'get', function (request, response) {

@@ -126,17 +126,7 @@ Ext.Loader.setConfig({
 								store: {
 									root: {
 										expanded: true,
-										text: 'Current project',
-										children: [{
-											text: 'Images'
-										}, {
-											text: 'Tiles'
-										}, {
-											text: 'Entities'
-										}, {
-											expanded: true,
-											text: 'Stages'
-										}]
+										text: 'Current project'
 									}
 								}
 							}
@@ -237,8 +227,10 @@ Ext.Loader.setConfig({
 			Canvace.images = new Images(function () {
 				Canvace.tiles = new Tiles(function () {
 					Canvace.entities = new Entities(function () {
-						Canvace.buckets = new Buckets(width, height);
-						Canvace.tools = new Tools();
+						Canvace.stages = new Stages(function () {
+							Canvace.buckets = new Buckets(width, height);
+							Canvace.tools = new Tools();
+						});
 					});
 				});
 			});
@@ -264,7 +256,7 @@ Ext.Loader.setConfig({
 						text: 'Start!',
 						handler: function () {
 							startDialog.close();
-							loadStage(0, 0);
+							loadStage(0, 'test');
 						}
 					}]
 				}

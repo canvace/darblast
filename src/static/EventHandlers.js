@@ -45,4 +45,10 @@ function EventHandlers() {
 			fireSet(set, firer);
 		}
 	};
+	this.rehash = function (oldKey, newKey) {
+		handlers[newKey] = handlers[oldKey];
+		delete handlers[oldKey];
+		triggers[newKey] = triggers[oldKey];
+		delete triggers[oldKey];
+	};
 }
