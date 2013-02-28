@@ -36,8 +36,19 @@ Ext.Loader.setConfig({
 							icon: '/resources/images/tools/save.png',
 							tooltip: 'Save'
 						}, {
+							icon: '/resources/images/tools/export.png',
+							tooltip: 'Export...'
+						}, {
 							icon: '/resources/images/tools/bug.png',
 							tooltip: 'Report a bug...'
+						}, {
+							xtype: 'tbseparator'
+						}, {
+							icon: '/resources/images/tools/undo.png',
+							tooltip: 'Undo'
+						}, {
+							icon: '/resources/images/tools/redo.png',
+							tooltip: 'Redo'
 						}, {
 							xtype: 'tbseparator'
 						}, {
@@ -102,12 +113,38 @@ Ext.Loader.setConfig({
 					split: true,
 					header: false,
 					width: 250,
-					title: 'Stages and Layer Controls',
-					layout: {
-						type: 'vbox',
-						align: 'stretch'
-					},
-					items: []
+					title: 'Project, Stages, Layers',
+					layout: 'fit',
+					items: {
+						xtype: 'tabpanel',
+						tabPosition: 'bottom',
+						items: [{
+							title: 'Project',
+							layout: 'fit',
+							items: {
+								xtype: 'treepanel',
+								store: {
+									root: {
+										expanded: true,
+										text: 'Current project',
+										children: [{
+											text: 'Images'
+										}, {
+											text: 'Tiles'
+										}, {
+											text: 'Entities'
+										}, {
+											expanded: true,
+											text: 'Stages'
+										}]
+									}
+								}
+							}
+						}, {
+							title: 'Layers',
+							layout: 'vbox'
+						}]
+					}
 				}, {
 					xtype: 'tabpanel',
 					region: 'south',
