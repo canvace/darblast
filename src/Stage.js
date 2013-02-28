@@ -1,11 +1,3 @@
-app.get('/stages/:stageId/', function (request, response) {
-	if ('projectPath' in request.session) {
-		response.render('main.handlebars');
-	} else {
-		response.type('text').send(400, 'Invalid request'); // FIXME create adequate error page
-	}
-});
-
 (function () {
 	installHandler('/stages/', 'get', function (request, response) {
 		this.stages.globalReadLock(function (release) {

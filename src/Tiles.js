@@ -1,8 +1,4 @@
 (function () {
-	var broadcaster = new pollChannel.Broadcaster('tiles');
-	var frameBroadcaster = new pollChannel.Broadcaster('tiles/frames');
-	var propertyBroadcaster = new pollChannel.Broadcaster('tiles/properties');
-
 	installHandler([
 		'/tiles/',
 		'/stages/:stageId/tiles/'
@@ -49,7 +45,7 @@
 						this.putJSON('tiles/' + id, tile, function () {
 							release();
 							response.json(id);
-							broadcaster.broadcast('create', {
+							this.broadcast('tiles', 'create', {
 								id: id
 							});
 						});
@@ -85,7 +81,7 @@
 						this.unlink('tiles/' + request.params.tileId, function () {
 							releaseTiles();
 							releaseTile();
-							broadcaster.broadcast('delete', {
+							this.broadcast('tiles', 'delete', {
 								id: request.params.tileId
 							});
 						});
@@ -137,7 +133,7 @@
 								if ('duration' in request.query) {
 									data.duration = request.query.duration;
 								}
-								frameBroadcaster.broadcast('create', data);
+								this.broadcast('tiles/frames', 'create', data);
 							});
 						});
 					});
@@ -175,13 +171,13 @@
 						release();
 						response.json(true);
 						if (request.query.duration !== false) {
-							frameBroadcaster.broadcast('update', {
+							this.broadcast('tiles/frames', 'update', {
 								tileId: request.params.tileId,
 								frameId: request.params.frameId,
 								duration: duration
 							});
 						} else {
-							frameBroadcaster.broadcast('update', {
+							this.broadcast('tiles/frames', 'update', {
 								tileId: request.params.tileId,
 								frameId: request.params.frameId
 							});
@@ -212,7 +208,7 @@
 								this.putJSON('tiles/' + request.params.tileId, tile, function () {
 									releaseTile();
 									response.json(true);
-									frameBroadcaster.broadcast('delete', {
+									this.broadcast('tiles/frames', 'delete', {
 										tileId: request.params.tileId,
 										frameId: request.params.frameId
 									});
@@ -257,7 +253,7 @@
 				if (found) {
 					delete tile.properties[request.params.name];
 					this.putJSON('tiles/' + request.params.tileId, tile, function () {
-						propertyBroadcaster.broadcast('delete', {
+						this.broadcast('tiles/properties', 'delete', {
 							name: request.params.name
 						});
 						release();

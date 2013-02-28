@@ -26,7 +26,6 @@ module.exports = function (grunt) {
 					'src/Prologue.js',
 					'src/FileLock.js',
 					'src/Handler.js',
-					'src/PollChannel.js',
 					'src/Stage.js',
 					'src/Images.js',
 					'src/Tiles.js',

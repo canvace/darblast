@@ -1,11 +1,11 @@
-(function () {
-	Ext.Loader.setConfig({
-		enabled: true,
-		paths: {
-			'Ext.ux': '/extjs/ux/'
-		}
-	});
+Ext.Loader.setConfig({
+	enabled: true,
+	paths: {
+		'Ext.ux': '/extjs/ux/'
+	}
+});
 
+(function () {
 	var width = screen.availWidth;
 	var height = screen.availHeight;
 
@@ -230,10 +230,9 @@
 		});
 	}
 
-	function loadStage() {
-		history.pushState(null, 'Canvace Development Environment', '/stages/0/');
-		Canvace.Ajax.get('../0', function (stage) {
-			Canvace.poller = new Poller();
+	function loadStage(projectId, id) {
+		Canvace.Ajax.get('stages/' + id, function (stage) {
+			Canvace.poller = new Poller(projectId);
 			Canvace.view = new View(stage.matrix, stage.x0, stage.y0);
 			Canvace.images = new Images(function () {
 				Canvace.tiles = new Tiles(function () {
@@ -265,7 +264,7 @@
 						text: 'Start!',
 						handler: function () {
 							startDialog.close();
-							loadStage();
+							loadStage(0, 0);
 						}
 					}]
 				}

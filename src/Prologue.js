@@ -106,7 +106,6 @@ var users = (function () {
 
 var MultiSet = require('multiset');
 var ReadWriteLock = require('rwlock');
-var Channel = require('broadcast');
 
 var express = require('express');
 var consolidate = require('consolidate');
@@ -127,10 +126,13 @@ if (users !== null) {
 	}));
 }
 
+var server = require('http').createServer(app);
+var io = require('socket.io').listen(server);
+
 app.get('/', function (request, response) {
 
 	// FIXME this is temporary
 	request.session.projectPath = 'C:/Users/Alberto/Documents/Darblast_NG/projects/test/';
 
-	response.render('main.handlebars');
+	response.render('start.handlebars');
 });

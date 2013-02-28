@@ -1,6 +1,4 @@
 (function () {
-	var broadcaster = new pollChannel.Broadcaster('images');
-
 	function sanitizeLabels(labels) {
 		labels = labels.split(',');
 		var label;
@@ -97,7 +95,7 @@
 									this.error();
 								} else {
 									this.writeFile('images/' + id + '/data', data, function () {
-										broadcaster.broadcast('create', {
+										this.broadcast('images', 'create', {
 											id: id,
 											labels: labels
 										});
@@ -151,7 +149,7 @@
 			this.getJSON('images/' + request.params.imageId + '/info', function (info) {
 				info.labels = sanitizeLabels(request.query.labels);
 				this.putJSON('images/' + request.params.imageId + '/info', info, function () {
-					broadcaster.broadcast('update', {
+					this.broadcast('images', 'update', {
 						id: request.params.imageId,
 						labels: info.labels
 					});
@@ -174,7 +172,7 @@
 				} else {
 					this.images.globalWriteLock(function (releaseImages) {
 						this.deleteTree('images/' + request.params.imageId, function () {
-							broadcaster.broadcast('delete', {
+							this.broadcast('images', 'delete', {
 								id: request.params.imageId
 							});
 							releaseImage();

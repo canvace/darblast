@@ -38,8 +38,8 @@
 		"express": "*",
 		"consolidate": "*",
 		"handlebars": "*",
+		"socket.io": "*",
 		"multiset": "1",
-		"rwlock": "2",
-		"broadcast": "1"
+		"rwlock": "2"
 	}
 }
