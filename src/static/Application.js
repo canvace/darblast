@@ -231,7 +231,7 @@ Ext.Loader.setConfig({
 	}
 
 	function loadStage(projectId, id) {
-		Canvace.Ajax.get('../' + id, function (stage) {
+		Canvace.Ajax.get('stages/' + id, function (stage) {
 			Canvace.poller = new Poller(projectId);
 			Canvace.view = new View(stage.matrix, stage.x0, stage.y0);
 			Canvace.images = new Images(function () {
@@ -245,39 +245,31 @@ Ext.Loader.setConfig({
 		});
 	}
 
-	window.edit = function (projectId, stageId) {
-		initGUI();
-		loadStage(projectId, stageId);
-	};
-
-	window.start = function () {
-		Ext.application({
-			name: 'Canvace Development Environment',
-			launch: function () {
-				initGUI();
-				var startDialog = Ext.create('Ext.window.Window', {
-					layout: 'vbox',
-					title: 'Canvace Development Environment',
-					modal: true,
-					resizable: false,
-					items: {
-						layout: {
-							type: 'hbox',
-							pack: 'begin'
-						},
-						items: [{
-							xtype: 'button',
-							text: 'Start!',
-							handler: function () {
-								startDialog.close();
-								history.pushState(null, 'Canvace Development Environment', '/stages/0/');
-								loadStage(0, 0);
-							}
-						}]
-					}
-				});
-				startDialog.show();
-			}
-		});
-	};
+	Ext.application({
+		name: 'Canvace Development Environment',
+		launch: function () {
+			initGUI();
+			var startDialog = Ext.create('Ext.window.Window', {
+				layout: 'vbox',
+				title: 'Canvace Development Environment',
+				modal: true,
+				resizable: false,
+				items: {
+					layout: {
+						type: 'hbox',
+						pack: 'begin'
+					},
+					items: [{
+						xtype: 'button',
+						text: 'Start!',
+						handler: function () {
+							startDialog.close();
+							loadStage(0, 0);
+						}
+					}]
+				}
+			});
+			startDialog.show();
+		}
+	});
 }());

@@ -1,15 +1,4 @@
 (function () {
-	installHandler('/stages/:stageId/', 'get', function (request, response) {
-		if ('projectPath' in request.session) {
-			response.render('stage.handlebars', {
-				projectId: this.getProjectId(),
-				stageId: request.params.stageId
-			});
-		} else {
-			response.type('text').send(400, 'Invalid request'); // FIXME create adequate error page
-		}
-	});
-
 	installHandler('/stages/', 'get', function (request, response) {
 		this.stages.globalReadLock(function (release) {
 			this.readdir('stages', function (entries) {
