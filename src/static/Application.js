@@ -237,6 +237,7 @@ Ext.Loader.setConfig({
 								Canvace.view = new View(data.matrix, data.x0, data.y0);
 								Canvace.buckets = new Buckets(width, height);
 								Canvace.array = new TileArray(data.map);
+								Canvace.layers = new Layers();
 								Canvace.tools = new Tools();
 							});
 						} else {
