@@ -252,6 +252,7 @@ Ext.Loader.setConfig({
 							Canvace.layers = new Layers();
 							Canvace.selection = new Selection();
 							Canvace.tileClipboard = new TileClipboard();
+							Canvace.entityClipboard = new EntityClipboard();
 							Canvace.renderer = new Renderer();
 							Canvace.tools = new Tools();
 							Canvace.renderer.render();

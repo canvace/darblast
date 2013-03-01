@@ -21,6 +21,7 @@ module.exports = function (grunt) {
 					'src/static/Layers.js',
 					'src/static/Selection.js',
 					'src/static/TileClipboard.js',
+					'src/static/EntityClipboard.js',
 					'src/static/Renderer.js',
 					'src/static/ToolGroup.js',
 					'src/static/Tools.js',
