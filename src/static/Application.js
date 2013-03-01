@@ -248,8 +248,10 @@ Ext.Loader.setConfig({
 							Canvace.view = new View(data.matrix, data.x0, data.y0);
 							Canvace.buckets = new Buckets(width, height);
 							Canvace.array = new TileArray(data.map);
+							Canvace.instances = new Instances(data.instances);
 							Canvace.layers = new Layers();
 							Canvace.selection = new Selection();
+							Canvace.tileClipboard = new TileClipboard();
 							Canvace.renderer = new Renderer();
 							Canvace.tools = new Tools();
 							Canvace.renderer.render();
