@@ -12,9 +12,12 @@ Ext.Loader.setConfig({
 	function initGUI() {
 		Ext.create('Ext.container.Viewport', {
 			layout: 'fit',
-			items: [{
+			items: {
 				layout: 'border',
-				bbar: Ext.create('Ext.ux.statusbar.StatusBar', {}),
+				bbar: Ext.create('Ext.ux.statusbar.StatusBar', {
+					text: 'Ready',
+					iconCls: 'x-status-valid'
+				}),
 				items: [{
 					region: 'center',
 					layout: 'fit',
@@ -109,11 +112,12 @@ Ext.Loader.setConfig({
 					}
 				}, {
 					region: 'east',
+					weight: -1,
 					collapsible: true,
 					split: true,
 					header: false,
 					width: 250,
-					title: 'Stages, Layers',
+					title: 'Stages and Layers',
 					layout: 'fit',
 					items: {
 						xtype: 'tabpanel',
@@ -138,6 +142,7 @@ Ext.Loader.setConfig({
 				}, {
 					xtype: 'tabpanel',
 					region: 'south',
+					weight: -2,
 					collapsible: true,
 					collapsed: true,
 					split: true,
@@ -209,7 +214,7 @@ Ext.Loader.setConfig({
 						title: 'Entities'
 					}]
 				}]
-			}]
+			}
 		});
 
 		Ext.get('canvas').set({
