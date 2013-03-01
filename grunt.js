@@ -24,6 +24,7 @@ module.exports = function (grunt) {
 					'src/static/EntityClipboard.js',
 					'src/static/Renderer.js',
 					'src/static/ToolGroup.js',
+					'src/static/DragTool.js',
 					'src/static/Tools.js',
 					'src/static/Application.js'
 				],
