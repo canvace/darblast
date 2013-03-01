@@ -13,7 +13,12 @@
 		"design",
 		"project",
 		"sencha",
-		"extjs"
+		"extjs",
+		"socket.io",
+		"socket",
+		"realtime",
+		"real",
+		"time"
 	],
 	"homepage": "http://www.canvace.com/",
 	"bugs": "https://github.com/canvace/darblast/issues",
