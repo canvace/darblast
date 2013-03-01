@@ -19,6 +19,10 @@ function Tiles(ready) {
 				solid: !!value
 			});
 		};
+
+		this.getLayout = function () {
+			return Ext.Object.merge({}, tile.layout);
+		};
 	}
 
 	Elements.call(this, 'tiles', Tile, ready);

@@ -124,16 +124,22 @@ Ext.Loader.setConfig({
 						tabPosition: 'bottom',
 						items: [{
 							title: 'Project',
-							layout: 'fit',
-							items: {
+							layout: 'border',
+							items: [{
 								xtype: 'treepanel',
+								region: 'center',
 								store: {
 									root: {
 										expanded: true,
 										text: 'Current project'
 									}
 								}
-							}
+							}, {
+								region: 'south',
+								split: true,
+								title: 'Properties',
+								height: 300
+							}]
 						}, {
 							title: 'Layers',
 							layout: 'vbox'
@@ -238,6 +244,7 @@ Ext.Loader.setConfig({
 								Canvace.buckets = new Buckets(width, height);
 								Canvace.array = new TileArray(data.map);
 								Canvace.layers = new Layers();
+								Canvace.selection = new Selection();
 								Canvace.tools = new Tools();
 							});
 						} else {
