@@ -18,6 +18,11 @@ function Stages(ready) {
 	var deletePropertyHandlers = new EventHandlers();
 
 	function Stage(id) {
+		// FIXME memory leak
+		renameHandlers.registerHandler(id, function (newId) {
+			id = newId;
+		});
+
 		var properties = stages[id];
 
 		this.getId = function () {
@@ -82,7 +87,9 @@ function Stages(ready) {
 		deleteHandlers.rehash(parameters.oldId, parameters.newId);
 		putPropertyHandlers.rehash(parameters.oldId, parameters.newId);
 		deletePropertyHandlers.rehash(parameters.oldId, parameters.newId);
-		renameHandlers.fire(parameters.newId);
+		renameHandlers.fire(parameters.newId, function (handler) {
+			handler(parameters.newId);
+		});
 	});
 
 	Canvace.poller.poll('stages', 'delete', function (parameters) {
