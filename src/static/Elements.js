@@ -48,6 +48,7 @@ function Elements(type, Element, ready) {
 	var createHandlers = new EventHandlers();
 	var updateHandlers = new EventHandlers();
 	var deleteHandlers = new EventHandlers();
+	var globalDeleteHandlers = new MultiSet();
 	var createFramesHandlers = new EventHandlers();
 	var updateFramesHandlers = new EventHandlers();
 	var deleteFramesHandlers = new EventHandlers();
@@ -199,6 +200,9 @@ function Elements(type, Element, ready) {
 	});
 
 	Canvace.poller.poll(type, 'delete', function (parameters) {
+		globalDeleteHandlers.fastForEach(function (handler) {
+			handler(parameters.id);
+		});
 		deleteHandlers.fire(parameters.id);
 		delete elements[parameters.id];
 	});
@@ -232,6 +236,7 @@ function Elements(type, Element, ready) {
 	this.onCreate = function (handler) {
 		return createHandlers.registerHandler(0, handler);
 	};
+	this.onDelete = globalDeleteHandlers.add;
 
 	this.get = function (id) {
 		if (id in elements) {

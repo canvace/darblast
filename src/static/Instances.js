@@ -20,6 +20,17 @@ function Instances(instances) {
 
 	var dirty = false;
 
+	Canvace.entities.onDelete(function (entityId) {
+		for (var instanceId in instances) {
+			if (instances[instanceId].id == entityId) {
+				var instance = instances[instanceId];
+				delete instances[instanceId];
+				dirty = true;
+				instance.erase();
+			}
+		}
+	});
+
 	this.add = function (i, j, k, id) {
 		dirty = true;
 		instances[nextId++] = {

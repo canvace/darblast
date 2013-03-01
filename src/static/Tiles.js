@@ -1,6 +1,4 @@
 function Tiles(ready) {
-	var deleteHandlers = new MultiSet();
-
 	function Tile(Element, id, tile) {
 		Element.call(this, id);
 
@@ -29,12 +27,6 @@ function Tiles(ready) {
 
 	Elements.call(this, 'tiles', Tile, ready);
 
-	Canvace.poller.poll('tiles', 'delete', function (parameters) {
-		deleteHandlers.fastForEach(function (handler) {
-			handler(parameters.id);
-		});
-	});
-
 	this.create = function (iSpan, jSpan, i0, j0) {
 		Canvace.Ajax.post('tiles/', {
 			layout: {
@@ -49,6 +41,4 @@ function Tiles(ready) {
 			}
 		});
 	};
-
-	this.onDelete = deleteHandlers.add;
 }
