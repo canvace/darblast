@@ -63,7 +63,8 @@ function Instances(instances) {
 			instance.erase = Canvace.buckets.addEntity(i, j, k, Canvace.entities.get(instance.id));
 		};
 		this._delete = function () {
-			if (delete instances[id]) {
+			if (id in instances) {
+				delete instances[id];
 				dirty = true;
 				instance.erase();
 			}
