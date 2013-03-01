@@ -18,12 +18,15 @@ function Stages(ready) {
 	var deletePropertyHandlers = new EventHandlers();
 
 	function Stage(id) {
+		if (!(id in stages)) {
+			throw 'Invalid stage ID: ' + id;
+		}
+		var properties = stages[id];
+
 		// FIXME memory leak
 		renameHandlers.registerHandler(id, function (newId) {
 			id = newId;
 		});
-
-		var properties = stages[id];
 
 		this.getId = function () {
 			return id;

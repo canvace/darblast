@@ -55,6 +55,9 @@ function Elements(type, Element, ready) {
 	var deletePropertyHandlers = new EventHandlers();
 
 	function ElementBase(id) {
+		if (!(id in elements)) {
+			throw 'Invalid element ID: ' + id;
+		}
 		var element = elements[id];
 
 		this.onUpdate = function (handler) {

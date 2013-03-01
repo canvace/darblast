@@ -237,19 +237,21 @@ Ext.Loader.setConfig({
 			Canvace.images = new Images(function () {
 				Canvace.tiles = new Tiles(function () {
 					Canvace.entities = new Entities(function () {
-						var stage = Canvace.stages.get(id);
-						if (stage) {
-							stage.load(function (data) {
-								Canvace.view = new View(data.matrix, data.x0, data.y0);
-								Canvace.buckets = new Buckets(width, height);
-								Canvace.array = new TileArray(data.map);
-								Canvace.layers = new Layers();
-								Canvace.selection = new Selection();
-								Canvace.tools = new Tools();
-							});
-						} else {
+						var stage;
+						try {
+							stage = Canvace.stages.get(id);
+						} catch (e) {
 							Ext.MessageBox.alert('Error', 'The specified stage does not exist.');
+							return;
 						}
+						stage.load(function (data) {
+							Canvace.view = new View(data.matrix, data.x0, data.y0);
+							Canvace.buckets = new Buckets(width, height);
+							Canvace.array = new TileArray(data.map);
+							Canvace.layers = new Layers();
+							Canvace.selection = new Selection();
+							Canvace.tools = new Tools();
+						});
 					});
 				});
 			});

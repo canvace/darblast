@@ -41,6 +41,9 @@ function Images(ready) {
 	});
 
 	function ImageObject(id) {
+		if (!(id in images)) {
+			throw 'Invalid image ID: ' + id;
+		}
 		var image = images[id];
 
 		this.getId = function () {
