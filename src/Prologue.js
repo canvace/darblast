@@ -129,6 +129,11 @@ if (users !== null) {
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 
+if (!config.debug) {
+	io.set('log level', 1);
+	io.enable('browser client minification');
+}
+
 app.get('/', function (request, response) {
 
 	// FIXME this is temporary
