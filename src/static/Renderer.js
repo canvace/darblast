@@ -85,16 +85,14 @@ function Renderer() {
 		});
 	}
 
-/*
-	$('#toggle-grid').change(function () {
-		showGrid = $(this).is(':checked');
-		render();
-	});
-	$('#toggle-transparency').change(function () {
-		layerTransparency = $(this).is(':checked');
-		render();
-	});
-*/
-
 	this.render = render;
+
+	this.toggleGrid = function (on) {
+		showGrid = !!on;
+		render();
+	};
+	this.toggleTransparency = function (on) {
+		layerTransparency = !!on;
+		render();
+	};
 }

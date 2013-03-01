@@ -73,6 +73,22 @@ function TileArray(map) {
 	}
 	dirty = false;
 
+	Canvace.tiles.onDelete(function (id) {
+		for (var k in map) {
+			k = parseInt(k, 10);
+			for (var i in map[k]) {
+				i = parseInt(i, 10);
+				for (var j in map[k][i]) {
+					j = parseInt(j, 10);
+					if (map[k][i][j] === id) {
+						erase(i, j, k);
+						dirty = true;
+					}
+				}
+			}
+		}
+	});
+
 	this.get = function (i, j, k) {
 		if ((k in array) && (i in array[k]) && (j in array[k][i])) {
 			if (typeof array[k][i][j] !== 'number') {
