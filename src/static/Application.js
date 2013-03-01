@@ -250,7 +250,9 @@ Ext.Loader.setConfig({
 							Canvace.array = new TileArray(data.map);
 							Canvace.layers = new Layers();
 							Canvace.selection = new Selection();
+							Canvace.renderer = new Renderer();
 							Canvace.tools = new Tools();
+							Canvace.renderer.render();
 						});
 					});
 				});
