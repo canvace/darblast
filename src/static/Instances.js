@@ -1,46 +1,63 @@
 function Instances(instances) {
-	(function () {
+	var nextId = 0;
+	instances = (function () {
+		var set = {};
 		for (var id in Canvace.instances) {
-			var instance = instances[id];
-			instance.dirty = false;
-			instance.erase = Canvace.buckets.addEntity(instance.i, instance.j, instance.k, Canvace.entities.get(instance.id));
-		}
-	}());
-
-	var nextId = (function () {
-		var result = 0;
-		for (var id in instances) {
 			id = parseInt(id, 10);
-			if (id >= result) {
-				result = id + 1;
+			if (id >= nextId) {
+				nextId = id + 1;
 			}
+			var instance = instances[id];
+			instance.erase = Canvace.buckets.addEntity(
+				instance.i,
+				instance.j,
+				instance.k,
+				Canvace.entities.get(instance.id)
+				);
+			set[id] = instance;
 		}
-		return result;
+		return set;
 	}());
-
-	var dirty = false;
 
 	Canvace.entities.onDelete(function (entityId) {
+		var modified = false;
 		for (var instanceId in instances) {
 			if (instances[instanceId].id == entityId) {
 				var instance = instances[instanceId];
 				delete instances[instanceId];
-				dirty = true;
 				instance.erase();
+				modified = true;
 			}
+		}
+		if (modified) {
+			/*
+			 * FIXME usability issue: a user loses his entire history as soon as
+			 * another one deletes something that's in his modifications.
+			 */
+			Canvace.history.erase();
 		}
 	});
 
-	this.add = function (i, j, k, id) {
-		dirty = true;
-		instances[nextId++] = {
-			id: id,
+	this.add = function (i, j, k, entityId) {
+		var instance = {
+			id: entityId,
 			i: i,
 			j: j,
 			k: k,
-			dirty: true,
-			erase: Canvace.buckets.addEntity(i, j, k, Canvace.entities.get(id))
+			erase: Canvace.buckets.addEntity(i, j, k, Canvace.entities.get(entityId))
 		};
+		var id = nextId++;
+		instances[id] = instance;
+		Canvace.history.record({
+			action: function () {
+				instance.erase = Canvace.buckets.addEntity(i, j, k, Canvace.entities.get(entityId));
+				instances[id] = instance;
+			},
+			reverse: function () {
+				delete instances[id];
+				instance.erase();
+			}
+		});
 	};
 
 	function Instance(id) {
@@ -55,9 +72,6 @@ function Instances(instances) {
 		this.getEntity = function () {
 			return Canvace.entities.get(instance.id);
 		};
-		this.isDirty = function () {
-			return instance.dirty;
-		};
 		this.getPosition = function () {
 			return {
 				i: instance.i,
@@ -65,19 +79,46 @@ function Instances(instances) {
 				k: instance.k
 			};
 		};
-		this.setPosition = function (i, j, k) {
-			instance.erase();
-			instance.i = i;
-			instance.j = j;
-			instance.k = k;
-			instance.dirty = true;
-			instance.erase = Canvace.buckets.addEntity(i, j, k, Canvace.entities.get(instance.id));
+		this.setPosition = function (i1, j1, k1) {
+			function doSet(i, j, k) {
+				instance.erase();
+				instance.i = i;
+				instance.j = j;
+				instance.k = k;
+				instance.erase = Canvace.buckets.addEntity(i, j, k, Canvace.entities.get(instance.id));
+			}
+			var i0 = instance.i;
+			var j0 = instance.j;
+			var k0 = instance.k;
+			doSet(i1, j1, k1);
+			Canvace.history.record({
+				action: function () {
+					doSet(i1, j1, k1);
+				},
+				reverse: function () {
+					doSet(i0, j0, k0);
+				}
+			});
 		};
 		this._delete = function () {
 			if (id in instances) {
 				delete instances[id];
-				dirty = true;
 				instance.erase();
+				Canvace.history.record({
+					action: function () {
+						delete instances[id];
+						instance.erase();
+					},
+					reverse: function () {
+						instance.erase = Canvace.buckets.addEntity(
+							instance.i,
+							instance.j,
+							instance.k,
+							Canvace.entities.get(instance.id)
+							);
+						instances[id] = instance;
+					}
+				});
 			}
 		};
 	}
@@ -108,16 +149,6 @@ function Instances(instances) {
 	this.forEach = function (action) {
 		for (var id in instances) {
 			action(new Instance(id));
-		}
-	};
-
-	this.isDirty = function () {
-		return dirty;
-	};
-	this.clearDirty = function () {
-		dirty = false;
-		for (var id in instances) {
-			instances[id].dirty = false;
 		}
 	};
 }
