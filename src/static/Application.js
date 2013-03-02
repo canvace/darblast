@@ -48,10 +48,12 @@ Ext.Loader.setConfig({
 							xtype: 'tbseparator'
 						}, {
 							icon: '/resources/images/tools/undo.png',
-							tooltip: 'Undo'
+							tooltip: 'Undo',
+							disabled: true
 						}, {
 							icon: '/resources/images/tools/redo.png',
-							tooltip: 'Redo'
+							tooltip: 'Redo',
+							disabled: true
 						}, {
 							xtype: 'tbseparator'
 						}, {
@@ -126,12 +128,29 @@ Ext.Loader.setConfig({
 							title: 'Project',
 							layout: 'border',
 							items: [{
-								xtype: 'treepanel',
 								region: 'center',
-								store: {
-									root: {
-										expanded: true,
-										text: 'Current project'
+								tbar: {
+									xtype: 'toolbar',
+									items: [{
+										icon: '/resources/images/icons/add.png',
+										tooltip: 'New stage...'
+									}, {
+										icon: '/resources/images/icons/pencil.png',
+										tooltip: 'Load stage',
+										disabled: true
+									}, {
+										icon: '/resources/images/icons/delete.png',
+										tooltip: 'Remove stage',
+										disabled: true
+									}]
+								},
+								items: {
+									xtype: 'treepanel',
+									store: {
+										root: {
+											expanded: true,
+											text: 'Current project'
+										}
 									}
 								}
 							}, {
@@ -162,6 +181,7 @@ Ext.Loader.setConfig({
 							xtype: 'toolbar',
 							region: 'north',
 							items: [{
+								icon: '/resources/images/icons/add.png',
 								tooltip: 'Load images...',
 								handler: function () {
 									var form = Ext.create('Ext.form.Panel', {
@@ -196,10 +216,19 @@ Ext.Loader.setConfig({
 									}).show();
 								}
 							}, {
+								icon: '/resources/images/icons/picture_add.png',
 								tooltip: 'Load image sheet...'
 							}, {
+								icon: '/resources/images/icons/pencil.png',
+								tooltip: 'Edit selected image...'
+							}, {
+								icon: '/resources/images/icons/folder_edit.png',
+								tooltip: 'Edit selected category...'
+							}, {
+								icon: '/resources/images/icons/delete.png',
 								tooltip: 'Delete selected images...'
 							}, {
+								icon: '/resources/images/icons/folder_delete.png',
 								tooltip: 'Delete selected category...'
 							}]
 						}, {

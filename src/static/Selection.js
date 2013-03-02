@@ -65,6 +65,7 @@ function Selection() {
 
 	var selection = new Area();
 	var currentArea = new Area();
+	var show = false;
 
 	this.setCurrentArea = function (x0, y0, x1, y1) {
 		var k = Canvace.layers.getSelected();
@@ -92,7 +93,16 @@ function Selection() {
 		selection.addFragment(i, j);
 	};
 	this.forEach = function (action) {
-		selection.forEach(action);
-		currentArea.forEach(action);
+		if (show) {
+			selection.forEach(action);
+			currentArea.forEach(action);
+		}
+	};
+
+	this.show = function () {
+		show = true;
+	};
+	this.hide = function () {
+		show = false;
 	};
 }
