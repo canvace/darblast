@@ -8,6 +8,14 @@ function History() {
 		stack[top = ++pointer] = entry;
 	};
 
+	this.canUndo = function () {
+		return pointer >= 0;
+	};
+
+	this.canRedo = function () {
+		return pointer < top;
+	};
+
 	this.undo = function () {
 		if (pointer >= 0) {
 			stack[pointer--].reverse();
