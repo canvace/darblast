@@ -276,6 +276,7 @@ Ext.Loader.setConfig({
 						stage.load(function (data) {
 							Canvace.view = new View(data.matrix, data.x0, data.y0);
 							Canvace.buckets = new Buckets(width, height);
+							Canvace.history = new History();
 							Canvace.array = new TileArray(data.map);
 							Canvace.instances = new Instances(data.instances);
 							Canvace.layers = new Layers();

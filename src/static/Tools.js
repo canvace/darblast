@@ -1,4 +1,7 @@
 function Tools() {
+	new UndoCommand();
+	new RedoCommand();
+
 	var activeTool = new DragTool();
 
 	new FillSelectionCommand();
