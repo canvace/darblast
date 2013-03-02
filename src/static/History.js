@@ -6,7 +6,6 @@ function History() {
 	var dirtyAnyway = false;
 
 	this.record = function (entry) {
-		entry.action();
 		stack[top = ++pointer] = entry;
 	};
 
