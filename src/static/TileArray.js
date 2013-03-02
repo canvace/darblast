@@ -1,28 +1,34 @@
 function TileArray(map) {
-	var dirty = false;
 	var array = {};
 	var minI = 0, maxI = 0, minJ = 0, maxJ = 0;
 
 	function erase(i, j, k) {
+		var info = {
+			i: i,
+			j: j,
+			k: k,
+			id: false
+		};
 		if (k in array) {
 			if (i in array[k]) {
 				if (j in array[k][i]) {
 					if (typeof array[k][i][j] !== 'number') {
 						var ref = array[k][i][j];
-						i = ref.i;
-						j = ref.j;
+						info.i = i = ref.i;
+						info.j = j = ref.j;
 					}
+					info.id = array[k][i][j];
 					var layout = Canvace.tiles.get(array[k][i][j]).getLayout();
 					for (var i1 = i - layout.ref.i; i1 < i - layout.ref.i + layout.span.i; i1++) {
 						for (var j1 = j - layout.ref.j; j1 < j - layout.ref.j + layout.span.j; j1++) {
 							delete array[k][i1][j1];
 						}
 					}
-					dirty = true;
 				}
 			}
 		}
 		Canvace.buckets.eraseTile(i, j, k);
+		return info;
 	}
 
 	function putTile(i, j, k, id) {
@@ -42,7 +48,6 @@ function TileArray(map) {
 			maxI = Math.max(maxI, i);
 			minJ = Math.min(minJ, j);
 			maxJ = Math.max(maxJ, j);
-			dirty = true;
 		}
 		put(i, j, k, id);
 		var tile = Canvace.tiles.get(id);
@@ -71,9 +76,9 @@ function TileArray(map) {
 			}
 		}
 	}
-	dirty = false;
 
 	Canvace.tiles.onDelete(function (id) {
+		var modified = false;
 		for (var k in map) {
 			k = parseInt(k, 10);
 			for (var i in map[k]) {
@@ -82,10 +87,17 @@ function TileArray(map) {
 					j = parseInt(j, 10);
 					if (map[k][i][j] === id) {
 						erase(i, j, k);
-						dirty = true;
+						modified = true;
 					}
 				}
 			}
+		}
+		if (modified) {
+			/*
+			 * FIXME usability issue: a user loses his entire history as soon as
+			 * another one deletes something that's in his modifications.
+			 */
+			Canvace.history.erase();
 		}
 	});
 
@@ -100,8 +112,30 @@ function TileArray(map) {
 			return false;
 		}
 	};
-	this.set = putTile;
-	this.erase = erase;
+	this.set = function (i, j, k, id) {
+		putTile(i, j, k, id);
+		Canvace.history.record({
+			action: function () {
+				putTile(i, j, k, id);
+			},
+			reverse: function () {
+				erase(i, j, k);
+			}
+		});
+	};
+	this.erase = function (i, j, k) {
+		var info = erase(i, j, k);
+		if (info.id !== false) {
+			Canvace.history.record({
+				action: function () {
+					erase(i, j, k);
+				},
+				reverse: function () {
+					putTile(info.i, info.j, info.k, info.id);
+				}
+			});
+		}
+	};
 	this.getTileCountForLayer = function (k) {
 		if (k in array) {
 			var count = 0;
@@ -117,18 +151,27 @@ function TileArray(map) {
 			return 0;
 		}
 	};
-	this.eraseLayer = function (k) {
+	this.eraseLayer = function eraseLayer(k) {
 		if (k in array) {
+			var layer = array[k];
 			for (var i in array[k]) {
 				for (var j in array[k][i]) {
 					Canvace.buckets.eraseTile(i, j, k);
 				}
 			}
 			delete array[k];
-			dirty = true;
+			Canvace.history.record({
+				action: function () {
+					eraseLayer(k);
+				},
+				reverse: function () {
+					array[k] = layer;
+				}
+			});
 		}
 	};
 	this.deleteTileOccurrences = function (id) {
+		var occurrences = [];
 		for (var k in array) {
 			k = parseInt(k, 10);
 			for (var i in array[k]) {
@@ -136,11 +179,28 @@ function TileArray(map) {
 				for (var j in array[k][i]) {
 					j = parseInt(j, 10);
 					if (array[k][i][j] === id) {
+						occurrences.push({
+							i: i,
+							j: j,
+							k: k
+						});
 						erase(i, j, k);
 					}
 				}
 			}
 		}
+		Canvace.history.record({
+			action: function () {
+				for (var i in occurrences) {
+					erase(occurrences[i].i, occurrences[i].j, occurrences[i].k);
+				}
+			},
+			reverse: function () {
+				for (var i in occurrences) {
+					putTile(occurrences[i].i, occurrences[i].j, occurrences[i].k, id);
+				}
+			}
+		});
 	};
 	this.updateRepositionedTile = function (id) {
 		var tile = Canvace.tiles.get(id);
@@ -235,11 +295,5 @@ function TileArray(map) {
 				}
 			}
 		}());
-	};
-	this.isDirty = function () {
-		return dirty;
-	};
-	this.clearDirty = function () {
-		dirty = false;
 	};
 }
