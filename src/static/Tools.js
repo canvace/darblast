@@ -1,18 +1,18 @@
 function Tools() {
 	var activeTool = new DragTool();
 
+	new FillSelectionCommand();
+
+	new EraseEntitiesTool();
+
 	new DragSelectTool();
 	new FloodSelectTool();
-
-	new FillSelectionCommand();
 
 	new CutTilesCommand();
 	new CopyTilesCommand();
 	new CutEntitiesTool();
 	new CopyEntitiesTool();
 	new PasteEntityTool();
-
-	// TODO
 
 	var canvas = Ext.get('canvas');
 	var down = false;
