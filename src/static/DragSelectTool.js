@@ -13,9 +13,11 @@ function DragSelectTool() {
 			Canvace.selection.dismiss();
 		}
 		Canvace.selection.setCurrentArea(x0 = x, y0 = y, x, y);
+		Canvace.renderer.render();
 	};
 	this.mousedrag = function (x, y) {
 		Canvace.selection.setCurrentArea(x0, y0, x, y);
+		Canvace.renderer.render();
 	};
 	this.mouseup = function () {
 		Canvace.selection.freezeCurrentArea();

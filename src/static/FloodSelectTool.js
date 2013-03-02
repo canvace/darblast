@@ -14,5 +14,6 @@ function FloodSelectTool() {
 		var k = Canvace.layers.getSelected();
 		var cell = Canvace.view.getCell(x, y, k);
 		Canvace.array.floodLayer(k, cell.i, cell.j, Canvace.selection.addFragment);
+		Canvace.renderer.render();
 	};
 }
