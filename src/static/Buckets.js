@@ -2,7 +2,7 @@ function Buckets(width, height) {
 	function Bucket() {
 		var sections = {};
 		var minS = 0, maxS = 0;
-		this.add = function (p, k, id) {
+		this.add = function (p, k, id, width, height) {
 			minS = Math.min(minS, p[2]);
 			maxS = Math.max(maxS, p[2]);
 			if (!sections[p[2]]) {
@@ -12,7 +12,9 @@ function Buckets(width, height) {
 				x: p[0],
 				y: p[1],
 				k: k,
-				id: id
+				id: id,
+				width: width,
+				height: height
 			});
 		};
 		this.forEach = function (action) {
@@ -33,6 +35,7 @@ function Buckets(width, height) {
 		}
 		var p = element.project(i, j, k);
 		var id = element.getFirstFrameId();
+		var dimensions = element.getDimensions();
 
 		var removers = [];
 		function addToBucket(i, j) {
@@ -42,7 +45,7 @@ function Buckets(width, height) {
 			if (!buckets[i][j]) {
 				buckets[i][j] = new Bucket();
 			}
-			removers.push(buckets[i][j].add(p, k, id));
+			removers.push(buckets[i][j].add(p, k, id, dimensions.width, dimensions.height));
 		}
 
 		(function () {
@@ -105,7 +108,15 @@ function Buckets(width, height) {
 		var j = Math.floor(-x0 / width);
 		var bucket = buckets[i][j];
 		if (bucket) {
-			bucket.forEach(action);
+			bucket.forEach(function (element) {
+				if ((element.x < -x0 + width) &&
+					(element.y < -y0 + height) &&
+					(element.x + element.width >= -x0) &&
+					(element.y + element.height >= -y0))
+				{
+					action(element);
+				}
+			});
 		}
 	};
 }

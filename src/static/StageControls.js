@@ -29,7 +29,8 @@ function StageControls() {
 
 	function addNode(stage) {
 		var node = projectNode.appendChild({
-			text: stage.getId()
+			text: stage.getId(),
+			leaf: true
 		});
 		stage.onRename(function (newId) {
 			node.set('text', newId);
