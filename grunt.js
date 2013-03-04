@@ -14,6 +14,7 @@ module.exports = function (grunt) {
 					'src/static/Tiles.js',
 					'src/static/Entities.js',
 					'src/static/Stages.js',
+					'src/static/StageControls.js',
 					'src/static/View.js',
 					'src/static/Buckets.js',
 					'src/static/History.js',

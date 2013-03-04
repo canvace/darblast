@@ -125,40 +125,9 @@ Ext.Loader.setConfig({
 						xtype: 'tabpanel',
 						tabPosition: 'bottom',
 						items: [{
+							id: 'stage-controls',
 							title: 'Project',
-							layout: 'border',
-							items: [{
-								region: 'center',
-								tbar: {
-									xtype: 'toolbar',
-									items: [{
-										icon: '/resources/images/icons/add.png',
-										tooltip: 'New stage...'
-									}, {
-										icon: '/resources/images/icons/pencil.png',
-										tooltip: 'Load stage',
-										disabled: true
-									}, {
-										icon: '/resources/images/icons/delete.png',
-										tooltip: 'Remove stage',
-										disabled: true
-									}]
-								},
-								items: {
-									xtype: 'treepanel',
-									store: {
-										root: {
-											expanded: true,
-											text: 'Current project'
-										}
-									}
-								}
-							}, {
-								region: 'south',
-								split: true,
-								title: 'Properties',
-								height: 300
-							}]
+							layout: 'border'
 						}, {
 							title: 'Layers',
 							layout: 'vbox'
@@ -262,35 +231,45 @@ Ext.Loader.setConfig({
 
 	function loadStage(projectId, id) {
 		Canvace.poller = new Poller(projectId);
-		Canvace.stages = new Stages(function () {
-			Canvace.images = new Images(function () {
-				Canvace.tiles = new Tiles(function () {
-					Canvace.entities = new Entities(function () {
-						var stage;
-						try {
-							stage = Canvace.stages.get(id);
-						} catch (e) {
-							Ext.MessageBox.alert('Error', 'The specified stage does not exist.');
-							return;
-						}
-						stage.load(function (data) {
-							Canvace.view = new View(data.matrix, data.x0, data.y0);
-							Canvace.buckets = new Buckets(width, height);
-							Canvace.history = new History();
-							Canvace.array = new TileArray(data.map);
-							Canvace.instances = new Instances(data.instances);
-							Canvace.layers = new Layers();
-							Canvace.selection = new Selection();
-							Canvace.tileClipboard = new TileClipboard();
-							Canvace.entityClipboard = new EntityClipboard();
-							Canvace.renderer = new Renderer();
-							Canvace.tools = new Tools();
-							Canvace.renderer.render();
-						});
-					});
-				});
+		var loader = new Loader(function () {
+			var stage;
+			try {
+				stage = Canvace.stages.get(id);
+			} catch (e) {
+				Ext.MessageBox.alert('Error', 'The specified stage does not exist.');
+				return;
+			}
+			stage.load(function (data) {
+				Canvace.view = new View(data.matrix, data.x0, data.y0);
+				Canvace.buckets = new Buckets(width, height);
+				Canvace.history = new History();
+				Canvace.array = new TileArray(data.map);
+				Canvace.instances = new Instances(data.instances);
+				Canvace.layers = new Layers();
+				Canvace.selection = new Selection();
+				Canvace.tileClipboard = new TileClipboard();
+				Canvace.entityClipboard = new EntityClipboard();
+				Canvace.renderer = new Renderer();
+				Canvace.tools = new Tools();
+				Canvace.renderer.render();
 			});
 		});
+		loader.queue(function (callback) {
+			Canvace.stages = new Stages(function () {
+				new StageControls();
+				callback();
+			});
+		});
+		loader.queue(function (callback) {
+			Canvace.images = new Images(callback);
+		});
+		loader.queue(function (callback) {
+			Canvace.tiles = new Tiles(callback);
+		});
+		loader.queue(function (callback) {
+			Canvace.entities = new Entities(callback);
+		});
+		loader.allQueued();
 	}
 
 	Ext.application({

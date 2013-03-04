@@ -119,7 +119,7 @@ function Stages(ready) {
 	};
 
 	this.onCreate = function (handler) {
-		return createHandlers.registeHandler(0, handler);
+		return createHandlers.registerHandler(0, handler);
 	};
 
 	this.forEach = function (callback) {
