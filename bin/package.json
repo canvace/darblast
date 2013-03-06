@@ -40,10 +40,12 @@
 		"url": "https://github.com/canvace/darblast.git"
 	},
 	"dependencies": {
+		"npm": "*",
 		"express": "*",
 		"consolidate": "*",
 		"handlebars": "*",
 		"socket.io": "*",
+		"openurl": "*",
 		"multiset": "1",
 		"rwlock": "2"
 	}

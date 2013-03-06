@@ -1,9 +1,5 @@
 var Handler = (function () {
 	var fileLock = new FileLock();
-
-	var projects = {};
-	var nextProjectId = 0;
-
 	return function (request, response) {
 		var thisObject = this;
 
@@ -221,14 +217,9 @@ var Handler = (function () {
 			});
 		};
 
-		function getProjectId() {
-			if (!(request.session.projectPath in projects)) {
-				projects[request.session.projectPath] = nextProjectId++;
-			}
-			return projects[request.session.projectPath];
-		}
-
-		this.getProjectId = getProjectId;
+		this.getProjectId = function () {
+			return getProjectId(request);
+		};
 
 		this.broadcast = function (key, method, parameters) {
 			io.of('/poll/' + getProjectId()).emit(key + '/' + method, parameters);

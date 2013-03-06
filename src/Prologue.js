@@ -8,6 +8,7 @@ try {
 var fs = require('fs');
 var path = require('path');
 var util = require('util');
+var npm = require('npm');
 
 var users = (function () {
 	var content;
@@ -76,7 +77,7 @@ var users = (function () {
 				showHelp(true);
 			} else {
 				config.port = parseInt(process.argv[4], 10);
-				fs.writeFileSync(JSON.stringify(config), 'ascii');
+				fs.writeFileSync(__dirname + '/config.json', JSON.stringify(config));
 			}
 			break;
 		case 'setuser':
@@ -103,6 +104,31 @@ var users = (function () {
 		process.exit(0);
 	}
 }());
+
+var newMinorVersion = false;
+var newMajorVersion = false;
+
+if (!('versions' in config)) {
+	config.versions = {};
+}
+npm.load(function () {
+	npm.commands.view(['canvace', 'versions'], true, function (error, data) {
+		var unknownVersions = {};
+		for (var key in data) {
+			for (var i in data[key]) {
+				var version = data[key].versions[i];
+				if (!(version in config.versions)) {
+					config.versions[version] = true;
+					unknownVersions[version] = true;
+				}
+			}
+		}
+		if (Object.keys(unknownVersions).length) {
+			fs.writeFile(__dirname + '/config.json', JSON.stringify(config));
+		}
+		// TODO compare versions and possibly set newXxxVersion flags
+	});
+});
 
 var MultiSet = require('multiset');
 var ReadWriteLock = require('rwlock');
@@ -134,10 +160,13 @@ if (!config.debug) {
 	io.enable('browser client minification');
 }
 
-app.get('/', function (request, response) {
-
-	// FIXME this is temporary
-	request.session.projectPath = 'C:/Users/Alberto/Documents/Darblast_NG/projects/test/';
-
-	response.render('main.handlebars');
-});
+var getProjectId = (function () {
+	var projects = {};
+	var nextProjectId = 0;
+	return function (request) {
+		if (!(request.session.projectPath in projects)) {
+			projects[request.session.projectPath] = nextProjectId++;
+		}
+		return projects[request.session.projectPath];
+	};
+}());

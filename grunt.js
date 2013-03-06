@@ -10,6 +10,7 @@ module.exports = function (grunt) {
 					'src/static/Loader.js',
 					'src/static/Poller.js',
 					'src/static/Images.js',
+					'src/static/ImageControls.js',
 					'src/static/Elements.js',
 					'src/static/Tiles.js',
 					'src/static/Entities.js',
@@ -46,6 +47,7 @@ module.exports = function (grunt) {
 			server: {
 				src: [
 					'src/Prologue.js',
+					'src/Main.js',
 					'src/FileLock.js',
 					'src/Handler.js',
 					'src/Stages.js',

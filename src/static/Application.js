@@ -147,67 +147,69 @@ Ext.Loader.setConfig({
 						title: 'Images',
 						layout: 'border',
 						items: [{
-							xtype: 'toolbar',
-							region: 'north',
-							items: [{
-								icon: '/resources/images/icons/add.png',
-								tooltip: 'Load images...',
-								handler: function () {
-									var form = Ext.create('Ext.form.Panel', {
-										url: 'images/',
-										items: []
-									});
-									var dialog = Ext.create('Ext.window.Window', {
-										title: 'Load new images',
-										modal: true,
-										resizable: false,
-										draggable: false,
-										layout: 'fit',
-										bbar: {
-											xtype: 'toolbar',
-											layout: {
-												pack: 'center'
-											},
-											items: [{
-												text: 'OK',
-												handler: function () {
-													form.submit();
-													dialog.close();
-												}
-											}, {
-												text: 'Cancel',
-												handler: function () {
-													dialog.close();
-												}
-											}]
-										},
-										items: form
-									}).show();
-								}
-							}, {
-								icon: '/resources/images/icons/picture_add.png',
-								tooltip: 'Load image sheet...'
-							}, {
-								icon: '/resources/images/icons/pencil.png',
-								tooltip: 'Edit selected image...'
-							}, {
-								icon: '/resources/images/icons/folder_edit.png',
-								tooltip: 'Edit selected category...'
-							}, {
-								icon: '/resources/images/icons/delete.png',
-								tooltip: 'Delete selected images...'
-							}, {
-								icon: '/resources/images/icons/folder_delete.png',
-								tooltip: 'Delete selected category...'
-							}]
-						}, {
 							xtype: 'treepanel',
 							region: 'west',
-							store: {
-								root: {
-									text: 'Categories',
-									expanded: true
-								}
+							split: true,
+							width: 250,
+							tbar: {
+								xtype: 'toolbar',
+								region: 'north',
+								items: [{
+									icon: '/resources/images/icons/add.png',
+									tooltip: 'Load images...',
+									handler: function () {
+										var form = Ext.create('Ext.form.Panel', {
+											url: 'images/',
+											items: []
+										});
+										var dialog = Ext.create('Ext.window.Window', {
+											title: 'Load new images',
+											modal: true,
+											resizable: false,
+											draggable: false,
+											layout: 'fit',
+											bbar: {
+												xtype: 'toolbar',
+												layout: {
+													type: 'hbox',
+													pack: 'center'
+												},
+												items: [{
+													text: 'OK',
+													handler: function () {
+														form.submit();
+														dialog.close();
+													}
+												}, {
+													text: 'Cancel',
+													handler: function () {
+														dialog.close();
+													}
+												}]
+											},
+											items: form
+										}).show();
+									}
+								}, {
+									icon: '/resources/images/icons/picture_add.png',
+									tooltip: 'Load image sheet...'
+								}, {
+									icon: '/resources/images/icons/pencil.png',
+									tooltip: 'Edit selected image...'
+								}, {
+									icon: '/resources/images/icons/folder_edit.png',
+									tooltip: 'Edit selected category...'
+								}, {
+									icon: '/resources/images/icons/delete.png',
+									tooltip: 'Delete selected images...'
+								}, {
+									icon: '/resources/images/icons/folder_delete.png',
+									tooltip: 'Delete selected category...'
+								}]
+							},
+							root: {
+								text: 'Categories',
+								expanded: true
 							}
 						}, {
 							region: 'center'
@@ -261,7 +263,10 @@ Ext.Loader.setConfig({
 			});
 		});
 		loader.queue(function (callback) {
-			Canvace.images = new Images(callback);
+			Canvace.images = new Images(function () {
+				new ImageControls();
+				callback();
+			});
 		});
 		loader.queue(function (callback) {
 			Canvace.tiles = new Tiles(callback);
@@ -277,24 +282,40 @@ Ext.Loader.setConfig({
 		launch: function () {
 			initGUI();
 			var startDialog = Ext.create('Ext.window.Window', {
-				layout: 'vbox',
 				title: 'Canvace Development Environment',
 				modal: true,
+				closable: false,
 				resizable: false,
-				items: {
-					layout: {
-						type: 'hbox',
-						pack: 'begin'
-					},
-					items: [{
-						xtype: 'button',
-						text: 'Start!',
-						handler: function () {
-							startDialog.close();
-							loadStage(0, 'test');
+				layout: 'accordion',
+				items: [{
+					title: 'Create new project',
+					layout: 'fit',
+					items: {
+						xtype: 'form',
+						layout: 'form',
+						bbar: {
+							xtype: 'toolbar',
+							items: {
+								text: 'Create',
+								handler: function () {
+									Ext.getCmp('create-project-form').submit({
+										url: '/',
+										params: {
+											// TODO matrix
+										},
+										success: function (projectId, stageId) {
+											loadStage(projectId, stageId);
+										}
+									});
+								}
+							}
 						}
-					}]
-				}
+					}
+				}, {
+					title: 'Load existing project'
+				}, {
+					title: 'Import project'
+				}]
 			});
 			startDialog.show();
 		}
