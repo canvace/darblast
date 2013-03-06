@@ -292,7 +292,8 @@ Ext.Loader.setConfig({
 					layout: 'fit',
 					items: {
 						xtype: 'form',
-						layout: 'form',
+						id: 'create-project-form',
+						layout: 'vbox',
 						bbar: {
 							xtype: 'toolbar',
 							items: {
@@ -309,7 +310,14 @@ Ext.Loader.setConfig({
 									});
 								}
 							}
-						}
+						},
+						items: [{
+							xtype: 'textfield',
+							name: 'projectPath',
+							fieldLabel: 'Project path',
+							width: 400,
+							allowBlank: false
+						}]
 					}
 				}, {
 					title: 'Load existing project'

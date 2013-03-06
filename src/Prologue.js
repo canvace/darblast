@@ -108,27 +108,29 @@ var users = (function () {
 var newMinorVersion = false;
 var newMajorVersion = false;
 
-if (!('versions' in config)) {
-	config.versions = {};
-}
-npm.load(function () {
-	npm.commands.view(['canvace', 'versions'], true, function (error, data) {
-		var unknownVersions = {};
-		for (var key in data) {
-			for (var i in data[key]) {
-				var version = data[key].versions[i];
-				if (!(version in config.versions)) {
-					config.versions[version] = true;
-					unknownVersions[version] = true;
+if (!config.dontCheckForUpdates) {
+	if (!('versions' in config)) {
+		config.versions = {};
+	}
+	npm.load(function () {
+		npm.commands.view(['canvace', 'versions'], true, function (error, data) {
+			var unknownVersions = {};
+			for (var key in data) {
+				for (var i in data[key].versions) {
+					var version = data[key].versions[i];
+					if (!(version in config.versions)) {
+						config.versions[version] = true;
+						unknownVersions[version] = true;
+					}
 				}
 			}
-		}
-		if (Object.keys(unknownVersions).length) {
-			fs.writeFile(__dirname + '/config.json', JSON.stringify(config));
-		}
-		// TODO compare versions and possibly set newXxxVersion flags
+			if (Object.keys(unknownVersions).length) {
+				fs.writeFile(__dirname + '/config.json', JSON.stringify(config));
+			}
+			// TODO compare versions and possibly set newXxxVersion flags
+		});
 	});
-});
+}
 
 var MultiSet = require('multiset');
 var ReadWriteLock = require('rwlock');
