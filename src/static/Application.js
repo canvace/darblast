@@ -293,23 +293,24 @@ Ext.Loader.setConfig({
 					items: {
 						xtype: 'form',
 						id: 'create-project-form',
-						layout: 'vbox',
+						layout: {
+							type: 'vbox',
+							align: 'stretch'
+						},
 						bbar: {
 							xtype: 'toolbar',
-							items: {
+							items: ['->', {
 								text: 'Create',
+								icon: '/resources/images/icons/accept.png',
 								handler: function () {
 									Ext.getCmp('create-project-form').submit({
 										url: '/',
-										params: {
-											// TODO matrix
-										},
 										success: function (projectId, stageId) {
 											loadStage(projectId, stageId);
 										}
 									});
 								}
-							}
+							}]
 						},
 						items: [{
 							xtype: 'textfield',
@@ -317,6 +318,10 @@ Ext.Loader.setConfig({
 							fieldLabel: 'Project path',
 							width: 400,
 							allowBlank: false
+						}, {
+							xtype: 'fieldset',
+							title: 'Projection matrix',
+							items: []
 						}]
 					}
 				}, {
