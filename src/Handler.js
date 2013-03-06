@@ -2,7 +2,6 @@ var Handler = (function () {
 	var fileLock = new FileLock();
 	return function (request, response) {
 		var thisObject = this;
-
 		var pendingLocks = new MultiSet();
 
 		function removePendingLocks() {
@@ -184,6 +183,25 @@ var Handler = (function () {
 				}
 			}(request.session.projectPath + path, callback));
 		};
+
+		this.realPath = (function () {
+			var cache = {};
+			return function (path, callback) {
+				fs.realPath(path, cache, function (error, path) {
+					if (error) {
+						removePendingLocks();
+						response.json(404, error.toString());
+					} else {
+						try {
+							callback.call(thisObject, path);
+						} catch (e) {
+							removePendingLocks();
+							response.json(404, e.toString());
+						}
+					}
+				});
+			};
+		}());
 
 		this.getJSON = function (path, callback) {
 			fs.readFile(request.session.projectPath + path, 'ascii', function (error, content) {
