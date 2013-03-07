@@ -28,6 +28,19 @@ app.post('/', function (request, response) {
 			}
 		});
 	}
+	function putJSON(path, data, callback) {
+		fs.writeFile(path, JSON.stringify(data), function (error) {
+			if (error) {
+				response.json(404, error.toString());
+			} else {
+				try {
+					callback();
+				} catch (e) {
+					response.json(404, e.toString());
+				}
+			}
+		});
+	}
 	function chain() {
 		var tasks = arguments;
 		var handler = this;
@@ -49,9 +62,32 @@ app.post('/', function (request, response) {
 					mkdir(basePath + '/' + projectName + path, callback);
 				};
 			});
-			tasks.push(function () {
+			tasks.push(function (callback) {
+				putJSON(basePath + '/' + projectName + '/info', {
+					matrix: [
+						[-48, 48, 0],
+						[24, 24, -48],
+						[1, 1, 1]
+					],
+					imageCounter: 0,
+					tileCounter: 0,
+					entityCounter: 0
+				}, callback);
+			}, function (callback) {
+				putJSON(basePath + '/' + projectName + '/stages/Stage 1', {
+					x0: 0,
+					y0: 0,
+					map: {},
+					marks: {},
+					instances: [],
+					properties: {}
+				}, callback);
+			}, function () {
 				request.session.projectPath = basePath + '/' + projectName;
-				response.json(getProjectId(request));
+				response.json({
+					projectId: getProjectId(request),
+					stageId: 'Stage 1'
+				});
 			});
 			chain.apply(this, tasks);
 		});

@@ -298,16 +298,6 @@ Ext.Loader.setConfig({
 							type: 'vbox',
 							align: 'stretch'
 						},
-						buttons: [{
-							text: 'Create',
-							handler: function () {
-								this.up('form').submit({
-									success: function (response) {
-										loadStage(response.projectId, response.stageId);
-									}
-								});
-							}
-						}],
 						items: [{
 							xtype: 'textfield',
 							name: 'path',
@@ -318,6 +308,21 @@ Ext.Loader.setConfig({
 							xtype: 'fieldset',
 							title: 'Projection matrix',
 							items: []
+						}],
+						buttons: [{
+							text: 'Create',
+							handler: function () {
+								var form = this.up('form').getForm();
+								if (form.isValid()) {
+									form.submit({
+										success: function (form, action) {
+											startDialog.close();
+											var response = action.result;
+											loadStage(response.projectId, response.stageId);
+										}
+									});
+								}
+							}
 						}]
 					}
 				}, {
@@ -327,10 +332,6 @@ Ext.Loader.setConfig({
 				}]
 			});
 			startDialog.show();
-
-			// FIXME remove
-			(function () {}(loadStage));
-
 		}
 	});
 }());
