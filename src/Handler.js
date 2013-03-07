@@ -184,10 +184,10 @@ var Handler = (function () {
 			}(request.session.projectPath + path, callback));
 		};
 
-		this.realPath = (function () {
+		this.realpath = (function () {
 			var cache = {};
 			return function (path, callback) {
-				fs.realPath(path, cache, function (error, path) {
+				fs.realpath(path, cache, function (error, path) {
 					if (error) {
 						removePendingLocks();
 						response.json(404, error.toString());

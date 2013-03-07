@@ -292,29 +292,25 @@ Ext.Loader.setConfig({
 					layout: 'fit',
 					items: {
 						xtype: 'form',
-						id: 'create-project-form',
+						url: '/',
+						method: 'POST',
 						layout: {
 							type: 'vbox',
 							align: 'stretch'
 						},
-						bbar: {
-							xtype: 'toolbar',
-							items: ['->', {
-								text: 'Create',
-								icon: '/resources/images/icons/accept.png',
-								handler: function () {
-									Ext.getCmp('create-project-form').submit({
-										url: '/',
-										success: function (projectId, stageId) {
-											loadStage(projectId, stageId);
-										}
-									});
-								}
-							}]
-						},
+						buttons: [{
+							text: 'Create',
+							handler: function () {
+								this.up('form').submit({
+									success: function (response) {
+										loadStage(response.projectId, response.stageId);
+									}
+								});
+							}
+						}],
 						items: [{
 							xtype: 'textfield',
-							name: 'projectPath',
+							name: 'path',
 							fieldLabel: 'Project path',
 							width: 400,
 							allowBlank: false
@@ -331,6 +327,10 @@ Ext.Loader.setConfig({
 				}]
 			});
 			startDialog.show();
+
+			// FIXME remove
+			(function () {}(loadStage));
+
 		}
 	});
 }());

@@ -1,8 +1,8 @@
 app.post('/', function (request, response) {
-	var realPath = (function () {
+	var realpath = (function () {
 		var cache = {};
 		return function (path, callback) {
-			fs.realPath(path, cache, function (error, path) {
+			fs.realpath(path, cache, function (error, path) {
 				if (error) {
 					response.json(404, error.toString());
 				} else {
@@ -39,11 +39,11 @@ app.post('/', function (request, response) {
 			}
 		}(0));
 	}
-	if ('path' in request.query) {
-		var projectPath = path.normalize(request.query.path);
+	if ('path' in request.body) {
+		var projectPath = path.normalize(request.body.path);
 		var basePath = path.dirname(projectPath);
 		var projectName = path.basename(projectPath);
-		realPath(basePath, function (basePath) {
+		realpath(basePath, function (basePath) {
 			var tasks = ['', '/images', '/tiles', '/entities', '/stages'].map(function (path) {
 				return function (callback) {
 					mkdir(basePath + '/' + projectName + path, callback);
