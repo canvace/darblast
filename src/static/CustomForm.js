@@ -1,8 +1,8 @@
 function CustomForm(config) {
 	config.errorReader = {
-		read: function (xhr) {
+		read: function () {
 			return {
-				success: xhr.status == 200,
+				success: true,
 				records: null
 			};
 		}

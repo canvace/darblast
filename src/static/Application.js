@@ -192,7 +192,7 @@ Ext.Loader.setConfig({
 												}
 											}],
 											success: function () {
-												// TODO
+												dialog.close();
 											}
 										})
 									}).show();

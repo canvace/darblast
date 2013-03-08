@@ -257,7 +257,7 @@ var Handler = (function () {
 		};
 
 		this.broadcast = function (key, method, parameters) {
-			io.of('/poll/' + getProjectId()).emit(key + '/' + method, parameters);
+			io.of('/poll/' + getProjectId(request)).emit(key + '/' + method, parameters);
 		};
 	};
 }());
