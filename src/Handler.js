@@ -20,11 +20,13 @@ var Handler = (function () {
 
 		function readLock(path, callback) {
 			fileLock.readLock(request.session.projectPath + path, function (release) {
+				console.log('acquired read lock on ' + path);
 				var remove = pendingLocks.add(release);
 				try {
 					callback.call(thisObject, function () {
 						remove();
 						release();
+						console.log('released read lock on ' + path);
 					});
 				} catch (e) {
 					removePendingLocks();

@@ -42,6 +42,7 @@
 						});
 					}, this);
 				} else {
+					releaseImages();
 					response.json({});
 				}
 			});

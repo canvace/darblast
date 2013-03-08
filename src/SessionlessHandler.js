@@ -73,6 +73,10 @@ function SessionlessHandler(request, response) {
 			}
 		});
 	};
+
+	this.getProjectId = function () {
+		return getProjectId(request);
+	};
 }
 
 function installSessionlessHandler(urls, method, handler) {

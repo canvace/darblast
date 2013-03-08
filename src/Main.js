@@ -43,7 +43,7 @@ installSessionlessHandler('/', 'post', function (request, response) {
 			}, function () {
 				request.session.projectPath = basePath + '/' + projectName + '/';
 				response.json({
-					projectId: getProjectId(request),
+					projectId: this.getProjectId(),
 					stageId: 'Stage 1'
 				});
 			});
@@ -64,7 +64,7 @@ installSessionlessHandler('/', 'put', function (request, response) {
 				}
 				this.readdir(request.session.projectPath + 'stages', function (stages) {
 					response.json({
-						projectId: getProjectId(request),
+						projectId: this.getProjectId(),
 						stageId: stages[0]
 					});
 				});
@@ -95,12 +95,15 @@ app.get('/install', function (request, response) {
 	});
 });
 
-app.get('/', function (request, response) {
+installSessionlessHandler('/', 'get', function (request, response) {
 	if ('projectPath' in request.session) {
-		response.render('main.handlebars', {
-			projectId: getProjectId(request),
-			newMinorVersion: newMinorVersion,
-			newMajorVersion: newMajorVersion
+		this.readdir(request.session.projectPath + 'stages', function (stages) {
+			response.render('main.handlebars', {
+				projectId: this.getProjectId(),
+				stageId: stages[0],
+				newMinorVersion: newMinorVersion,
+				newMajorVersion: newMajorVersion
+			});
 		});
 	} else {
 		response.render('main.handlebars', {
