@@ -298,6 +298,14 @@ Ext.Loader.setConfig({
 							type: 'vbox',
 							align: 'stretch'
 						},
+						errorReader: {
+							read: function (xhr) {
+								return {
+									success: xhr.status == 200,
+									records: null
+								};
+							}
+						},
 						items: [{
 							xtype: 'textfield',
 							name: 'path',
@@ -317,7 +325,12 @@ Ext.Loader.setConfig({
 									form.submit({
 										success: function (form, action) {
 											startDialog.close();
-											var response = action.result;
+											var response;
+											try {
+												response = JSON.parse(action.response.responseText);
+											} catch (e) {
+												response = action.response.response;
+											}
 											loadStage(response.projectId, response.stageId);
 										}
 									});

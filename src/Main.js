@@ -83,7 +83,7 @@ app.post('/', function (request, response) {
 					properties: {}
 				}, callback);
 			}, function () {
-				request.session.projectPath = basePath + '/' + projectName;
+				request.session.projectPath = basePath + '/' + projectName + '/';
 				response.json({
 					projectId: getProjectId(request),
 					stageId: 'Stage 1'
