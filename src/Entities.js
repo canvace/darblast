@@ -99,18 +99,18 @@ installHandler([
 	'/stages/:stageId/entities/:entityId/frames/'
 ], 'post', function (request, response) {
 	this.entities.individualWriteLock(request.params.entityId, function (releaseEntity) {
-		this.images.individualWriteLock(request.query.imageId, function (releaseImage) {
-			this.getJSON('images/' + request.query.imageId + '/info', function (image) {
+		this.images.individualWriteLock(request.body.imageId, function (releaseImage) {
+			this.getJSON('images/' + request.body.imageId + '/info', function (image) {
 				image.refCount++;
-				this.putJSON('images/' + request.query.imageId + '/info', image, function () {
+				this.putJSON('images/' + request.body.imageId + '/info', image, function () {
 					releaseImage();
 					this.getJSON('entities/' + request.params.entityId, function (entity) {
 						var id = entity.frameCounter++;
 						entity.frames[id] = {
-							id: request.query.imageId
+							id: request.body.imageId
 						};
-						if ('duration' in request.query) {
-							entity.frames[id].duration = parseInt(request.query.duration, 10);
+						if ('duration' in request.body) {
+							entity.frames[id].duration = parseInt(request.body.duration, 10);
 						}
 						this.putJSON('entities/' + request.params.entityId, entity, function () {
 							releaseEntity();
@@ -119,8 +119,8 @@ installHandler([
 								id: request.params.entityId,
 								frameId: id
 							};
-							if ('duration' in request.query) {
-								data.duration = request.query.duration;
+							if ('duration' in request.body) {
+								data.duration = request.body.duration;
 							}
 							this.broadcast('entities/frames', 'create', data);
 						});
@@ -151,15 +151,15 @@ installHandler([
 		this.getJSON('entities/' + request.params.entityId, function (entity) {
 			if (request.params.frameId in entity.frames) {
 				var duration;
-				if (request.query.duration !== false) {
-					duration = entity.frames[request.params.frameId].duration = parseInt(request.query.duration, 10);
+				if (request.body.duration !== false) {
+					duration = entity.frames[request.params.frameId].duration = parseInt(request.body.duration, 10);
 				} else {
 					delete entity.frames[request.params.frameId].duration;
 				}
 				this.putJSON('entities/' + request.params.entityId, entity, function () {
 					release();
 					response.json(true);
-					if (request.query.duration !== false) {
+					if (request.body.duration !== false) {
 						this.broadcast('entities/frames', 'update', {
 							id: request.params.entityId,
 							frameId: request.params.frameId,
@@ -231,12 +231,12 @@ installHandler([
 ], 'put', function (request, response) {
 	this.entities.individualWriteLock(request.params.entityId, function (release) {
 		this.getJSON('entities/' + request.params.entityId, function (entity) {
-			entity.properties[request.params.name] = request.query.value;
+			entity.properties[request.params.name] = request.body.value;
 			this.putJSON('entities/' + request.params.entityId, entity, function () {
 				this.broadcast('entities/properties', 'put', {
 					id: request.params.entityId,
 					name: request.params.name,
-					value: request.query.value
+					value: request.body.value
 				});
 				release();
 				response.json(true);

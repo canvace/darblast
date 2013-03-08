@@ -62,12 +62,12 @@ installHandler('/stages/:stageId', 'put', function (request, response) {
 			tiles[id] = true;
 		});
 		var map = {};
-		for (var k in request.query.map) {
+		for (var k in request.body.map) {
 			map[k] = {};
-			for (var i in request.query.map[k]) {
+			for (var i in request.body.map[k]) {
 				map[k][i] = {};
-				for (var j in request.query.map[k][i]) {
-					var id = parseInt(request.query.map[k][i][j], 10);
+				for (var j in request.body.map[k][i]) {
+					var id = parseInt(request.body.map[k][i][j], 10);
 					if (id in tiles) {
 						map[k][i][j] = id;
 					} else {
@@ -85,8 +85,8 @@ installHandler('/stages/:stageId', 'put', function (request, response) {
 			entities[id] = true;
 		});
 		var instances = [];
-		for (var i in request.query.instances) {
-			var instance = request.query.instances[i];
+		for (var i in request.body.instances) {
+			var instance = request.body.instances[i];
 			instance.id = parseInt(instance.id, 10);
 			if (instance.id in entities) {
 				instances.push({
@@ -115,8 +115,8 @@ installHandler('/stages/:stageId', 'put', function (request, response) {
 								this.getJSON('stages/' + request.params.stageId, function (stage) {
 									this.putJSON('stages/' + request.params.stageId, {
 										name: stage.name,
-										x0: request.query.x0 || stage.x0,
-										y0: request.query.y0 || stage.y0,
+										x0: request.body.x0 || stage.x0,
+										y0: request.body.y0 || stage.y0,
 										map: map,
 										instances: instances
 									}, function () {
@@ -175,12 +175,12 @@ installHandler('/stages/:stageId/properties/:name', 'get', function (request, re
 installHandler('/stages/:stageId/properties/:name', 'put', function (request, response) {
 	this.stages.individualWriteLock(request.params.stageId, function (release) {
 		this.getJSON('stages/' + request.params.stageId, function (stage) {
-			stage.properties[request.params.name] = request.query.value;
+			stage.properties[request.params.name] = request.body.value;
 			this.putJSON('stages/' + request.params.stageId, stage, function () {
 				this.broadcast('stages/properties', 'put', {
 					id: request.params.stageId,
 					name: request.params.name,
-					value: request.query.value
+					value: request.body.value
 				});
 				release();
 				response.json(true);

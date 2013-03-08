@@ -24,12 +24,12 @@ installHandler([
 						solid: false,
 						layout: {
 							ref: {
-								i: parseInt(request.query.layout.ref.i, 10),
-								j: parseInt(request.query.layout.ref.j, 10)
+								i: parseInt(request.body.layout.ref.i, 10),
+								j: parseInt(request.body.layout.ref.j, 10)
 							},
 							span: {
-								i: parseInt(request.query.layout.span.i, 10),
-								j: parseInt(request.query.layout.span.j, 10)
+								i: parseInt(request.body.layout.span.i, 10),
+								j: parseInt(request.body.layout.span.j, 10)
 							}
 						},
 						used: false,
@@ -109,18 +109,18 @@ installHandler([
 	'/stages/:stageId/tiles/:tileId/frames/'
 ], 'post', function (request, response) {
 	this.tiles.individualWriteLock(request.params.tileId, function (releaseTile) {
-		this.images.individualWriteLock(request.query.imageId, function (releaseImage) {
-			this.getJSON('images/' + request.query.imageId + '/info', function (image) {
+		this.images.individualWriteLock(request.body.imageId, function (releaseImage) {
+			this.getJSON('images/' + request.body.imageId + '/info', function (image) {
 				image.refCount++;
-				this.putJSON('images/' + request.query.imageId + '/info', image, function () {
+				this.putJSON('images/' + request.body.imageId + '/info', image, function () {
 					releaseImage();
 					this.getJSON('tiles/' + request.params.tileId, function (tile) {
 						var id = tile.frameCounter++;
 						tile.frames[id] = {
-							id: request.query.imageId
+							id: request.body.imageId
 						};
-						if ('duration' in request.query) {
-							tile.frames[id].duration = parseInt(request.query.duration, 10);
+						if ('duration' in request.body) {
+							tile.frames[id].duration = parseInt(request.body.duration, 10);
 						}
 						this.putJSON('tiles/' + request.params.tileId, tile, function () {
 							releaseTile();
@@ -129,8 +129,8 @@ installHandler([
 								id: request.params.tileId,
 								frameId: id
 							};
-							if ('duration' in request.query) {
-								data.duration = request.query.duration;
+							if ('duration' in request.body) {
+								data.duration = request.body.duration;
 							}
 							this.broadcast('tiles/frames', 'create', data);
 						});
@@ -161,15 +161,15 @@ installHandler([
 		this.getJSON('tiles/' + request.params.tileId, function (tile) {
 			if (request.params.frameId in tile.frames) {
 				var duration;
-				if (request.query.duration !== false) {
-					duration = tile.frames[request.params.frameId].duration = parseInt(request.query.duration, 10);
+				if (request.body.duration !== false) {
+					duration = tile.frames[request.params.frameId].duration = parseInt(request.body.duration, 10);
 				} else {
 					delete tile.frames[request.params.frameId].duration;
 				}
 				this.putJSON('tiles/' + request.params.tileId, tile, function () {
 					release();
 					response.json(true);
-					if (request.query.duration !== false) {
+					if (request.body.duration !== false) {
 						this.broadcast('tiles/frames', 'update', {
 							id: request.params.tileId,
 							frameId: request.params.frameId,
@@ -241,12 +241,12 @@ installHandler([
 ], 'put', function (request, response) {
 	this.tiles.individualWriteLock(request.params.tileId, function (release) {
 		this.getJSON('tiles/' + request.params.tileId, function (tile) {
-			tile.properties[request.params.name] = request.query.value;
+			tile.properties[request.params.name] = request.body.value;
 			this.putJSON('tiles/' + request.params.tileId, tile, function () {
 				this.broadcast('tiles/properties', 'put', {
 					id: request.params.tileId,
 					name: request.params.name,
-					value: request.query.value
+					value: request.body.value
 				});
 				release();
 				response.json(true);

@@ -67,7 +67,7 @@
 		'/stages/:stageId/images/'
 	], 'post', function (request, response) {
 		var labels;
-		if ('labels' in request.query) {
+		if ('labels' in request.body) {
 			try {
 				labels = sanitizeLabels(request.body.labels);
 			} catch (e) {
@@ -147,7 +147,7 @@
 	], 'put', function (request, response) {
 		this.images.individualWriteLock(request.params.imageId, function (release) {
 			this.getJSON('images/' + request.params.imageId + '/info', function (info) {
-				info.labels = sanitizeLabels(request.query.labels);
+				info.labels = sanitizeLabels(request.body.labels);
 				this.putJSON('images/' + request.params.imageId + '/info', info, function () {
 					this.broadcast('images', 'update', {
 						id: request.params.imageId,
