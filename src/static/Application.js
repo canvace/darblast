@@ -290,21 +290,13 @@ Ext.Loader.setConfig({
 				items: [{
 					title: 'Create new project',
 					layout: 'fit',
-					items: {
+					items: new CustomForm({
 						xtype: 'form',
 						url: '/',
 						method: 'POST',
 						layout: {
 							type: 'vbox',
 							align: 'stretch'
-						},
-						errorReader: {
-							read: function (xhr) {
-								return {
-									success: xhr.status == 200,
-									records: null
-								};
-							}
 						},
 						items: [{
 							xtype: 'textfield',
@@ -320,24 +312,20 @@ Ext.Loader.setConfig({
 						buttons: [{
 							text: 'Create',
 							handler: function () {
-								var form = this.up('form').getForm();
-								if (form.isValid()) {
-									form.submit({
-										success: function (form, action) {
-											startDialog.close();
-											var response;
-											try {
-												response = JSON.parse(action.response.responseText);
-											} catch (e) {
-												response = action.response.response;
-											}
-											loadStage(response.projectId, response.stageId);
-										}
-									});
+								var form = this.up('form');
+								if (form.getForm().isValid()) {
+									form.submit();
 								}
 							}
-						}]
-					}
+						}],
+						success: function (response) {
+							startDialog.close();
+							loadStage(response.projectId, response.stageId);
+						},
+						failure: function (response) {
+							Ext.MessageBox.alert('Error', response);
+						}
+					})
 				}, {
 					title: 'Load existing project'
 				}, {
