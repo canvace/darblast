@@ -48,6 +48,7 @@ module.exports = function (grunt) {
 			server: {
 				src: [
 					'src/Prologue.js',
+					'src/SessionlessHandler.js',
 					'src/Main.js',
 					'src/FileLock.js',
 					'src/Handler.js',

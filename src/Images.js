@@ -6,7 +6,7 @@
 		for (var i in labels) {
 			label = labels[i].toString().trim();
 			if (label !== '') {
-				if (/^[a-zA-Z_\-]+$/.test(label)) {
+				if (/^\w+$/.test(label)) {
 					set[label] = true;
 				} else {
 					throw 'One or more labels contain invalid characters';

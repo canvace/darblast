@@ -1,46 +1,4 @@
-app.post('/', function (request, response) {
-	var realpath = (function () {
-		var cache = {};
-		return function (path, callback) {
-			fs.realpath(path, cache, function (error, path) {
-				if (error) {
-					response.json(404, error.toString());
-				} else {
-					try {
-						callback(path);
-					} catch (e) {
-						response.json(404, e.toString());
-					}
-				}
-			});
-		};
-	}());
-	function mkdir(path, callback) {
-		fs.mkdir(path, function (error) {
-			if (error) {
-				response.json(404, error.toString());
-			} else {
-				try {
-					callback();
-				} catch (e) {
-					response.json(404, e.toString());
-				}
-			}
-		});
-	}
-	function putJSON(path, data, callback) {
-		fs.writeFile(path, JSON.stringify(data), function (error) {
-			if (error) {
-				response.json(404, error.toString());
-			} else {
-				try {
-					callback();
-				} catch (e) {
-					response.json(404, e.toString());
-				}
-			}
-		});
-	}
+installSessionlessHandler('/', 'post', function (request, response) {
 	function chain() {
 		var tasks = arguments;
 		var handler = this;
@@ -56,14 +14,14 @@ app.post('/', function (request, response) {
 		var projectPath = path.normalize(request.body.path);
 		var basePath = path.dirname(projectPath);
 		var projectName = path.basename(projectPath);
-		realpath(basePath, function (basePath) {
+		this.realpath(basePath, function (basePath) {
 			var tasks = ['', '/images', '/tiles', '/entities', '/stages'].map(function (path) {
 				return function (callback) {
-					mkdir(basePath + '/' + projectName + path, callback);
+					this.mkdir(basePath + '/' + projectName + path, callback);
 				};
 			});
 			tasks.push(function (callback) {
-				putJSON(basePath + '/' + projectName + '/info', {
+				this.putJSON(basePath + '/' + projectName + '/info', {
 					matrix: [
 						[-48, 48, 0],
 						[24, 24, -48],
@@ -74,7 +32,7 @@ app.post('/', function (request, response) {
 					entityCounter: 0
 				}, callback);
 			}, function (callback) {
-				putJSON(basePath + '/' + projectName + '/stages/Stage 1', {
+				this.putJSON(basePath + '/' + projectName + '/stages/Stage 1', {
 					x0: 0,
 					y0: 0,
 					map: {},
@@ -94,6 +52,27 @@ app.post('/', function (request, response) {
 	} else {
 		response.json(400, 'Missing project path');
 	}
+});
+
+installSessionlessHandler('/', 'put', function (request, response) {
+	this.realpath(path.normalize(request.body.path), function (path) {
+		this.stat(path, function (stat) {
+			if (stat.isDirectory()) {
+				request.session.projectPath = path;
+				if (!/[\\\/]$/.test(path)) {
+					request.session.projectPath += '/';
+				}
+				this.readdir(request.session.projectPath + 'stages', function (stages) {
+					response.json({
+						projectId: getProjectId(request),
+						stageId: stages[0]
+					});
+				});
+			} else {
+				response.json(404, 'Invalid path');
+			}
+		});
+	});
 });
 
 app.get('/update', function (request, response) {
