@@ -6,12 +6,12 @@ function SessionlessHandler(request, response) {
 		return function (path, callback) {
 			fs.realpath(path, cache, function (error, path) {
 				if (error) {
-					response.json(404, error.toString());
+					response.json(400, error.toString());
 				} else {
 					try {
 						callback.call(thisObject, path);
 					} catch (e) {
-						response.json(404, e.toString());
+						response.json(400, e.toString());
 					}
 				}
 			});
@@ -21,12 +21,12 @@ function SessionlessHandler(request, response) {
 	this.stat = function (path, callback) {
 		fs.stat(path, function (error, stat) {
 			if (error) {
-				response.json(404, error.toString());
+				response.json(400, error.toString());
 			} else {
 				try {
 					callback.call(thisObject, stat);
 				} catch (e) {
-					response.json(404, e.toString());
+					response.json(400, e.toString());
 				}
 			}
 		});
@@ -35,12 +35,12 @@ function SessionlessHandler(request, response) {
 	this.readdir = function (path, callback) {
 		fs.readdir(path, function (error, entries) {
 			if (error) {
-				response.json(404, error.toString());
+				response.json(400, error.toString());
 			} else {
 				try {
 					callback.call(thisObject, entries);
 				} catch (e) {
-					response.json(404, e.toString());
+					response.json(400, e.toString());
 				}
 			}
 		});
@@ -49,12 +49,12 @@ function SessionlessHandler(request, response) {
 	this.mkdir = function (path, callback) {
 		fs.mkdir(path, function (error) {
 			if (error) {
-				response.json(404, error.toString());
+				response.json(400, error.toString());
 			} else {
 				try {
 					callback.call(thisObject);
 				} catch (e) {
-					response.json(404, e.toString());
+					response.json(400, e.toString());
 				}
 			}
 		});
@@ -63,12 +63,12 @@ function SessionlessHandler(request, response) {
 	this.putJSON = function (path, data, callback) {
 		fs.writeFile(path, JSON.stringify(data), function (error) {
 			if (error) {
-				response.json(404, error.toString());
+				response.json(400, error.toString());
 			} else {
 				try {
 					callback.call(thisObject);
 				} catch (e) {
-					response.json(404, e.toString());
+					response.json(400, e.toString());
 				}
 			}
 		});
@@ -88,7 +88,7 @@ function installSessionlessHandler(urls, method, handler) {
 			try {
 				handler.call(new SessionlessHandler(request, response), request, response);
 			} catch (e) {
-				response.json(404, e.toString());
+				response.json(400, e.toString());
 			}
 		});
 	}

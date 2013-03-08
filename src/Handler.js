@@ -13,39 +13,45 @@ var Handler = (function () {
 
 		this.removePendingLocks = removePendingLocks;
 
-		this.error = function (error) {
+		function error(e) {
 			removePendingLocks();
-			response.json(404, error.toString());
-		};
+			response.json(400, e.toString());
+		}
+
+		this.error = error;
 
 		function readLock(path, callback) {
-			fileLock.readLock(request.session.projectPath + path, function (release) {
-				console.log('acquired read lock on ' + path);
-				var remove = pendingLocks.add(release);
-				try {
-					callback.call(thisObject, function () {
-						remove();
-						release();
-						console.log('released read lock on ' + path);
-					});
-				} catch (e) {
-					removePendingLocks();
-					response.json(404, e.toString());
+			fileLock.readLock(request.session.projectPath + path, function (e, release) {
+				if (e) {
+					error(e);
+				} else {
+					var remove = pendingLocks.add(release);
+					try {
+						callback.call(thisObject, function () {
+							remove();
+							release();
+						});
+					} catch (e) {
+						error(e);
+					}
 				}
 			});
 		}
 
 		function writeLock(path, callback) {
-			fileLock.writeLock(request.session.projectPath + path, function (release) {
-				var remove = pendingLocks.add(release);
-				try {
-					callback.call(thisObject, function () {
-						remove();
-						release();
-					});
-				} catch (e) {
-					removePendingLocks();
-					response.json(404, e.toString());
+			fileLock.writeLock(request.session.projectPath + path, function (e, release) {
+				if (e) {
+					error(e);
+				} else {
+					var remove = pendingLocks.add(release);
+					try {
+						callback.call(thisObject, function () {
+							remove();
+							release();
+						});
+					} catch (e) {
+						error(e);
+					}
 				}
 			});
 		}
@@ -74,64 +80,56 @@ var Handler = (function () {
 		this.entities = new SpecificLocks('entities');
 
 		this.readFile = function (path, callback) {
-			fs.readFile(request.session.projectPath + path, function (error, data) {
-				if (error) {
-					removePendingLocks();
-					response.json(404, error.toString());
+			fs.readFile(request.session.projectPath + path, function (e, data) {
+				if (e) {
+					error(e);
 				} else {
 					try {
 						callback.call(thisObject, data);
 					} catch (e) {
-						removePendingLocks();
-						response.json(404, e.toString());
+						error(e);
 					}
 				}
 			});
 		};
 
 		this.unlink = function (path, callback) {
-			fs.unlink(request.session.projectPath + path, function (error) {
-				if (error) {
-					removePendingLocks();
-					response.json(404, error.toString());
+			fs.unlink(request.session.projectPath + path, function (e) {
+				if (e) {
+					error(e);
 				} else {
 					try {
 						callback.call(thisObject);
 					} catch (e) {
-						removePendingLocks();
-						response.json(404, e.toString());
+						error(e);
 					}
 				}
 			});
 		};
 
 		this.mkdir = function (path, callback) {
-			fs.mkdir(request.session.projectPath + path, function (error) {
-				if (error) {
-					removePendingLocks();
-					response.json(404, error.toString());
+			fs.mkdir(request.session.projectPath + path, function (e) {
+				if (e) {
+					error(e);
 				} else {
 					try {
 						callback.call(thisObject);
 					} catch (e) {
-						removePendingLocks();
-						response.json(404, e.toString());
+						error(e);
 					}
 				}
 			});
 		};
 
 		this.readdir = function (path, callback) {
-			fs.readdir(request.session.projectPath + path, function (error, entries) {
-				if (error) {
-					removePendingLocks();
-					response.json(404, error.toString());
+			fs.readdir(request.session.projectPath + path, function (e, entries) {
+				if (e) {
+					error(e);
 				} else {
 					try {
 						callback.call(thisObject, entries);
 					} catch (e) {
-						removePendingLocks();
-						response.json(404, e.toString());
+						error(e);
 					}
 				}
 			});
@@ -141,25 +139,22 @@ var Handler = (function () {
 			(function remove(path, callback) {
 				var stat = fs.statSync(path);
 				if (stat.isDirectory()) {
-					fs.readdir(path, function (error, entries) {
-						if (error) {
-							removePendingLocks();
-							response.json(404, error.toString());
+					fs.readdir(path, function (e, entries) {
+						if (e) {
+							error(e);
 						} else {
 							var count = entries.length;
 							entries.forEach(function (entry) {
 								remove(path + '/' + entry, function () {
 									if (!--count) {
-										fs.rmdir(path, function (error) {
-											if (error) {
-												removePendingLocks();
-												response.json(404, error.toString());
+										fs.rmdir(path, function (e) {
+											if (e) {
+												error(e);
 											} else {
 												try {
 													callback.call(thisObject);
 												} catch (e) {
-													removePendingLocks();
-													response.json(404, e.toString());
+													error(e);
 												}
 											}
 										});
@@ -169,16 +164,14 @@ var Handler = (function () {
 						}
 					});
 				} else {
-					fs.unlink(path, function (error) {
-						if (error) {
-							removePendingLocks();
-							response.json(404, error.toString());
+					fs.unlink(path, function (e) {
+						if (e) {
+							error(e);
 						} else {
 							try {
 								callback.call(thisObject);
 							} catch (e) {
-								removePendingLocks();
-								response.json(404, e.toString());
+								error(e);
 							}
 						}
 					});
@@ -189,49 +182,71 @@ var Handler = (function () {
 		this.realpath = (function () {
 			var cache = {};
 			return function (path, callback) {
-				fs.realpath(path, cache, function (error, path) {
-					if (error) {
-						removePendingLocks();
-						response.json(404, error.toString());
+				fs.realpath(path, cache, function (e, path) {
+					if (e) {
+						error(e);
 					} else {
 						try {
 							callback.call(thisObject, path);
 						} catch (e) {
-							removePendingLocks();
-							response.json(404, e.toString());
+							error(e);
 						}
 					}
 				});
 			};
 		}());
 
+		this.readFile = function (path, callback) {
+			fs.readFile(request.session.projectPath + path, 'ascii', function (e, content) {
+				if (e) {
+					error(e);
+				} else {
+					try {
+						callback.call(thisObject, content);
+					} catch (e) {
+						error(e);
+					}
+				}
+			});
+		};
+
+		this.writeFile = function (path, data, callback) {
+			fs.writeFile(request.session.projectPath + path, data, function (e) {
+				if (e) {
+					error(e);
+				} else {
+					try {
+						callback.call(thisObject);
+					} catch (e) {
+						error(e);
+					}
+				}
+			});
+		};
+
 		this.getJSON = function (path, callback) {
-			fs.readFile(request.session.projectPath + path, 'ascii', function (error, content) {
-				if (error) {
-					removePendingLocks();
-					response.json(404, error.toString());
+			fs.readFile(request.session.projectPath + path, 'ascii', function (e, content) {
+				if (e) {
+					error(e);
 				} else {
 					try {
 						callback.call(thisObject, JSON.parse(content));
 					} catch (e) {
-						removePendingLocks();
-						response.json(404, e.toString());
+						error(e);
 					}
 				}
 			});
 		};
 
 		this.putJSON = function (path, data, callback) {
-			fs.writeFile(request.session.projectPath + path, JSON.stringify(data), function (error) {
-				if (error) {
-					removePendingLocks();
-					response.json(404, error.toString());
+			fs.writeFile(request.session.projectPath + path, JSON.stringify(data), function (e) {
+				if (e) {
+					error(e);
 				} else {
 					try {
 						callback.call(thisObject);
 					} catch (e) {
-						removePendingLocks();
-						response.json(404, e.toString());
+						error(e);
 					}
 				}
 			});

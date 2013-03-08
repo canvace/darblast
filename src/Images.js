@@ -91,11 +91,12 @@
 							type: file.type,
 							labels: labels
 						}, function () {
+							var handler = this;
 							fs.readFile(file.path, function (error, data) {
 								if (error) {
-									this.error();
+									handler.error();
 								} else {
-									this.writeFile('images/' + id + '/data', data, function () {
+									handler.writeFile('images/' + id + '/data', data, function () {
 										this.broadcast('images', 'create', {
 											id: id,
 											labels: labels

@@ -9,14 +9,26 @@ function FileLock() {
 	var lock = new ReadWriteLock();
 
 	this.readLock = function (path, callback) {
-		normalize(path, function (path) {
-			lock.readLock(path, callback);
+		normalize(path, function (error, path) {
+			if (error) {
+				callback(error);
+			} else {
+				lock.readLock(path, function (release) {
+					callback(false, release);
+				});
+			}
 		});
 	};
 
 	this.writeLock = function (path, callback) {
-		normalize(path, function (path) {
-			lock.writeLock(path, callback);
+		normalize(path, function (error, path) {
+			if (error) {
+				callback(error);
+			} else {
+				lock.writeLock(path, function (release) {
+					callback(false, release);
+				});
+			}
 		});
 	};
 }
