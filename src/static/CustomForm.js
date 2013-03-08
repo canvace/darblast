@@ -7,41 +7,46 @@ function CustomForm(config) {
 			};
 		}
 	};
-	var success = config.success;
+
+	function makeCallback(original) {
+		if (original) {
+			return function (form, action) {
+				var response;
+				try {
+					response = JSON.parse(action.response.responseText);
+				} catch (e) {
+					response = action.response.response;
+				}
+				original.call(form, response);
+			};
+		} else {
+			return null;
+		}
+	}
+
+	var success = makeCallback(config.success);
 	delete config.success;
-	var failure = config.failure;
+
+	var failure = makeCallback(config.failure || function (response) {
+		Ext.MessageBox.alert('Error', response.toString());
+	});
 	delete config.failure;
+
 	var form = Ext.create('Ext.form.Panel', config);
-	if (success || failure) {
-		var superSubmit = form.submit;
-		form.submit = function (options) {
+
+	var superSubmit = form.submit;
+	form.submit = function (options) {
+		if (form.getForm().isValid()) {
 			if (!options) {
 				options = {};
 			}
 			if (success) {
-				options.success = function (form, action) {
-					var response;
-					try {
-						response = JSON.parse(action.response.responseText);
-					} catch (e) {
-						response = action.response.response;
-					}
-					success.call(form, response);
-				};
+				options.success = success;
 			}
-			if (failure) {
-				options.failure = function (form, action) {
-					var response;
-					try {
-						response = JSON.parse(action.response.responseText);
-					} catch (e) {
-						response = action.response.response;
-					}
-					failure.call(form, response);
-				};
-			}
+			options.failure = failure;
 			return superSubmit.call(form, options);
-		};
-	}
+		}
+	};
+
 	return form;
 }

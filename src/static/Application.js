@@ -158,36 +158,35 @@ Ext.Loader.setConfig({
 									icon: '/resources/images/icons/add.png',
 									tooltip: 'Load images...',
 									handler: function () {
-										var form = Ext.create('Ext.form.Panel', {
-											url: 'images/',
-											items: []
-										});
 										var dialog = Ext.create('Ext.window.Window', {
 											title: 'Load new images',
 											modal: true,
 											resizable: false,
 											draggable: false,
 											layout: 'fit',
-											bbar: {
-												xtype: 'toolbar',
+											items: new CustomForm({
+												url: 'images/',
+												method: 'POST',
 												layout: {
-													type: 'hbox',
-													pack: 'center'
+													type: 'vbox',
+													flex: 'stretch'
 												},
-												items: [{
-													text: 'OK',
+												items: [],
+												buttons: [{
+													text: 'Load',
 													handler: function () {
-														form.submit();
-														dialog.close();
+														this.up('form').submit();
 													}
 												}, {
 													text: 'Cancel',
 													handler: function () {
 														dialog.close();
 													}
-												}]
-											},
-											items: form
+												}],
+												success: function () {
+													// TODO
+												}
+											})
 										}).show();
 									}
 								}, {
@@ -312,18 +311,12 @@ Ext.Loader.setConfig({
 						buttons: [{
 							text: 'Create',
 							handler: function () {
-								var form = this.up('form');
-								if (form.getForm().isValid()) {
-									form.submit();
-								}
+								this.up('form').submit();
 							}
 						}],
 						success: function (response) {
 							startDialog.close();
 							loadStage(response.projectId, response.stageId);
-						},
-						failure: function (response) {
-							Ext.MessageBox.alert('Error', response);
 						}
 					})
 				}, {
