@@ -135,6 +135,7 @@ Ext.Loader.setConfig({
 					}
 				}, {
 					xtype: 'tabpanel',
+					id: 'lower-panel',
 					region: 'south',
 					weight: -2,
 					collapsible: true,
@@ -142,89 +143,7 @@ Ext.Loader.setConfig({
 					split: true,
 					title: 'Images and Elements',
 					header: false,
-					height: 200,
-					items: [{
-						title: 'Images',
-						layout: 'border',
-						items: [{
-							xtype: 'treepanel',
-							region: 'west',
-							split: true,
-							width: 250,
-							tbar: [{
-								icon: '/resources/images/icons/add.png',
-								tooltip: 'Load images...',
-								handler: function () {
-									var dialog = Ext.create('Ext.window.Window', {
-										title: 'Load new images',
-										modal: true,
-										resizable: false,
-										draggable: false,
-										layout: 'fit',
-										items: new CustomForm({
-											url: 'images/',
-											method: 'POST',
-											layout: {
-												type: 'vbox',
-												flex: 'stretch'
-											},
-											items: [{
-												xtype: 'filefield',
-												name: 'images',
-												fieldLabel: 'Image file(s)',
-												allowBlank: false
-											}, {
-												xtype: 'textfield',
-												name: 'labels',
-												fieldLabel: 'Categories',
-												regex: /^\w*(\s*,\s*\w*)*$/,
-												invalidText: 'Invalid category list: categories must include only alphanumeric characters and be separated by commas.'
-											}],
-											buttons: [{
-												text: 'Load',
-												handler: function () {
-													this.up('form').submit();
-												}
-											}, {
-												text: 'Cancel',
-												handler: function () {
-													dialog.close();
-												}
-											}],
-											success: function () {
-												dialog.close();
-											}
-										})
-									}).show();
-								}
-							}, {
-								icon: '/resources/images/icons/picture_add.png',
-								tooltip: 'Load image sheet...'
-							}, {
-								icon: '/resources/images/icons/pencil.png',
-								tooltip: 'Edit selected image...'
-							}, {
-								icon: '/resources/images/icons/folder_edit.png',
-								tooltip: 'Edit selected category...'
-							}, {
-								icon: '/resources/images/icons/delete.png',
-								tooltip: 'Delete selected images...'
-							}, {
-								icon: '/resources/images/icons/folder_delete.png',
-								tooltip: 'Delete selected category...'
-							}],
-							root: {
-								text: 'Categories',
-								expanded: true
-							}
-						}, {
-							region: 'center'
-						}]
-					}, {
-						title: 'Tiles'
-					}, {
-						title: 'Entities'
-					}]
+					height: 200
 				}]
 			}
 		});

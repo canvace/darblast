@@ -115,7 +115,7 @@ function Images(ready) {
 	};
 
 	this.onCreate = function (handler) {
-		return createHandlers.regsterHandler(0, handler);
+		return createHandlers.registerHandler(0, handler);
 	};
 
 	this.get = function (id) {
