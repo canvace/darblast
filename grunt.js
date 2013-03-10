@@ -3,6 +3,7 @@ module.exports = function (grunt) {
 		concat: {
 			client: {
 				src: [
+					'src/static/Normalize.js',
 					'src/static/MultiSet.js',
 					'src/static/EventHandlers.js',
 					'src/static/Hierarchy.js',

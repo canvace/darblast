@@ -21,6 +21,7 @@ function ImageControls() {
 		]
 	});
 	var store = view.getStore();
+	var selection = view.getSelectionModel();
 
 	Ext.getCmp('lower-panel').add(Ext.create('Ext.panel.Panel', {
 		title: 'Images',
@@ -87,7 +88,45 @@ function ImageControls() {
 				tooltip: 'Edit selected category...'
 			}, {
 				icon: '/resources/images/icons/delete.png',
-				tooltip: 'Delete selected images...'
+				tooltip: 'Delete selected images...',
+				handler: function () {
+					var models = selection.getSelection();
+					var imageConfig = [];
+					if (models.length > 3) {
+						// TODO
+					} else {
+						// TODO
+					}
+					var confirmationDialog = Ext.create('Ext.window.Window', {
+						title: 'Confirm image deletion',
+						modal: true,
+						resizable: false,
+						layout: 'vbox',
+						items: [{
+							xtype: 'header',
+							title: 'Do you actually want to delete the ' + models.length + ' selected images?'
+						}, {
+							xtype: 'container',
+							layout: 'hbox',
+							items: imageConfig
+						}],
+						fbar: [{
+							text: 'Delete',
+							handler: function () {
+								for (var i in models) {
+									Canvace.images.get(models[i].get('id'))._delete();
+								}
+								confirmationDialog.close();
+							}
+						}, {
+							text: 'Cancel',
+							handler: function () {
+								confirmationDialog.close();
+							}
+						}]
+					});
+					confirmationDialog.show();
+				}
 			}, {
 				icon: '/resources/images/icons/folder_delete.png',
 				tooltip: 'Delete selected category...'
@@ -116,4 +155,17 @@ function ImageControls() {
 			store.remove(model);
 		});
 	});
+
+	this.getSelectedId = function () {
+		return selection.getLastSelected().get('id');
+	};
+
+	this.getSelectedIds = function () {
+		var models = selection.getSelectedModels();
+		var ids = [];
+		for (var i in models) {
+			ids.push(models[i].get('id'));
+		}
+		return ids;
+	};
 }
