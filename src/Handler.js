@@ -79,20 +79,6 @@ var Handler = (function () {
 		this.tiles = new SpecificLocks('tiles');
 		this.entities = new SpecificLocks('entities');
 
-		this.readFile = function (path, callback) {
-			fs.readFile(request.session.projectPath + path, function (e, data) {
-				if (e) {
-					error(e);
-				} else {
-					try {
-						callback.call(thisObject, data);
-					} catch (e) {
-						error(e);
-					}
-				}
-			});
-		};
-
 		this.unlink = function (path, callback) {
 			fs.unlink(request.session.projectPath + path, function (e) {
 				if (e) {
@@ -197,7 +183,7 @@ var Handler = (function () {
 		}());
 
 		this.readFile = function (path, callback) {
-			fs.readFile(request.session.projectPath + path, 'ascii', function (e, content) {
+			fs.readFile(request.session.projectPath + path, function (e, content) {
 				if (e) {
 					error(e);
 				} else {
