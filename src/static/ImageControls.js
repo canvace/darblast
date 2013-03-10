@@ -1,6 +1,8 @@
 function ImageControls() {
 	var view = Ext.create('Ext.view.View', {
+		id: 'images-view',
 		region: 'center',
+		store: [],
 		tpl: [
 			'<tpl for=".">',
 			'	<div class="thumb-wrap" id="{id}">',
