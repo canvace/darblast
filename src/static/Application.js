@@ -259,7 +259,7 @@ Ext.Loader.setConfig({
 						items: [{
 							xtype: 'textfield',
 							name: 'path',
-							fieldLabel: 'ProjectPath',
+							fieldLabel: 'Project path',
 							width: 400,
 							allowBlank: false
 						}],

@@ -3,7 +3,7 @@
 	font: 11px Arial, Helvetica, sans-serif;
 }
 #images-view .thumb {
-	background: #dddddd;
+	background: #DDDDDD;
 	padding: 3px;
 	padding-bottom: 0;
 }
@@ -30,14 +30,14 @@
 }
 
 #images-view .x-item-over {
-	border: 1px solid #dddddd;
-	background: #efefef url('over.gif') repeat-x left top;
+	border: 1px solid #DDDDDD;
+	background: #EFEFEF url('over.gif') repeat-x left top;
 	padding: 4px;
 }
 
 #images-view .x-item-selected {
-	background: #eff5fb url('selected.gif') no-repeat right bottom;
-	border: 1px solid #99bbe8;
+	background: #EFF5FB url('selected.gif') no-repeat right bottom;
+	border: 1px solid #99BBE8;
 	padding: 4px;
 }
 #images-view .x-item-selected .thumb {
@@ -63,8 +63,8 @@
 	-moz-opacity: 0.5;
 	filter: alpha(opacity=50);
 	zoom: 1;
-	background-color: #c3daf9;
-	border-color: #3399bb;
+	background-color: #C3DAF9;
+	border-color: #3399BB;
 }
 .ext-strict .ext-ie .x-tree .x-panel-bwrap {
 	position: relative;

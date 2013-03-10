@@ -12,13 +12,15 @@ function ImageControls() {
 		multiSelect: true,
 		trackOver: true,
 		overItemCls: 'x-item-over',
+		itemSelector: 'div.thumb-wrap',
 		emptyText: 'No images',
 		plugins: [
 			Ext.create('Ext.ux.DataView.DragSelector', {})
 		]
 	});
+	var store = view.getStore();
 
-	Ext.getCmp('lower-panel').add(Ext.create('Ext.container.Container', {
+	Ext.getCmp('lower-panel').add(Ext.create('Ext.panel.Panel', {
 		title: 'Images',
 		layout: 'border',
 		items: [{
@@ -96,14 +98,20 @@ function ImageControls() {
 	}));
 
 	Canvace.images.forEach(function (image) {
-		view.getStore().add({
+		var model = store.add({
 			id: image.getId()
+		});
+		image.onDelete(function () {
+			store.remove(model);
 		});
 	});
 
 	Canvace.images.onCreate(function (id) {
-		view.getStore().add({
+		var model = store.add({
 			id: id
+		});
+		Canvace.images.get(id).onDelete(function () {
+			store.remove(model);
 		});
 	});
 }

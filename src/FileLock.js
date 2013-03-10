@@ -1,7 +1,7 @@
 function FileLock() {
 	var normalize = (function () {
 		var cache = {};
-		return function normalize(pathToNormalize, callback) {
+		return function (pathToNormalize, callback) {
 			return fs.realpath(path.normalize(pathToNormalize), cache, callback);
 		};
 	}());
