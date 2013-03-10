@@ -99,8 +99,8 @@ installSessionlessHandler('/', 'get', function (request, response) {
 	if ('projectPath' in request.session) {
 		this.readdir(request.session.projectPath + 'stages', function (stages) {
 			response.render('main.handlebars', {
-				projectId: this.getProjectId(),
-				stageId: stages[0],
+				projectId: JSON.stringify(this.getProjectId()),
+				stageId: JSON.stringify(stages[0]),
 				newMinorVersion: newMinorVersion,
 				newMajorVersion: newMajorVersion
 			});

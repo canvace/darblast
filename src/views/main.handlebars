@@ -13,5 +13,18 @@
 		<script type="text/javascript" src="/app.js"></script>
 	</head>
 	<body>
+		<script type="text/javascript">
+Ext.application({
+	name: 'Canvace Development Environment',
+	launch: function () {
+		window.initGUI();
+{{#if projectId }}
+		window.loadStage({{{projectId}}}, {{{stageId}}});
+{{else}}
+		window.showStartScreen();
+{{/if}}
+	}
+});
+		</script>
 	</body>
 </html>

@@ -9,7 +9,7 @@ Ext.Loader.setConfig({
 	var width = screen.availWidth;
 	var height = screen.availHeight;
 
-	function initGUI() {
+	window.initGUI = function () {
 		Ext.create('Ext.container.Viewport', {
 			layout: 'fit',
 			items: {
@@ -154,9 +154,9 @@ Ext.Loader.setConfig({
 		}).setStyle({
 			backgroundColor: 'white'
 		});
-	}
+	};
 
-	function loadStage(projectId, id) {
+	window.loadStage = function (projectId, id) {
 		Canvace.poller = new Poller(projectId);
 		var loader = new Loader(function () {
 			var stage;
@@ -200,87 +200,83 @@ Ext.Loader.setConfig({
 			Canvace.entities = new Entities(callback);
 		});
 		loader.allQueued();
-	}
+	};
 
-	Ext.application({
-		name: 'Canvace Development Environment',
-		launch: function () {
-			initGUI();
-			var startDialog = Ext.create('Ext.window.Window', {
-				title: 'Canvace Development Environment',
-				modal: true,
-				closable: false,
-				resizable: false,
-				layout: 'accordion',
-				items: [{
-					title: 'Create new project',
-					layout: 'fit',
-					items: new CustomForm({
-						xtype: 'form',
-						url: '/',
-						method: 'POST',
-						layout: {
-							type: 'vbox',
-							align: 'stretch'
-						},
-						items: [{
-							xtype: 'textfield',
-							name: 'path',
-							fieldLabel: 'Project path',
-							width: 400,
-							allowBlank: false
-						}, {
-							xtype: 'fieldset',
-							title: 'Projection matrix',
-							items: []
-						}],
-						buttons: [{
-							text: 'Create',
-							handler: function () {
-								this.up('form').submit();
-							}
-						}],
-						success: function (response) {
-							startDialog.close();
-							loadStage(response.projectId, response.stageId);
+	window.showStartScreen = function () {
+		var startDialog = Ext.create('Ext.window.Window', {
+			title: 'Canvace Development Environment',
+			modal: true,
+			closable: false,
+			resizable: false,
+			layout: 'accordion',
+			items: [{
+				title: 'Create new project',
+				layout: 'fit',
+				items: new CustomForm({
+					xtype: 'form',
+					url: '/',
+					method: 'POST',
+					layout: {
+						type: 'vbox',
+						align: 'stretch'
+					},
+					items: [{
+						xtype: 'textfield',
+						name: 'path',
+						fieldLabel: 'Project path',
+						width: 400,
+						allowBlank: false
+					}, {
+						xtype: 'fieldset',
+						title: 'Projection matrix',
+						items: []
+					}],
+					buttons: [{
+						text: 'Create',
+						handler: function () {
+							this.up('form').submit();
 						}
-					})
-				}, {
-					title: 'Load existing project',
-					layout: 'fit',
-					items: new CustomForm({
-						xtype: 'form',
-						url: '/',
-						method: 'PUT',
-						layout: {
-							type: 'vbox',
-							align: 'stretch'
-						},
-						items: [{
-							xtype: 'textfield',
-							name: 'path',
-							fieldLabel: 'Project path',
-							width: 400,
-							allowBlank: false
-						}],
-						buttons: [{
-							text: 'Load',
-							handler: function () {
-								this.up('form').submit();
-							}
-						}],
-						success: function (response) {
-							startDialog.close();
-							loadStage(response.projectId, response.stageId);
+					}],
+					success: function (response) {
+						startDialog.close();
+						window.loadStage(response.projectId, response.stageId);
+					}
+				})
+			}, {
+				title: 'Load existing project',
+				layout: 'fit',
+				items: new CustomForm({
+					xtype: 'form',
+					url: '/',
+					method: 'PUT',
+					layout: {
+						type: 'vbox',
+						align: 'stretch'
+					},
+					items: [{
+						xtype: 'textfield',
+						name: 'path',
+						fieldLabel: 'Project path',
+						width: 400,
+						allowBlank: false
+					}],
+					buttons: [{
+						text: 'Load',
+						handler: function () {
+							this.up('form').submit();
 						}
-					})
-				}, {
-					title: 'Import project',
-					layout: 'fit',
-					items: new CustomForm({})
-				}]
-			});
-			startDialog.show();
-		}
-	});
+					}],
+					success: function (response) {
+						startDialog.close();
+						window.loadStage(response.projectId, response.stageId);
+					}
+				})
+			}, {
+				title: 'Import project',
+				layout: 'fit',
+				items: new CustomForm({})
+			}]
+		});
+		startDialog.show();
+	};
 }());
