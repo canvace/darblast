@@ -12,8 +12,16 @@ var Canvace = (function () {
 	(function () {
 		function bindAjax(method) {
 			return function (url, data, callback) {
-				if (arguments.length < 3) {
-					callback = data;
+				var hasData;
+				if (arguments.length < 2) {
+					hasData = false;
+				} else if (arguments.length < 3) {
+					if (typeof data !== 'function') {
+						hasData = true;
+					} else {
+						callback = data;
+						hasData = false;
+					}
 				}
 				var settings = {
 					url: url,
@@ -22,8 +30,12 @@ var Canvace = (function () {
 						callback && callback(JSON.parse(response.responseText));
 					}
 				};
-				if (arguments.length > 2) {
-					settings.params = data;
+				if (hasData) {
+					if (method !== 'GET') {
+						settings.jsonData = data;
+					} else {
+						settings.params = data;
+					}
 				}
 				Ext.Ajax.request(settings);
 			};
