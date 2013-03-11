@@ -167,7 +167,9 @@ function Elements(type, Element, ready) {
 			return element.properties[name];
 		};
 		this.putProperty = function (name, value) {
-			Canvace.Ajax.put(type + '/' + id + '/properties/' + name, value);
+			Canvace.Ajax.put(type + '/' + id + '/properties/' + name, {
+				value: value
+			});
 		};
 		this.deleteProperty = function (name) {
 			Canvace.Ajax._delete(type + '/' + id + '/properties/' + name);

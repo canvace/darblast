@@ -82,7 +82,43 @@ function ImageControls() {
 				tooltip: 'Load image sheet...'
 			}, {
 				icon: '/resources/images/icons/pencil.png',
-				tooltip: 'Edit selected image...'
+				tooltip: 'Edit selected image...',
+				handler: function () {
+					var model = selection.getLastSelected();
+					if (model) {
+						var id = model.get('id');
+						var image = Canvace.images.get(id);
+						var dialog = Ext.create('Ext.window.Window', {
+							title: 'Edit image',
+							modal: true,
+							resizable: false,
+							layout: 'vbox',
+							items: [{
+								xtype: 'image',
+								src: 'images/' + id,
+								shrinkWrap: false
+							}, {
+								xtype: 'textfield',
+								id: 'image-labels',
+								value: image.getLabels().join(', '),
+								fieldlabel: 'Labels'
+							}],
+							fbar: [{
+								text: 'OK',
+								handler: function () {
+									Canvace.images.get(id).setLabels(Ext.getCmp('image-labels').getValue());
+									dialog.close();
+								}
+							}, {
+								text: 'Cancel',
+								handler: function () {
+									dialog.close();
+								}
+							}]
+						});
+						dialog.show();
+					}
+				}
 			}, {
 				icon: '/resources/images/icons/folder_edit.png',
 				tooltip: 'Edit selected category...'

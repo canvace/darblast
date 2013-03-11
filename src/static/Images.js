@@ -61,10 +61,12 @@ function Images(ready) {
 			return image;
 		};
 		this.getLabels = function () {
-			return Ext.Object.merge({}, labels[id]);
+			return Ext.Object.merge([], labels[id]);
 		};
 		this.setLabels = function (labels) {
-			Canvace.Ajax.put('images/' + id + '/labels', labels);
+			Canvace.Ajax.put('images/' + id, {
+				labels: labels
+			});
 		};
 
 		this._delete = function () {

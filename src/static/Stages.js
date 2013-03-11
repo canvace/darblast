@@ -56,7 +56,9 @@ function Stages(ready) {
 			return properties[name];
 		};
 		this.putProperty = function (name, value) {
-			Canvace.Ajax.put('stages/' + id + '/properties/' + name, value);
+			Canvace.Ajax.put('stages/' + id + '/properties/' + name, {
+				value: value
+			});
 		};
 		this.deleteProperty = function (name) {
 			Canvace.Ajax._delete('stages/' + id + '/properties/' + name);
