@@ -91,41 +91,21 @@ function ImageControls() {
 				tooltip: 'Delete selected images...',
 				handler: function () {
 					var models = selection.getSelection();
-					var imageConfig = [];
-					if (models.length > 3) {
-						// TODO
-					} else {
-						// TODO
-					}
-					var confirmationDialog = Ext.create('Ext.window.Window', {
-						title: 'Confirm image deletion',
-						modal: true,
-						resizable: false,
-						layout: 'vbox',
-						items: [{
-							xtype: 'header',
-							title: 'Do you actually want to delete the ' + models.length + ' selected images?'
-						}, {
-							xtype: 'container',
-							layout: 'hbox',
-							items: imageConfig
-						}],
-						fbar: [{
-							text: 'Delete',
-							handler: function () {
-								for (var i in models) {
-									Canvace.images.get(models[i].get('id'))._delete();
+					if (models.length) {
+						Ext.MessageBox.show({
+							title: 'Confirm deletion',
+							msg: 'Do you actually want to delete the ' + models.length + ' selected image(s)?',
+							buttons: Ext.MessageBox.OKCANCEL,
+							icon: Ext.MessageBox.WARNING,
+							fn: function (button) {
+								if (button === 'ok') {
+									models.forEach(function (model) {
+										Canvace.images.get(model.get('id'))._delete();
+									});
 								}
-								confirmationDialog.close();
 							}
-						}, {
-							text: 'Cancel',
-							handler: function () {
-								confirmationDialog.close();
-							}
-						}]
-					});
-					confirmationDialog.show();
+						});
+					}
 				}
 			}, {
 				icon: '/resources/images/icons/folder_delete.png',
@@ -156,16 +136,19 @@ function ImageControls() {
 		});
 	});
 
+	this.hasSelection = function () {
+		return selection.hasSelection();
+	};
+
 	this.getSelectedId = function () {
-		return selection.getLastSelected().get('id');
+		if (selection.hasSelection()) {
+			return selection.getLastSelected().get('id');
+		}
 	};
 
 	this.getSelectedIds = function () {
-		var models = selection.getSelectedModels();
-		var ids = [];
-		for (var i in models) {
-			ids.push(models[i].get('id'));
-		}
-		return ids;
+		return selection.getSelection().map(function (model) {
+			return model.get('id');
+		});
 	};
 }
