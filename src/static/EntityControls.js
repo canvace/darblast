@@ -3,6 +3,10 @@ function EntityControls() {
 
 	controls.onAddElement(Canvace.entities.create);
 
+	controls.onLoadSheet(function () {
+		// TODO
+	});
+
 	controls.onActivateElement(function (id) {
 		var entity = Canvace.entities.get(id);
 		var dialog = Ext.create('Ext.window.Window', {
@@ -40,18 +44,28 @@ function EntityControls() {
 					}
 				}]
 			}],
-			buttons: {
+			buttons: [{
 				text: 'OK',
 				handler: function () {
 					dialog.close();
 				}
-			}
+			}]
 		}).show();
 	});
 
 	controls.onDeleteElement(function (ids) {
-		ids.forEach(function (id) {
-			Canvace.entities.get(id)._delete();
+		Ext.MessageBox.show({
+			title: 'Confirm entity deletion',
+			msg: 'Do you actually want to delete the ' + ids.length + ' selected entities?',
+			buttons: Ext.MessageBox.YESNO,
+			icon: Ext.MessageBox.WARNING,
+			fn: function (button) {
+				if (button === 'yes') {
+					ids.forEach(function (id) {
+						Canvace.entities.get(id)._delete();
+					});
+				}
+			}
 		});
 	});
 

@@ -12,9 +12,9 @@ var LowerControls = (function () {
 		}
 
 		this.onAddElement = bindOn('element/add');
+		this.onLoadSheet = bindOn('sheet/load');
 		this.onActivateElement = bindOn('element/activate');
 		this.onDeleteElement = bindOn('element/delete');
-		this.onLoadSheet = bindOn('sheet/load');
 		this.onDeleteCategory = bindOn('category/delete');
 
 		var view = Ext.create('Ext.view.View', {

@@ -28,7 +28,7 @@ function TileControls() {
 			buttons: [{
 				text: 'OK',
 				handler: function () {
-					Canvace.tiles.create(/* ... */);
+					// TODO Canvace.tiles.create(...);
 					dialog.close();
 				}
 			}, {
@@ -39,6 +39,60 @@ function TileControls() {
 			}]
 		}).show();
 	};
+
+	controls.onActivateElement(function (id) {
+		var tile = Canvace.tiles.get(id);
+		var dialog = Ext.create('Ext.window.Window', {
+			title: 'Tile configuration',
+			modal: true,
+			resizable: false,
+			layout: 'fit',
+			items: {
+				xtype: 'tabpanel',
+				items: [{
+					xtype: 'form',
+					title: 'General',
+					items: [{
+						xtype: 'checkbox',
+						fieldLabel: 'Solid',
+						checked: tile.isSolid()
+					}, {
+						xtype: 'checkbox',
+						fieldLabel: 'Static',
+						checked: tile.isStatic()
+					}]
+				}, {
+					title: 'Frames'
+				}, {
+					title: 'Positioning'
+				}, {
+					title: 'Properties'
+				}]
+			},
+			buttons: [{
+				text: 'OK',
+				handler: function () {
+					dialog.close();
+				}
+			}]
+		}).show();
+	});
+
+	controls.onDeleteElement(function (ids) {
+		Ext.MessageBox.show({
+			title: 'Confirm tile deletion',
+			msg: 'Do you actually want to delete the ' + ids.length + ' selected tiles?',
+			buttons: Ext.MessageBox.YESNO,
+			icon: Ext.MessageBox.WARNING,
+			fn: function (button) {
+				if (button === 'yes') {
+					ids.forEach(function (id) {
+						Canvace.tiles.get(id)._delete();
+					});
+				}
+			}
+		});
+	});
 
 	function addTile(tile) {
 		var id = tile.getId();
