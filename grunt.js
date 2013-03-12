@@ -35,6 +35,7 @@ module.exports = function (grunt) {
 					'src/static/UndoCommand.js',
 					'src/static/RedoCommand.js',
 					'src/static/DragTool.js',
+					'src/static/StampTileTool.js',
 					'src/static/FillSelectionCommand.js',
 					'src/static/EraseEntitiesTool.js',
 					'src/static/DragSelectTool.js',

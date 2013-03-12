@@ -35,7 +35,8 @@ installHandler([
 						release();
 						response.json(id);
 						this.broadcast('entities', 'create', {
-							id: id
+							id: id,
+							descriptor: entity
 						});
 					});
 				});

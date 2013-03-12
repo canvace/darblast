@@ -3,6 +3,58 @@ function EntityControls() {
 
 	controls.onAddElement(Canvace.entities.create);
 
+	controls.onActivateElement(function (id) {
+		var entity = Canvace.entities.get(id);
+		var dialog = Ext.create('Ext.window.Window', {
+			title: 'Entity configuration',
+			modal: true,
+			resizable: false,
+			layout: 'fit',
+			items: [{
+				xtype: 'tabpanel',
+				items: [{
+					title: 'Frames'
+				}, {
+					title: 'Positioning'
+				}, {
+					xtype: 'form',
+					title: 'Physics',
+					layout: 'vbox',
+					items: {
+						xtype: 'checkbox',
+						fieldLabel: 'Enable physics',
+						checked: entity.hasPhysics(),
+						listeners: {
+							change: function (field, checked) {
+								entity.setPhysics(checked);
+							}
+						}
+					}
+				}, {
+					title: 'Properties',
+					layout: 'fit',
+					items: {
+						xtype: 'grid',
+						columns: 2,
+						store: []
+					}
+				}]
+			}],
+			buttons: {
+				text: 'OK',
+				handler: function () {
+					dialog.close();
+				}
+			}
+		}).show();
+	});
+
+	controls.onDeleteElement(function (ids) {
+		ids.forEach(function (id) {
+			Canvace.entities.get(id)._delete();
+		});
+	});
+
 	function addEntity(entity) {
 		var id = entity.getId();
 		controls.addElement(id, entity.getLabels(), entity.getFirstFrameId());

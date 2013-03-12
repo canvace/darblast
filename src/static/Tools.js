@@ -9,6 +9,7 @@ function Tools() {
 	new EraseEntitiesTool();
 
 	new DragSelectTool();
+	new StampTileTool();
 	new FloodSelectTool();
 
 	new CutTilesCommand();

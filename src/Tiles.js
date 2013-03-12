@@ -45,7 +45,8 @@ installHandler([
 						release();
 						response.json(id);
 						this.broadcast('tiles', 'create', {
-							id: id
+							id: id,
+							descriptor: tile
 						});
 					});
 				});
