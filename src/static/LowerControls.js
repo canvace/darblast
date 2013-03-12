@@ -18,11 +18,12 @@ var LowerControls = (function () {
 		this.onDeleteCategory = bindOn('category/delete');
 
 		var view = Ext.create('Ext.view.View', {
+			id: 'view',
 			store: [],
 			tpl: [
 				'<tpl for=".">',
 				'	<div class="thumb-wrap" id="{id}">',
-				'		<div class="thumb"><img src="images/{imageId}"></div>',
+				'		<div class="thumb"><img src="images/{imageId}" alt=""></div>',
 				'	</div>',
 				'</tpl>',
 				'<div class="x-clear"></div>'
@@ -31,7 +32,7 @@ var LowerControls = (function () {
 			trackOver: true,
 			overItemCls: 'x-item-over',
 			itemSelector: 'div.thumb-wrap',
-			emptyText: 'No images',
+			emptyText: 'No items',
 			plugins: [
 				Ext.create('Ext.ux.DataView.DragSelector', {})
 			],
@@ -148,7 +149,7 @@ var LowerControls = (function () {
 				id: id,
 				labels: labels,
 				imageId: imageId
-			});
+			})[0];
 		};
 
 		this.removeElement = function (id) {
