@@ -61,7 +61,7 @@ function LowerControls(name) {
 				tooltip: 'Load image sheet...',
 				handler: function () {
 					if (window.canSplitImages) {
-						handlers.fire('sheet/add');
+						handlers.fire('sheet/load');
 					} else {
 						Ext.MessageBox.show({
 							title: 'Additional software needed',
