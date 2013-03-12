@@ -77,7 +77,7 @@ function Images(ready) {
 	Canvace.poller.poll('images', 'create', function (parameters) {
 		loadImage(parameters.id, parameters.labels, function () {
 			createHandlers.fire(0, function (handler) {
-				handler(parameters.id);
+				handler(new ImageObject(parameters.id));
 			});
 		});
 		hierarchy = new Hierarchy(labels);

@@ -11,6 +11,7 @@ module.exports = function (grunt) {
 					'src/static/Loader.js',
 					'src/static/Poller.js',
 					'src/static/CustomForm.js',
+					'src/static/LowerControls.js',
 					'src/static/Images.js',
 					'src/static/ImageControls.js',
 					'src/static/Elements.js',
