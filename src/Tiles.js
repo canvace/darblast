@@ -224,6 +224,18 @@ installHandler([
 });
 
 installHandler([
+	'/tiles/:tileId/properties/',
+	'/stages/:stageId/tiles/:tileId/properties/'
+], 'get', function (request, response) {
+	this.tiles.individualReadLock(request.params.tileId, function (release) {
+		this.getJSON('tiles/' + request.params.tileId, function (tile) {
+			release();
+			response.json(tile.properties);
+		});
+	});
+});
+
+installHandler([
 	'/tiles/:tileId/properties/:name',
 	'/stages/:stageId/tiles/:tileId/properties/:name'
 ], 'get', function (request, response) {

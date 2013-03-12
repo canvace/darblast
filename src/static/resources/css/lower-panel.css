@@ -1,50 +1,50 @@
-#view .x-panel-body {
+.view .x-panel-body {
 	background: white;
 	font: 11px Arial, Helvetica, sans-serif;
 }
-#view .thumb {
+.view .thumb {
 	background: #DDDDDD;
 	padding: 3px;
 	padding-bottom: 0;
 }
 
-.x-quirks #view .thumb {
+.x-quirks .view .thumb {
 	padding-bottom: 3px;
 }
 
-#view .thumb img {
+.view .thumb img {
 	height: 60px;
 	width: 80px;
 }
-#view .thumb-wrap {
+.view .thumb-wrap {
 	float: left;
 	margin: 4px;
 	margin-right: 0;
 	padding: 5px;
 }
-#view .thumb-wrap span {
+.view .thumb-wrap span {
 	display: block;
 	overflow: hidden;
 	text-align: center;
 	width: 86px; /* for ie to ensure that the text is centered */
 }
 
-#view .x-item-over {
+.view .x-item-over {
 	border: 1px solid #DDDDDD;
 	background: #EFEFEF url('over.gif') repeat-x left top;
 	padding: 4px;
 }
 
-#view .x-item-selected {
+.view .x-item-selected {
 	background: #EFF5FB url('selected.gif') no-repeat right bottom;
 	border: 1px solid #99BBE8;
 	padding: 4px;
 }
-#view .x-item-selected .thumb {
+.view .x-item-selected .thumb {
 	background: transparent;
 }
 
-#view .loading-indicator {
+.view .loading-indicator {
 	font-size: 11px;
 	background-image: url('../../resources/themes/images/default/grid/loading.gif');
 	background-repeat: no-repeat;

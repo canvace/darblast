@@ -18,7 +18,7 @@ var LowerControls = (function () {
 		this.onDeleteCategory = bindOn('category/delete');
 
 		var view = Ext.create('Ext.view.View', {
-			id: 'view',
+			cls: 'view',
 			store: [],
 			tpl: [
 				'<tpl for=".">',
@@ -48,6 +48,10 @@ var LowerControls = (function () {
 		var selection = view.getSelectionModel();
 
 		(function () {
+			/*
+			 * This is to order tabs correctly independently of when they are
+			 * added to the panel.
+			 */
 			tabs[index] = true;
 			maxIndex = Math.max(maxIndex, index);
 			for (var i = 0, j = 0; i <= maxIndex; i++) {

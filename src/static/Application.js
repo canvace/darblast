@@ -200,7 +200,10 @@ Ext.Loader.setConfig({
 			});
 		});
 		loader.queue(function (callback) {
-			Canvace.entities = new Entities(callback);
+			Canvace.entities = new Entities(function () {
+				Canvace.entityControls = new EntityControls();
+				callback();
+			});
 		});
 		loader.allQueued();
 	};

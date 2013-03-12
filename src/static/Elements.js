@@ -139,7 +139,9 @@ function Elements(type, Element, ready) {
 			}
 		};
 		this.getFirstFrameId = function () {
-			return element.frames[0].imageId;
+			if (element.frames.length) {
+				return element.frames[0].imageId;
+			}
 		};
 		this.forEachFrame = function (callback) {
 			element.frames.forEach(function (frame) {

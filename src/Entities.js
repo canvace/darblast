@@ -214,6 +214,18 @@ installHandler([
 });
 
 installHandler([
+	'/entities/:entityId/properties/',
+	'/stages/:stageId/entities/:entityId/properties/'
+], 'get', function (request, response) {
+	this.entities.individualReadLock(request.params.entityId, function (release) {
+		this.getJSON('entities/' + request.params.entityId, function (entity) {
+			release();
+			response.json(entity.properties);
+		});
+	});
+});
+
+installHandler([
 	'/entities/:entityId/properties/:name',
 	'/stages/:stageId/entities/:entityId/properties/:name'
 ], 'get', function (request, response) {
