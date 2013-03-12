@@ -1,5 +1,5 @@
 function ImageControls() {
-	var controls = new LowerControls('Images');
+	var controls = new LowerControls('Images', 0, true);
 
 	controls.onAddElement(function () {
 		var dialog = Ext.create('Ext.window.Window', {

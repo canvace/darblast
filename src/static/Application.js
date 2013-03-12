@@ -183,18 +183,21 @@ Ext.Loader.setConfig({
 		});
 		loader.queue(function (callback) {
 			Canvace.stages = new Stages(function () {
-				new StageControls();
+				Canvace.stageControls = new StageControls();
 				callback();
 			});
 		});
 		loader.queue(function (callback) {
 			Canvace.images = new Images(function () {
-				new ImageControls();
+				Canvace.imageControls = new ImageControls();
 				callback();
 			});
 		});
 		loader.queue(function (callback) {
-			Canvace.tiles = new Tiles(callback);
+			Canvace.tiles = new Tiles(function () {
+				Canvace.tileControls = new TileControls();
+				callback();
+			});
 		});
 		loader.queue(function (callback) {
 			Canvace.entities = new Entities(callback);

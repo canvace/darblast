@@ -7,20 +7,18 @@ function Elements(type, Element, ready) {
 				callback(element);
 			});
 			loader.get(type + '/' + id + '/frames/', function (frameIds) {
-				for (var i in frameIds) {
-					(function (frameId) {
-						loader.get(type + '/' + id + '/frames/' + frameIds[i], function (frameData) {
-							var frame = {
-								frameId: frameId,
-								imageId: frameData.id
-							};
-							if ('duration' in frameData) {
-								frame.duration = frameData.duration;
-							}
-							element.frames.push(frame);
-						});
-					}(frameIds[i]));
-				}
+				frameIds.forEach(function (frameId) {
+					loader.get(type + '/' + id + '/frames/' + frameId, function (frameData) {
+						var frame = {
+							frameId: frameId,
+							imageId: frameData.id
+						};
+						if ('duration' in frameData) {
+							frame.duration = frameData.duration;
+						}
+						element.frames.push(frame);
+					});
+				});
 				loader.allQueued();
 			});
 			loader.get(type + '/' + id + '/properties/', function (properties) {
@@ -32,16 +30,14 @@ function Elements(type, Element, ready) {
 
 	Canvace.Ajax.get(type + '/', function (ids) {
 		var loader = new Loader(ready);
-		for (var i in ids) {
-			(function (id) {
-				loader.queue(function (callback) {
-					loadElement(id, function (element) {
-						elements[id] = element;
-						callback();
-					});
+		ids.forEach(function (id) {
+			loader.queue(function (callback) {
+				loadElement(id, function (element) {
+					elements[id] = element;
+					callback();
 				});
-			}(ids[i]));
-		}
+			});
+		});
 		loader.allQueued();
 	});
 
@@ -146,9 +142,9 @@ function Elements(type, Element, ready) {
 			return element.frames[0].imageId;
 		};
 		this.forEachFrame = function (callback) {
-			for (var i in element.frames) {
-				callback(new Frame(element.frames[i]));
-			}
+			element.frames.forEach(function (frame) {
+				callback(new Frame(frame));
+			});
 		};
 		this.addFrame = function (imageId, duration) {
 			var data = {
@@ -161,6 +157,14 @@ function Elements(type, Element, ready) {
 		};
 		this.onAddFrame = function (handler) {
 			return createFramesHandlers.registerHandler(id, handler);
+		};
+
+		this.getLabels = function () {
+			var labels = [];
+			element.frames.forEach(function (frame) {
+				labels.push(Canvace.images.get(frame.imageId).getLabels());
+			});
+			return labels;
 		};
 
 		this.getProperty = function (name) {
