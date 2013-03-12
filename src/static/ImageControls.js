@@ -1,6 +1,7 @@
 function ImageControls() {
-	function edit(model) {
-		var id = model.get('id');
+	var controls = new LowerControls('Images');
+
+	controls.onActivateElement(function (id) {
 		var image = Canvace.images.get(id);
 		var dialog = Ext.create('Ext.window.Window', {
 			title: 'Edit image',
@@ -44,37 +45,9 @@ function ImageControls() {
 				}
 			})
 		}).show();
-	}
-
-	var view = Ext.create('Ext.view.View', {
-		id: 'images-view',
-		region: 'center',
-		store: [],
-		tpl: [
-			'<tpl for=".">',
-			'	<div class="thumb-wrap" id="{id}">',
-			'		<div class="thumb"><img src="images/{id}"></div>',
-			'	</div>',
-			'</tpl>',
-			'<div class="x-clear"></div>'
-		],
-		multiSelect: true,
-		trackOver: true,
-		overItemCls: 'x-item-over',
-		itemSelector: 'div.thumb-wrap',
-		emptyText: 'No images',
-		plugins: [
-			Ext.create('Ext.ux.DataView.DragSelector', {})
-		],
-		listeners: {
-			itemdblclick: function (view, model) {
-				edit(model);
-			}
-		}
 	});
-	var store = view.getStore();
-	var selection = view.getSelectionModel();
 
+/*
 	Ext.getCmp('lower-panel').add(Ext.create('Ext.panel.Panel', {
 		title: 'Images',
 		layout: 'border',
@@ -204,38 +177,16 @@ function ImageControls() {
 			}
 		}, view]
 	}));
+*/
 
-	Canvace.images.forEach(function (image) {
-		var model = store.add({
-			id: image.getId()
-		});
+	function addImage(image) {
+		var id = image.getId();
+		controls.addElement(id, image.getLabels(), id);
 		image.onDelete(function () {
-			store.remove(model);
+			controls.removeElement(id);
 		});
-	});
+	}
 
-	Canvace.images.onCreate(function (id) {
-		var model = store.add({
-			id: id
-		});
-		Canvace.images.get(id).onDelete(function () {
-			store.remove(model);
-		});
-	});
-
-	this.hasSelection = function () {
-		return selection.hasSelection();
-	};
-
-	this.getSelectedId = function () {
-		if (selection.hasSelection()) {
-			return selection.getLastSelected().get('id');
-		}
-	};
-
-	this.getSelectedIds = function () {
-		return selection.getSelection().map(function (model) {
-			return model.get('id');
-		});
-	};
+	Canvace.images.forEach(addImage);
+	Canvace.images.onCreate(addImage);
 }
