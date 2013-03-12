@@ -213,7 +213,6 @@ Ext.Loader.setConfig({
 				title: 'Create new project',
 				layout: 'fit',
 				items: new CustomForm({
-					xtype: 'form',
 					url: '/',
 					method: 'POST',
 					layout: {

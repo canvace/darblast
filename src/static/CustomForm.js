@@ -1,4 +1,5 @@
 function CustomForm(config) {
+	config.xtype = 'form';
 	config.errorReader = {
 		read: function () {
 			return {

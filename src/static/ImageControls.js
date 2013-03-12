@@ -1,4 +1,51 @@
 function ImageControls() {
+	function edit(model) {
+		var id = model.get('id');
+		var image = Canvace.images.get(id);
+		var dialog = Ext.create('Ext.window.Window', {
+			title: 'Edit image',
+			modal: true,
+			resizable: false,
+			layout: 'fit',
+			items: new CustomForm({
+				url: 'images/' + id,
+				method: 'PUT',
+				layout: {
+					type: 'vbox',
+					align: 'center'
+				},
+				items: [{
+					xtype: 'image',
+					src: 'images/' + id,
+					width: 100,
+					height: 100
+				}, {
+					xtype: 'textfield',
+					name: 'labels',
+					fieldLabel: 'Categories',
+					width: 300,
+					regex: /^\w*(\s*,\s*\w*)*$/,
+					invalidText: 'Invalid category list: categories must include only alphanumeric characters and be separated by commas.',
+					value: image.getLabels().join(', ')
+				}],
+				buttons: [{
+					text: 'OK',
+					handler: function () {
+						this.up('form').submit();
+					}
+				}, {
+					text: 'Cancel',
+					handler: function () {
+						dialog.close();
+					}
+				}],
+				success: function () {
+					dialog.close();
+				}
+			})
+		}).show();
+	}
+
 	var view = Ext.create('Ext.view.View', {
 		id: 'images-view',
 		region: 'center',
@@ -18,7 +65,12 @@ function ImageControls() {
 		emptyText: 'No images',
 		plugins: [
 			Ext.create('Ext.ux.DataView.DragSelector', {})
-		]
+		],
+		listeners: {
+			itemdblclick: function (view, model) {
+				edit(model);
+			}
+		}
 	});
 	var store = view.getStore();
 	var selection = view.getSelectionModel();
@@ -39,7 +91,6 @@ function ImageControls() {
 						title: 'Load new images',
 						modal: true,
 						resizable: false,
-						draggable: false,
 						layout: 'fit',
 						items: new CustomForm({
 							url: 'images/',
@@ -79,49 +130,36 @@ function ImageControls() {
 				}
 			}, {
 				icon: '/resources/images/icons/picture_add.png',
-				tooltip: 'Load image sheet...'
+				tooltip: 'Load image sheet...',
+				handler: function () {
+					if (window.canSplitImages) {
+						// TODO
+					} else {
+						Ext.MessageBox.show({
+							title: 'Additional software needed',
+							msg: 'To import image sheets into Canvace you need to install Cairo and restart the environment.<br/>Do you want to open the Cairo website now? (Another window will open)',
+							buttons: Ext.MessageBox.YESNO,
+							icon: Ext.MessageBox.INFORMATION,
+							fn: function (button) {
+								if (button === 'yes') {
+									window.open('http://cairographics.org/');
+								}
+							}
+						});
+					}
+				}
 			}, {
 				icon: '/resources/images/icons/pencil.png',
 				tooltip: 'Edit selected image...',
 				handler: function () {
 					var model = selection.getLastSelected();
 					if (model) {
-						var id = model.get('id');
-						var image = Canvace.images.get(id);
-						var dialog = Ext.create('Ext.window.Window', {
-							title: 'Edit image',
-							modal: true,
-							resizable: false,
-							layout: 'vbox',
-							items: [{
-								xtype: 'image',
-								src: 'images/' + id,
-								shrinkWrap: false
-							}, {
-								xtype: 'textfield',
-								id: 'image-labels',
-								value: image.getLabels().join(', '),
-								fieldlabel: 'Labels'
-							}],
-							fbar: [{
-								text: 'OK',
-								handler: function () {
-									Canvace.images.get(id).setLabels(Ext.getCmp('image-labels').getValue());
-									dialog.close();
-								}
-							}, {
-								text: 'Cancel',
-								handler: function () {
-									dialog.close();
-								}
-							}]
-						});
-						dialog.show();
+						edit(model);
 					}
 				}
 			}, {
 				icon: '/resources/images/icons/folder_edit.png',
-				tooltip: 'Edit selected category...'
+				tooltip: 'Rename selected category...'
 			}, {
 				icon: '/resources/images/icons/delete.png',
 				tooltip: 'Delete selected images...',
@@ -145,7 +183,20 @@ function ImageControls() {
 				}
 			}, {
 				icon: '/resources/images/icons/folder_delete.png',
-				tooltip: 'Delete selected category...'
+				tooltip: 'Delete selected category...',
+				handler: function () {
+					Ext.MessageBox({
+						title: 'Confirm category removal',
+						msg: 'Do you actually want to delete the selected category and all the images it contains?',
+						buttons: Ext.MessageBox.OKCANCEL,
+						icon: Ext.MessageBox.WARNING,
+						fn: function (button) {
+							if (button === 'ok') {
+								// TODO
+							}
+						}
+					});
+				}
 			}],
 			root: {
 				text: 'Categories',
