@@ -32,12 +32,12 @@ installHandler([
 					};
 					entity['static'] = true;
 					this.putJSON('entities/' + id, entity, function () {
-						release();
-						response.json(id);
 						this.broadcast('entities', 'create', {
 							id: id,
 							descriptor: entity
 						});
+						release();
+						response.json(id);
 					});
 				});
 			});
@@ -69,11 +69,12 @@ installHandler([
 			} else {
 				this.entities.globalWriteLock(function (releaseEntities) {
 					this.unlink('entities/' + request.params.entityId, function () {
-						releaseEntities();
-						releaseEntity();
 						this.broadcast('entities', 'delete', {
 							id: request.params.entityId
 						});
+						releaseEntities();
+						releaseEntity();
+						response.json(true);
 					});
 				});
 			}
@@ -114,8 +115,6 @@ installHandler([
 							entity.frames[id].duration = parseInt(request.body.duration, 10);
 						}
 						this.putJSON('entities/' + request.params.entityId, entity, function () {
-							releaseEntity();
-							response.json(id);
 							var data = {
 								id: request.params.entityId,
 								frameId: id
@@ -124,6 +123,8 @@ installHandler([
 								data.duration = request.body.duration;
 							}
 							this.broadcast('entities/frames', 'create', data);
+							releaseEntity();
+							response.json(id);
 						});
 					});
 				});
@@ -158,8 +159,6 @@ installHandler([
 					delete entity.frames[request.params.frameId].duration;
 				}
 				this.putJSON('entities/' + request.params.entityId, entity, function () {
-					release();
-					response.json(true);
 					if (request.body.duration !== false) {
 						this.broadcast('entities/frames', 'update', {
 							id: request.params.entityId,
@@ -172,6 +171,8 @@ installHandler([
 							frameId: request.params.frameId
 						});
 					}
+					release();
+					response.json(true);
 				});
 			} else {
 				release();
@@ -196,12 +197,12 @@ installHandler([
 							releaseImage();
 							delete entity.frames[request.params.frameId].id;
 							this.putJSON('entities/' + request.params.entityId, entity, function () {
-								releaseEntity();
-								response.json(true);
 								this.broadcast('entities/frames', 'delete', {
 									id: request.params.entityId,
 									frameId: request.params.frameId
 								});
+								releaseEntity();
+								response.json(true);
 							});
 						});
 					});

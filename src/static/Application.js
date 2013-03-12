@@ -9,7 +9,7 @@ Ext.Loader.setConfig({
 	var width = screen.availWidth;
 	var height = screen.availHeight;
 
-	window.initGUI = function () {
+	Canvace.initGUI = function () {
 		Ext.create('Ext.container.Viewport', {
 			layout: 'fit',
 			items: {
@@ -156,7 +156,7 @@ Ext.Loader.setConfig({
 		});
 	};
 
-	window.loadStage = function (projectId, id) {
+	Canvace.loadStage = function (projectId, id) {
 		Canvace.poller = new Poller(projectId);
 		var loader = new Loader(function () {
 			var stage;
@@ -208,7 +208,7 @@ Ext.Loader.setConfig({
 		loader.allQueued();
 	};
 
-	window.showStartScreen = function () {
+	Canvace.showStartScreen = function () {
 		var startDialog = Ext.create('Ext.window.Window', {
 			title: 'Canvace Development Environment',
 			modal: true,
@@ -244,7 +244,7 @@ Ext.Loader.setConfig({
 					}],
 					success: function (response) {
 						startDialog.close();
-						window.loadStage(response.projectId, response.stageId);
+						Canvace.loadStage(response.projectId, response.stageId);
 					}
 				})
 			}, {
@@ -273,7 +273,7 @@ Ext.Loader.setConfig({
 					}],
 					success: function (response) {
 						startDialog.close();
-						window.loadStage(response.projectId, response.stageId);
+						Canvace.loadStage(response.projectId, response.stageId);
 					}
 				})
 			}, {

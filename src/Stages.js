@@ -146,6 +146,9 @@ installHandler('/stages/:stageId', 'delete', function (request, response) {
 	this.stages.globalWriteLock(function (releaseStages) {
 		this.stages.individualWriteLock(request.params.stageId, function (releaseStage) {
 			this.unlink('stages/' + request.params.stageId, function () {
+				this.broadcast('stages', 'delete', {
+					id: request.params.stageId
+				});
 				releaseStage();
 				releaseStages();
 				response.json(true);

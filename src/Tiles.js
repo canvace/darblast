@@ -42,12 +42,12 @@ installHandler([
 					};
 					tile['static'] = true;
 					this.putJSON('tiles/' + id, tile, function () {
-						release();
-						response.json(id);
 						this.broadcast('tiles', 'create', {
 							id: id,
 							descriptor: tile
 						});
+						release();
+						response.json(id);
 					});
 				});
 			});
@@ -79,11 +79,12 @@ installHandler([
 			} else {
 				this.tiles.globalWriteLock(function (releaseTiles) {
 					this.unlink('tiles/' + request.params.tileId, function () {
-						releaseTiles();
-						releaseTile();
 						this.broadcast('tiles', 'delete', {
 							id: request.params.tileId
 						});
+						releaseTiles();
+						releaseTile();
+						response.json(true);
 					});
 				});
 			}
@@ -124,8 +125,6 @@ installHandler([
 							tile.frames[id].duration = parseInt(request.body.duration, 10);
 						}
 						this.putJSON('tiles/' + request.params.tileId, tile, function () {
-							releaseTile();
-							response.json(id);
 							var data = {
 								id: request.params.tileId,
 								frameId: id
@@ -134,6 +133,8 @@ installHandler([
 								data.duration = request.body.duration;
 							}
 							this.broadcast('tiles/frames', 'create', data);
+							releaseTile();
+							response.json(id);
 						});
 					});
 				});
@@ -168,8 +169,6 @@ installHandler([
 					delete tile.frames[request.params.frameId].duration;
 				}
 				this.putJSON('tiles/' + request.params.tileId, tile, function () {
-					release();
-					response.json(true);
 					if (request.body.duration !== false) {
 						this.broadcast('tiles/frames', 'update', {
 							id: request.params.tileId,
@@ -182,6 +181,8 @@ installHandler([
 							frameId: request.params.frameId
 						});
 					}
+					release();
+					response.json(true);
 				});
 			} else {
 				release();
@@ -206,12 +207,12 @@ installHandler([
 							releaseImage();
 							delete tile.frames[request.params.frameId].id;
 							this.putJSON('tiles/' + request.params.tileId, tile, function () {
-								releaseTile();
-								response.json(true);
 								this.broadcast('tiles/frames', 'delete', {
 									id: request.params.tileId,
 									frameId: request.params.frameId
 								});
+								releaseTile();
+								response.json(true);
 							});
 						});
 					});
