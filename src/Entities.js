@@ -30,7 +30,6 @@ installHandler([
 						frames: [],
 						properties: {}
 					};
-					entity['static'] = true;
 					this.putJSON('entities/' + id, entity, function () {
 						this.broadcast('entities', 'create', {
 							id: id,
