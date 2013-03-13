@@ -141,9 +141,17 @@ var consolidate = require('consolidate');
 var app = express();
 app.enable('strict routing');
 app.use(express.cookieParser());
-app.use(express.session({
-	secret: 'darblast'
-}));
+
+if (config.debug) {
+	app.use(express.cookieSession({
+		secret: 'darblast'
+	}));
+} else {
+	app.use(express.session({
+		secret: 'darblast'
+	}));
+}
+
 app.use(express['static'](__dirname + '/static'));
 app.use(express.query());
 app.use(express.bodyParser());
