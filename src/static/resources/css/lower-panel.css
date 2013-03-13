@@ -3,6 +3,7 @@
 	font: 11px Arial, Helvetica, sans-serif;
 }
 .view .thumb {
+	background: transparent;
 	padding: 3px;
 	padding-bottom: 0;
 }
