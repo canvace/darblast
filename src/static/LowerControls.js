@@ -19,7 +19,15 @@ var LowerControls = (function () {
 
 		var view = Ext.create('Ext.view.View', {
 			cls: 'view',
-			store: [],
+			store: {
+				fields: [{
+					name: 'id'
+				}, {
+					name: 'labels'
+				}, {
+					name: 'imageId'
+				}]
+			},
 			tpl: [
 				'<tpl for=".">',
 				'	<div class="thumb-wrap" id="{id}">',
