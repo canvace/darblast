@@ -1,5 +1,5 @@
 function ImageControls() {
-	var controls = new LowerControls('Images', 0, true);
+	var controls = new LowerControls('Images', 0, true, 'image', 'images');
 
 	controls.onAddElement(function () {
 		var dialog = Ext.create('Ext.window.Window', {
@@ -95,32 +95,8 @@ function ImageControls() {
 	});
 
 	controls.onDeleteElement(function (ids) {
-		Ext.MessageBox.show({
-			title: 'Confirm deletion',
-			msg: 'Do you actually want to delete the ' + ids.length + ' selected image(s)?',
-			buttons: Ext.MessageBox.OKCANCEL,
-			icon: Ext.MessageBox.WARNING,
-			fn: function (button) {
-				if (button === 'ok') {
-					ids.forEach(function (id) {
-						Canvace.images.get(id)._delete();
-					});
-				}
-			}
-		});
-	});
-
-	controls.onDeleteCategory(function () {
-		Ext.MessageBox({
-			title: 'Confirm category removal',
-			msg: 'Do you actually want to delete the selected category and all the images it contains?',
-			buttons: Ext.MessageBox.OKCANCEL,
-			icon: Ext.MessageBox.WARNING,
-			fn: function (button) {
-				if (button === 'ok') {
-					// TODO
-				}
-			}
+		ids.forEach(function (id) {
+			Canvace.images.get(id)._delete();
 		});
 	});
 

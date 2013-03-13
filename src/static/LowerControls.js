@@ -2,7 +2,7 @@ var LowerControls = (function () {
 	var tabs = {};
 	var maxIndex = -1;
 
-	return function (name, index, activate) {
+	return function (name, index, activate, element, elements) {
 		var handlers = new EventHandlers();
 
 		function bindOn(key) {
@@ -15,7 +15,6 @@ var LowerControls = (function () {
 		this.onLoadSheet = bindOn('sheet/load');
 		this.onActivateElement = bindOn('element/activate');
 		this.onDeleteElement = bindOn('element/delete');
-		this.onDeleteCategory = bindOn('category/delete');
 
 		var view = Ext.create('Ext.view.View', {
 			cls: 'view',
@@ -84,13 +83,13 @@ var LowerControls = (function () {
 				width: 250,
 				tbar: [{
 					icon: '/resources/images/icons/add.png',
-					tooltip: 'Load images...',
+					tooltip: 'Load ' + elements + '...',
 					handler: function () {
 						handlers.fire('element/add');
 					}
 				}, {
 					icon: '/resources/images/icons/picture_add.png',
-					tooltip: 'Load image sheet...',
+					tooltip: 'Load ' + element + ' sheet...',
 					handler: function () {
 						if (window.canSplitImages) {
 							handlers.fire('sheet/load');
@@ -110,7 +109,7 @@ var LowerControls = (function () {
 					}
 				}, {
 					icon: '/resources/images/icons/pencil.png',
-					tooltip: 'Edit selected image...',
+					tooltip: 'Edit selected ' + element + '...',
 					handler: function () {
 						handlers.fire('element/activate');
 					}
@@ -122,14 +121,24 @@ var LowerControls = (function () {
 					}
 				}, {
 					icon: '/resources/images/icons/delete.png',
-					tooltip: 'Delete selected images...',
+					tooltip: 'Delete selected ' + elements + '...',
 					handler: function () {
 						var models = selection.getSelection();
 						if (models.length) {
-							handlers.fire('element/delete', function (handler) {
-								handler(models.map(function (model) {
-									return model.get('id');
-								}));
+							Ext.MessageBox.show({
+								title: 'Confirm deletion',
+								msg: 'Do you actually want to delete the ' + models.length + ' selected ' + elements + '?',
+								buttons: Ext.MessageBox.OKCANCEL,
+								icon: Ext.MessageBox.WARNING,
+								fn: function (button) {
+									if (button === 'ok') {
+										handlers.fire('element/delete', function (handler) {
+											handler(models.map(function (model) {
+												return model.get('id');
+											}));
+										});
+									}
+								}
 							});
 						}
 					}

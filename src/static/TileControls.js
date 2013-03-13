@@ -1,5 +1,5 @@
 function TileControls() {
-	var controls = new LowerControls('Tiles', 1);
+	var controls = new LowerControls('Tiles', 1, false, 'tile', 'tiles');
 
 	controls.onAddElement = function () {
 		var dialog = Ext.create('Ext.window.Window', {
@@ -79,18 +79,8 @@ function TileControls() {
 	});
 
 	controls.onDeleteElement(function (ids) {
-		Ext.MessageBox.show({
-			title: 'Confirm tile deletion',
-			msg: 'Do you actually want to delete the ' + ids.length + ' selected tiles?',
-			buttons: Ext.MessageBox.YESNO,
-			icon: Ext.MessageBox.WARNING,
-			fn: function (button) {
-				if (button === 'yes') {
-					ids.forEach(function (id) {
-						Canvace.tiles.get(id)._delete();
-					});
-				}
-			}
+		ids.forEach(function (id) {
+			Canvace.tiles.get(id)._delete();
 		});
 	});
 

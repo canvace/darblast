@@ -1,5 +1,5 @@
 function EntityControls() {
-	var controls = new LowerControls('Entities', 2);
+	var controls = new LowerControls('Entities', 2, false, 'entity', 'entities');
 
 	controls.onAddElement(Canvace.entities.create);
 
@@ -16,6 +16,7 @@ function EntityControls() {
 			layout: 'fit',
 			items: [{
 				xtype: 'tabpanel',
+				layout: 'fit',
 				items: [{
 					title: 'Frames'
 				}, {
@@ -54,18 +55,8 @@ function EntityControls() {
 	});
 
 	controls.onDeleteElement(function (ids) {
-		Ext.MessageBox.show({
-			title: 'Confirm entity deletion',
-			msg: 'Do you actually want to delete the ' + ids.length + ' selected entities?',
-			buttons: Ext.MessageBox.YESNO,
-			icon: Ext.MessageBox.WARNING,
-			fn: function (button) {
-				if (button === 'yes') {
-					ids.forEach(function (id) {
-						Canvace.entities.get(id)._delete();
-					});
-				}
-			}
+		ids.forEach(function (id) {
+			Canvace.entities.get(id)._delete();
 		});
 	});
 
