@@ -1,32 +1,21 @@
-.view .x-panel-body {
-	background: white;
-	font: 11px Arial, Helvetica, sans-serif;
-}
 .view .thumb {
 	background: transparent;
-	padding: 3px;
-	padding-bottom: 0;
-}
-
-.x-quirks .view .thumb {
-	padding-bottom: 3px;
+	margin: 3px;
+	width: 86px;
+	height: 66px;
+	text-align: center;
 }
 
 .view .thumb img {
-	height: 60px;
-	width: 80px;
+	max-height: 100%;
+	max-width: 100%;
 }
+
 .view .thumb-wrap {
 	float: left;
 	margin: 4px;
 	margin-right: 0;
 	padding: 5px;
-}
-.view .thumb-wrap span {
-	display: block;
-	overflow: hidden;
-	text-align: center;
-	width: 86px; /* for ie to ensure that the text is centered */
 }
 
 .view .x-item-over {
@@ -34,23 +23,10 @@
 	background: #EFEFEF url('over.gif') repeat-x left top;
 	padding: 4px;
 }
-
 .view .x-item-selected {
 	background: #EFF5FB url('selected.gif') no-repeat right bottom;
 	border: 1px solid #99BBE8;
 	padding: 4px;
-}
-.view .x-item-selected .thumb {
-	background: transparent;
-}
-
-.view .loading-indicator {
-	font-size: 11px;
-	background-image: url('../../resources/themes/images/default/grid/loading.gif');
-	background-repeat: no-repeat;
-	background-position: left;
-	padding-left: 20px;
-	margin: 10px;
 }
 
 .x-view-selector {
