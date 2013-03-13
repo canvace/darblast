@@ -15,6 +15,9 @@ function ToolGroup(icon, tooltip, tools) {
 				return function () {
 					selectedToolIndex = i;
 					group.setIcon(tools[i].icon).setTooltip(tools[i].text).toggle(true);
+					if (tools[i].handler) {
+						tools[i].handler();
+					}
 				};
 			}(parseInt(i, 10)))
 		});

@@ -1,9 +1,9 @@
 function FillSelectionCommand() {
 	this.activate = function () {
-		var tileId = Canvace.tiles.getSelected();
-		if (tileId !== false) {
+		var id = Canvace.tiles.getSelectedId();
+		if (id !== false) {
 			Canvace.selection.forEach(function (i, j, k) {
-				Canvace.array.set(i, j, k, tileId);
+				Canvace.array.set(i, j, k, id);
 			});
 			Canvace.renderer.render();
 		}
