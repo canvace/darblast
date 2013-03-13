@@ -187,7 +187,6 @@ Ext.Loader.setConfig({
 				title: 'Load existing project',
 				layout: 'fit',
 				items: new CustomForm({
-					xtype: 'form',
 					url: '/',
 					method: 'PUT',
 					layout: {
@@ -215,7 +214,27 @@ Ext.Loader.setConfig({
 			}, {
 				title: 'Import project',
 				layout: 'fit',
-				items: new CustomForm({})
+				items: new CustomForm({
+					url: '/import',
+					method: 'POST',
+					layout: 'vbox',
+					items: [{
+						xtype: 'filefield',
+						name: 'data',
+						fieldLabel: 'JSON file',
+						allowBlank: false
+					}],
+					buttons: [{
+						text: 'Import',
+						handler: function () {
+							this.up('form').submit();
+						}
+					}],
+					success: function (response) {
+						startDialog.close();
+						Canvace.loadStage(response.projectId, response.stageId);
+					}
+				})
 			}]
 		});
 		startDialog.show();

@@ -29,7 +29,12 @@ function CustomForm(config) {
 	delete config.success;
 
 	var failure = makeCallback(config.failure || function (response) {
-		Ext.MessageBox.alert('Error', response.toString());
+		Ext.MessageBox.show({
+			title: 'Error',
+			msg: response.toString(),
+			buttons: Ext.MessageBox.OK,
+			icon: Ext.MessageBox.ERROR
+		});
 	});
 	delete config.failure;
 
