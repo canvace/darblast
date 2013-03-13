@@ -17,11 +17,11 @@
 Ext.application({
 	name: 'Canvace Development Environment',
 	launch: function () {
-		window.initGUI();
+		Canvace.initGUI();
 {{#if projectId }}
-		window.loadStage({{{projectId}}}, {{{stageId}}});
+		Canvace.loadStage({{{projectId}}}, {{{stageId}}});
 {{else}}
-		window.showStartScreen();
+		Canvace.showStartScreen();
 {{/if}}
 	}
 });
