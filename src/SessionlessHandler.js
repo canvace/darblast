@@ -74,6 +74,11 @@ function SessionlessHandler(request, response) {
 		});
 	};
 
+	this.createSession = function (projectPath) {
+		request.session.projectPath = projectPath;
+		io.of('/poll/' + getProjectId(request)).on('connection', function () {});
+	};
+
 	this.getProjectId = function () {
 		return getProjectId(request);
 	};

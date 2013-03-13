@@ -41,7 +41,7 @@ installSessionlessHandler('/', 'post', function (request, response) {
 					properties: {}
 				}, callback);
 			}, function () {
-				request.session.projectPath = basePath + '/' + projectName + '/';
+				this.createSession(basePath + '/' + projectName + '/');
 				response.json({
 					projectId: this.getProjectId(),
 					stageId: 'Stage 1'
@@ -58,10 +58,10 @@ installSessionlessHandler('/', 'put', function (request, response) {
 	this.realpath(path.normalize(request.body.path), function (path) {
 		this.stat(path, function (stat) {
 			if (stat.isDirectory()) {
-				request.session.projectPath = path;
 				if (!/[\\\/]$/.test(path)) {
-					request.session.projectPath += '/';
+					path += '/';
 				}
+				this.createSession(path);
 				this.readdir(request.session.projectPath + 'stages', function (stages) {
 					response.json({
 						projectId: this.getProjectId(),
