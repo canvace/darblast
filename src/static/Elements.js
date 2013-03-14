@@ -7,6 +7,7 @@ function Elements(type, Element, ready) {
 				callback(element);
 			});
 			loader.get(type + '/' + id + '/frames/', function (frameIds) {
+				element.frames = [];
 				frameIds.forEach(function (frameId) {
 					loader.get(type + '/' + id + '/frames/' + frameId, function (frameData) {
 						var frame = {
