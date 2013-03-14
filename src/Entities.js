@@ -14,31 +14,26 @@ installHandler([
 	'/entities/',
 	'/stages/:stageId/entities/'
 ], 'post', function (request, response) {
-	this.writeLock('info', function (release) {
-		this.getJSON('info', function (project) {
-			var id = project.entityCounter++;
-			this.putJSON('info', project, function () {
-				release();
-				this.entities.globalWriteLock(function (release) {
-					var entity = {
-						used: false,
-						hasPhysics: false,
-						offset: {
-							x: 0,
-							y: 0
-						},
-						frames: [],
-						properties: {}
-					};
-					this.putJSON('entities/' + id, entity, function () {
-						this.broadcast('entities', 'create', {
-							id: id,
-							descriptor: entity
-						});
-						release();
-						response.json(id);
-					});
+	this.newIds('entity', function (id) {
+		this.entities.globalWriteLock(function (release) {
+			var entity = {
+				used: false,
+				offset: {
+					x: 0,
+					y: 0
+				},
+				frames: {},
+				properties: {}
+			};
+			this.putJSON('entities/' + id, entity, function () {
+				delete entity.frames;
+				delete entity.properties;
+				this.broadcast('entities', 'create', {
+					id: id,
+					descriptor: entity
 				});
+				release();
+				response.json(id);
 			});
 		});
 	});
@@ -50,8 +45,34 @@ installHandler([
 ], 'get', function (request, response) {
 	this.entities.individualReadLock(request.params.entityId, function (release) {
 		this.getJSON('entities/' + request.params.entityId, function (entity) {
+			delete entity.frames;
+			delete entity.properties;
 			release();
 			response.json(entity);
+		});
+	});
+});
+
+installHandler([
+	'/entities/:entityId',
+	'/stages/:stageId/entities/:entityId'
+], 'put', function (request, response) {
+	this.entities.individualWriteLock(request.params.entityId, function (release) {
+		this.getJSON('entities/' + request.params.entityId, function (entity) {
+			if ('offset' in request.body) {
+				entity.offset.x = ~~request.body.offset.x;
+				entity.offset.x = ~~request.body.offset.x;
+			}
+			this.putJSON('entities/' + request.params.entityId, entity, function () {
+				delete entity.frames;
+				delete entity.properties;
+				this.broadcast('entities', 'update', {
+					id: request.params.entityId,
+					descriptor: entity
+				});
+				release();
+				response.json(true);
+			});
 		});
 	});
 });
@@ -64,7 +85,7 @@ installHandler([
 		this.getJSON('entities/' + request.params.entityId, function (entity) {
 			if (entity.used) {
 				releaseEntity();
-				response.json(404, 'The specified entity is in use');
+				response.json(400, 'The specified entity is still in use');
 			} else {
 				this.entities.globalWriteLock(function (releaseEntities) {
 					this.unlink('entities/' + request.params.entityId, function () {
@@ -100,32 +121,26 @@ installHandler([
 	'/stages/:stageId/entities/:entityId/frames/'
 ], 'post', function (request, response) {
 	this.entities.individualWriteLock(request.params.entityId, function (releaseEntity) {
-		this.images.individualWriteLock(request.body.imageId, function (releaseImage) {
-			this.getJSON('images/' + request.body.imageId + '/info', function (image) {
-				image.refCount++;
-				this.putJSON('images/' + request.body.imageId + '/info', image, function () {
-					releaseImage();
-					this.getJSON('entities/' + request.params.entityId, function (entity) {
-						var id = entity.frameCounter++;
-						entity.frames[id] = {
-							id: request.body.imageId
-						};
-						if ('duration' in request.body) {
-							entity.frames[id].duration = parseInt(request.body.duration, 10);
-						}
-						this.putJSON('entities/' + request.params.entityId, entity, function () {
-							var data = {
-								id: request.params.entityId,
-								frameId: id
-							};
-							if ('duration' in request.body) {
-								data.duration = request.body.duration;
-							}
-							this.broadcast('entities/frames', 'create', data);
-							releaseEntity();
-							response.json(id);
-						});
-					});
+		this.refImage(request.body.imageId, function () {
+			this.getJSON('entities/' + request.params.entityId, function (entity) {
+				var id = entity.frameCounter++;
+				entity.frames[id] = {
+					id: request.body.imageId
+				};
+				if ('duration' in request.body) {
+					entity.frames[id].duration = parseInt(request.body.duration, 10);
+				}
+				this.putJSON('entities/' + request.params.entityId, entity, function () {
+					var data = {
+						id: request.params.entityId,
+						frameId: id
+					};
+					if ('duration' in request.body) {
+						data.duration = request.body.duration;
+					}
+					this.broadcast('entities/frames', 'create', data);
+					releaseEntity();
+					response.json(id);
 				});
 			});
 		});
@@ -139,7 +154,11 @@ installHandler([
 	this.entities.individualReadLock(request.params.entityId, function (release) {
 		this.getJSON('entities/' + request.params.entityId, function (entity) {
 			release();
-			response.json(entity.frames[request.params.frameId]);
+			if (request.params.frameId in entity.frames) {
+				response.json(entity.frames[request.params.frameId]);
+			} else {
+				response.json(400, 'Invalid frame ID: ' + request.params.frameId);
+			}
 		});
 	});
 });
@@ -154,28 +173,29 @@ installHandler([
 				var duration;
 				if (request.body.duration !== false) {
 					duration = entity.frames[request.params.frameId].duration = parseInt(request.body.duration, 10);
-				} else {
-					delete entity.frames[request.params.frameId].duration;
-				}
-				this.putJSON('entities/' + request.params.entityId, entity, function () {
-					if (request.body.duration !== false) {
+					this.putJSON('entities/' + request.params.entityId, entity, function () {
 						this.broadcast('entities/frames', 'update', {
 							id: request.params.entityId,
 							frameId: request.params.frameId,
 							duration: duration
 						});
-					} else {
+						release();
+						response.json(true);
+					});
+				} else {
+					delete entity.frames[request.params.frameId].duration;
+					this.putJSON('entities/' + request.params.entityId, entity, function () {
 						this.broadcast('entities/frames', 'update', {
 							id: request.params.entityId,
 							frameId: request.params.frameId
 						});
-					}
-					release();
-					response.json(true);
-				});
+						release();
+						response.json(true);
+					});
+				}
 			} else {
 				release();
-				response.json(404, 'Invalid frame ID: ' + request.params.frameId);
+				response.json(400, 'Invalid frame ID: ' + request.params.frameId);
 			}
 		});
 	});
@@ -188,27 +208,20 @@ installHandler([
 	this.entities.individualWriteLock(request.params.entityId, function (releaseEntity) {
 		this.getJSON('entities/' + request.params.entityId, function (entity) {
 			if (request.params.frameId in entity.frames) {
-				var imageId = entity.frames[request.params.frameId].id;
-				this.images.individualWriteLock(imageId, function (releaseImage) {
-					this.getJSON('images/' + imageId + '/info', function (image) {
-						image.refCount--;
-						this.putJSON('images/' + imageId + '/info', image, function () {
-							releaseImage();
-							delete entity.frames[request.params.frameId].id;
-							this.putJSON('entities/' + request.params.entityId, entity, function () {
-								this.broadcast('entities/frames', 'delete', {
-									id: request.params.entityId,
-									frameId: request.params.frameId
-								});
-								releaseEntity();
-								response.json(true);
-							});
+				this.unrefImage(entity.frames[request.params.frameId].id, function () {
+					delete entity.frames[request.params.frameId];
+					this.putJSON('entities/' + request.params.entityId, entity, function () {
+						this.broadcast('entities/frames', 'delete', {
+							id: request.params.entityId,
+							frameId: request.params.frameId
 						});
+						releaseEntity();
+						response.json(true);
 					});
 				});
 			} else {
 				releaseEntity();
-				response.json(404, 'Invalid frame ID: ' + request.params.frameId);
+				response.json(400, 'Invalid frame ID: ' + request.params.frameId);
 			}
 		});
 	});
@@ -233,7 +246,11 @@ installHandler([
 	this.individualReadLock(request.params.entityId, function (release) {
 		this.getJSON('entities/' + request.params.entityId, function (entity) {
 			release();
-			response.json(entity.properties[request.params.name]);
+			if (request.params.name in entity.properties) {
+				response.json(entity.properties[request.params.name]);
+			} else {
+				response.json(400, 'Invalid property name: ' + request.params.name);
+			}
 		});
 	});
 });
@@ -264,8 +281,7 @@ installHandler([
 ], 'delete', function (request, response) {
 	this.individualWriteLock(request.params.entityId, function (release) {
 		this.getJSON('entities/' + request.params.entityId, function (entity) {
-			var found = request.params.name in entity.properties;
-			if (found) {
+			if (request.params.name in entity.properties) {
 				delete entity.properties[request.params.name];
 				this.putJSON('entities/' + request.params.entityId, entity, function () {
 					this.broadcast('entities/properties', 'delete', {

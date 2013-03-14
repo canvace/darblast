@@ -238,6 +238,47 @@ var Handler = (function () {
 			});
 		};
 
+		this.newIds = function (key, count, callback) {
+			if (arguments.length < 3) {
+				callback = count;
+				count = 1;
+			}
+			this.writeLock('info', function (release) {
+				this.getJSON('info', function (project) {
+					var firstId = project[key + 'Counter'];
+					project[key + 'Counter'] += count;
+					this.putJSON('info', project, function () {
+						release();
+						callback.call(this, firstId);
+					});
+				});
+			});
+		};
+
+		this.refImage = function (id, callback) {
+			this.images.individualWriteLock(id, function (release) {
+				this.getJSON('images/' + id + '/info', function (image) {
+					var count = ++image.refCount;
+					this.putJSON('images/' + id + '/info', image, function () {
+						release();
+						callback.call(this, count);
+					});
+				});
+			});
+		};
+
+		this.unrefImage = function (id, callback) {
+			this.images.individualWriteLock(id, function (release) {
+				this.getJSON('images/' + id + '/info', function (image) {
+					var count = --image.refCount;
+					this.putJSON('images/' + id + '/info', image, function () {
+						release();
+						callback.call(this, count);
+					});
+				});
+			});
+		};
+
 		this.getProjectId = function () {
 			return getProjectId(request);
 		};
@@ -260,7 +301,7 @@ function installHandler(urls, method, handler) {
 				try {
 					handler.call(new Handler(request, response), request, response);
 				} catch (e) {
-					response.json(404, e.toString());
+					response.json(400, e.toString());
 				}
 			}
 		});

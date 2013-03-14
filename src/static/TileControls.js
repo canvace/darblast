@@ -55,22 +55,56 @@ function TileControls() {
 			layout: 'fit',
 			items: {
 				xtype: 'tabpanel',
+				layout: 'fit',
 				items: [{
-					xtype: 'form',
 					title: 'General',
+					layout: 'vbox',
 					items: [{
 						xtype: 'checkbox',
 						fieldLabel: 'Solid',
-						checked: tile.isSolid()
+						checked: tile.isSolid(),
+						listeners: {
+							change: function (field, checked) {
+								tile.setSolid(checked);
+							}
+						}
 					}, {
 						xtype: 'checkbox',
 						fieldLabel: 'Static',
-						checked: tile.isStatic()
+						checked: tile.isStatic(),
+						listeners: {
+							change: function (field, checked) {
+								tile.setStatic(checked);
+							}
+						}
 					}]
 				}, {
 					title: 'Frames'
 				}, {
-					title: 'Positioning'
+					title: 'Positioning',
+					layout: 'table',
+					items: [{
+						xtype: 'box',
+						resizable: true,
+						width: 200,
+						height: 200
+					}, {
+						xtype: 'numberfield',
+						fieldLabel: 'X offset',
+						listeners: {
+							blur: function (field) {
+								tile.setOffsetX(field.getValue());
+							}
+						}
+					}, {
+						xtype: 'numberfield',
+						fieldLabel: 'Y offset',
+						listeners: {
+							blur: function (field) {
+								tile.setOffsetY(field.getValue());
+							}
+						}
+					}]
 				}, {
 					title: 'Properties'
 				}]

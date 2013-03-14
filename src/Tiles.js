@@ -14,42 +14,38 @@ installHandler([
 	'/tiles/',
 	'/stages/:stageId/tiles/'
 ], 'post', function (request, response) {
-	this.writeLock('info', function (release) {
-		this.getJSON('info', function (project) {
-			var id = project.tileCounter++;
-			this.putJSON('info', project, function () {
-				release();
-				this.tiles.globalWriteLock(function (release) {
-					var tile = {
-						solid: false,
-						layout: {
-							ref: {
-								i: parseInt(request.body.layout.ref.i, 10),
-								j: parseInt(request.body.layout.ref.j, 10)
-							},
-							span: {
-								i: parseInt(request.body.layout.span.i, 10),
-								j: parseInt(request.body.layout.span.j, 10)
-							}
-						},
-						used: false,
-						offset: {
-							x: 0,
-							y: 0
-						},
-						frames: [],
-						properties: {}
-					};
-					tile['static'] = true;
-					this.putJSON('tiles/' + id, tile, function () {
-						this.broadcast('tiles', 'create', {
-							id: id,
-							descriptor: tile
-						});
-						release();
-						response.json(id);
-					});
+	this.newIds('tile', function (id) {
+		this.tiles.globalWriteLock(function (release) {
+			var tile = {
+				solid: false,
+				layout: {
+					ref: {
+						i: parseInt(request.body.layout.ref.i, 10),
+						j: parseInt(request.body.layout.ref.j, 10)
+					},
+					span: {
+						i: parseInt(request.body.layout.span.i, 10),
+						j: parseInt(request.body.layout.span.j, 10)
+					}
+				},
+				used: false,
+				offset: {
+					x: 0,
+					y: 0
+				},
+				frames: {},
+				properties: {}
+			};
+			tile['static'] = true;
+			this.putJSON('tiles/' + id, tile, function () {
+				delete tile.frames;
+				delete tile.properties;
+				this.broadcast('tiles', 'create', {
+					id: id,
+					descriptor: tile
 				});
+				release();
+				response.json(id);
 			});
 		});
 	});
@@ -61,8 +57,41 @@ installHandler([
 ], 'get', function (request, response) {
 	this.tiles.individualReadLock(request.params.tileId, function (release) {
 		this.getJSON('tiles/' + request.params.tileId, function (tile) {
+			delete tile.frames;
+			delete tile.properties;
 			release();
 			response.json(tile);
+		});
+	});
+});
+
+installHandler([
+	'/tiles/:tileId',
+	'/stages/:stageId/tiles/:tileId'
+], 'put', function (request, response) {
+	this.tiles.individualWriteLock(request.params.tileId, function (release) {
+		this.getJSON('tiles/' + request.params.tileId, function (tile) {
+			if ('static' in request.body) {
+				tile['static'] = !!request.body['static'];
+			}
+			if ('solid' in request.body) {
+				tile.solid = !!request.body.solid;
+			}
+			if ('offset' in request.body) {
+				tile.offset.x = ~~request.body.offset.x;
+				tile.offset.x = ~~request.body.offset.x;
+			}
+			this.putJSON('tiles/' + request.params.tileId, tile, function () {
+				delete tile.layout;
+				delete tile.frames;
+				delete tile.properties;
+				this.broadcast('tiles', 'update', {
+					id: request.params.tileId,
+					descriptor: tile
+				});
+				release();
+				response.json(true);
+			});
 		});
 	});
 });
@@ -75,7 +104,7 @@ installHandler([
 		this.getJSON('tiles/' + request.params.tileId, function (tile) {
 			if (tile.used) {
 				releaseTile();
-				response.json(404, 'The specified tile is in use');
+				response.json(400, 'The specified tile is still in use');
 			} else {
 				this.tiles.globalWriteLock(function (releaseTiles) {
 					this.unlink('tiles/' + request.params.tileId, function () {
@@ -111,32 +140,26 @@ installHandler([
 	'/stages/:stageId/tiles/:tileId/frames/'
 ], 'post', function (request, response) {
 	this.tiles.individualWriteLock(request.params.tileId, function (releaseTile) {
-		this.images.individualWriteLock(request.body.imageId, function (releaseImage) {
-			this.getJSON('images/' + request.body.imageId + '/info', function (image) {
-				image.refCount++;
-				this.putJSON('images/' + request.body.imageId + '/info', image, function () {
-					releaseImage();
-					this.getJSON('tiles/' + request.params.tileId, function (tile) {
-						var id = tile.frameCounter++;
-						tile.frames[id] = {
-							id: request.body.imageId
-						};
-						if ('duration' in request.body) {
-							tile.frames[id].duration = parseInt(request.body.duration, 10);
-						}
-						this.putJSON('tiles/' + request.params.tileId, tile, function () {
-							var data = {
-								id: request.params.tileId,
-								frameId: id
-							};
-							if ('duration' in request.body) {
-								data.duration = request.body.duration;
-							}
-							this.broadcast('tiles/frames', 'create', data);
-							releaseTile();
-							response.json(id);
-						});
-					});
+		this.refImage(request.body.imageId, function () {
+			this.getJSON('tiles/' + request.params.tileId, function (tile) {
+				var id = tile.frameCounter++;
+				tile.frames[id] = {
+					id: request.body.imageId
+				};
+				if ('duration' in request.body) {
+					tile.frames[id].duration = parseInt(request.body.duration, 10);
+				}
+				this.putJSON('tiles/' + request.params.tileId, tile, function () {
+					var data = {
+						id: request.params.tileId,
+						frameId: id
+					};
+					if ('duration' in request.body) {
+						data.duration = request.body.duration;
+					}
+					this.broadcast('tiles/frames', 'create', data);
+					releaseTile();
+					response.json(id);
 				});
 			});
 		});
@@ -150,7 +173,11 @@ installHandler([
 	this.tiles.individualReadLock(request.params.tileId, function (release) {
 		this.getJSON('tiles/' + request.params.tileId, function (tile) {
 			release();
-			response.json(tile.frames[request.params.frameId]);
+			if (request.params.frameId in tile.frames) {
+				response.json(tile.frames[request.params.frameId]);
+			} else {
+				response.json(400, 'Invalid frame ID: ' + request.params.frameId);
+			}
 		});
 	});
 });
@@ -165,28 +192,29 @@ installHandler([
 				var duration;
 				if (request.body.duration !== false) {
 					duration = tile.frames[request.params.frameId].duration = parseInt(request.body.duration, 10);
-				} else {
-					delete tile.frames[request.params.frameId].duration;
-				}
-				this.putJSON('tiles/' + request.params.tileId, tile, function () {
-					if (request.body.duration !== false) {
+					this.putJSON('tiles/' + request.params.tileId, tile, function () {
 						this.broadcast('tiles/frames', 'update', {
 							id: request.params.tileId,
 							frameId: request.params.frameId,
 							duration: duration
 						});
-					} else {
+						release();
+						response.json(true);
+					});
+				} else {
+					delete tile.frames[request.params.frameId].duration;
+					this.putJSON('tiles/' + request.params.tileId, tile, function () {
 						this.broadcast('tiles/frames', 'update', {
 							id: request.params.tileId,
 							frameId: request.params.frameId
 						});
-					}
-					release();
-					response.json(true);
-				});
+						release();
+						response.json(true);
+					});
+				}
 			} else {
 				release();
-				response.json(404, 'Invalid frame ID: ' + request.params.frameId);
+				response.json(400, 'Invalid frame ID: ' + request.params.frameId);
 			}
 		});
 	});
@@ -199,27 +227,20 @@ installHandler([
 	this.tiles.individualWriteLock(request.params.tileId, function (releaseTile) {
 		this.getJSON('tiles/' + request.params.tileId, function (tile) {
 			if (request.params.frameId in tile.frames) {
-				var imageId = tile.frames[request.params.frameId].id;
-				this.images.individualWriteLock(imageId, function (releaseImage) {
-					this.getJSON('images/' + imageId + '/info', function (image) {
-						image.refCount--;
-						this.putJSON('images/' + imageId + '/info', image, function () {
-							releaseImage();
-							delete tile.frames[request.params.frameId].id;
-							this.putJSON('tiles/' + request.params.tileId, tile, function () {
-								this.broadcast('tiles/frames', 'delete', {
-									id: request.params.tileId,
-									frameId: request.params.frameId
-								});
-								releaseTile();
-								response.json(true);
-							});
+				this.unrefImage(tile.frames[request.params.frameId].id, function () {
+					delete tile.frames[request.params.frameId];
+					this.putJSON('tiles/' + request.params.tileId, tile, function () {
+						this.broadcast('tiles/frames', 'delete', {
+							id: request.params.tileId,
+							frameId: request.params.frameId
 						});
+						releaseTile();
+						response.json(true);
 					});
 				});
 			} else {
 				releaseTile();
-				response.json(404, 'Invalid frame ID: ' + request.params.frameId);
+				response.json(400, 'Invalid frame ID: ' + request.params.frameId);
 			}
 		});
 	});
@@ -244,7 +265,11 @@ installHandler([
 	this.individualReadLock(request.params.tileId, function (release) {
 		this.getJSON('tiles/' + request.params.tileId, function (tile) {
 			release();
-			response.json(tile.properties[request.params.name]);
+			if (request.params.name in tile.properties) {
+				response.json(tile.properties[request.params.name]);
+			} else {
+				response.json(400, 'Invalid property name: ' + request.params.name);
+			}
 		});
 	});
 });
@@ -275,8 +300,7 @@ installHandler([
 ], 'delete', function (request, response) {
 	this.individualWriteLock(request.params.tileId, function (release) {
 		this.getJSON('tiles/' + request.params.tileId, function (tile) {
-			var found = request.params.name in tile.properties;
-			if (found) {
+			if (request.params.name in tile.properties) {
 				delete tile.properties[request.params.name];
 				this.putJSON('tiles/' + request.params.tileId, tile, function () {
 					this.broadcast('tiles/properties', 'delete', {

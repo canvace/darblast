@@ -13,7 +13,7 @@ installHandler('/stages/', 'post', function (request, response) {
 			this.exists('stages/' + request.body.name, function (exists) {
 				if (exists) {
 					release();
-					response.json(404, 'A stage with the specified name already exists.');
+					response.json(400, 'A stage with the specified name already exists.');
 				} else {
 					this.putJSON('stages/' + request.body.name, {
 						x0: 0,
@@ -130,13 +130,13 @@ installHandler('/stages/:stageId', 'put', function (request, response) {
 						} catch (e) {
 							releaseEntities();
 							releaseTiles();
-							response.json(404, e.toString());
+							response.json(400, e.toString());
 						}
 					});
 				});
 			} catch (e) {
 				releaseTiles();
-				response.json(404, e.toString());
+				response.json(400, e.toString());
 			}
 		});
 	});

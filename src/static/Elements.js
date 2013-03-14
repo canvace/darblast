@@ -82,6 +82,22 @@ function Elements(type, Element, ready) {
 				}
 			});
 		};
+		this.setOffsetX = function (value) {
+			Canvace.Ajax.put(type + '/' + id, {
+				offset: {
+					x: value,
+					y: element.offset.y
+				}
+			});
+		};
+		this.setOffsetY = function (value) {
+			Canvace.Ajax.put(type + '/' + id, {
+				offset: {
+					x: element.offset.x,
+					y: value
+				}
+			});
+		};
 
 		this.project = function (i, j, k) {
 			return Canvace.view.projectElement(element, i, j, k);
@@ -203,10 +219,15 @@ function Elements(type, Element, ready) {
 	});
 
 	Canvace.poller.poll(type, 'update', function (parameters) {
-		if (parameters.id in elements) {
+		var id = parameters.id;
+		if (id in elements) {
 			// TODO
 		} else {
-			// TODO
+			elements[id] = parameters.descriptor;
+			// TODO load frames and properties
+			createHandlers.fire(0, function (handler) {
+				handler(new Element(ElementBase, id, elements[id]));
+			});
 		}
 	});
 

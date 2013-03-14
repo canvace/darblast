@@ -113,8 +113,8 @@
 			});
 		}
 
-		function storeImages(imageId) {
-			if (util.isArray(request.files.images)) {
+		if (util.isArray(request.files.images)) {
+			this.newIds('image', request.files.images.length, function (imageId) {
 				var count = 0;
 				for (var i in request.files.images) {
 					count++;
@@ -124,23 +124,14 @@
 						}
 					});
 				}
-			} else {
+			});
+		} else {
+			this.newIds('image', function (imageId) {
 				storeImage.call(this, request.files.images, imageId, function () {
 					response.json([imageId]);
 				});
-			}
-		}
-
-		this.writeLock('info', function (release) {
-			this.getJSON('info', function (projectInfo) {
-				var firstId = projectInfo.imageCounter;
-				projectInfo.imageCounter += util.isArray(request.files.images) ? request.files.images.length : 1;
-				this.putJSON('info', projectInfo, function () {
-					release();
-					storeImages.call(this, firstId);
-				});
 			});
-		});
+		}
 	});
 
 	installHandler([
