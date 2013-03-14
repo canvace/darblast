@@ -39,17 +39,14 @@ installHandler('/stages/', 'post', function (request, response) {
 
 installHandler('/stages/:stageId', 'get', function (request, response) {
 	this.getJSON('info', function (project) {
-		this.stages.individualReadLock(request.params.stageId, function (release) {
-			this.getJSON('stages/' + request.params.stageId, function (stage) {
-				release();
-				response.json({
-					matrix: project.matrix,
-					name: stage.name,
-					x0: stage.x0,
-					y0: stage.y0,
-					map: stage.map,
-					instances: stage.instances
-				});
+		this.stages.get(request.params.stageId, function (stage) {
+			response.json({
+				matrix: project.matrix,
+				name: stage.name,
+				x0: stage.x0,
+				y0: stage.y0,
+				map: stage.map,
+				instances: stage.instances
 			});
 		});
 	});
@@ -111,21 +108,15 @@ installHandler('/stages/:stageId', 'put', function (request, response) {
 					this.readdir('entities', function (entityIds) {
 						try {
 							var instances = sanitizeInstances(entityIds);
-							this.stages.individualWriteLock(request.params.stageId, function (releaseStage) {
-								this.getJSON('stages/' + request.params.stageId, function (stage) {
-									this.putJSON('stages/' + request.params.stageId, {
-										name: stage.name,
-										x0: request.body.x0 || stage.x0,
-										y0: request.body.y0 || stage.y0,
-										map: map,
-										instances: instances
-									}, function () {
-										releaseStage();
-										releaseEntities();
-										releaseTiles();
-										response.json(true);
-									});
-								});
+							this.stages.modify(request.params.stageId, function (stage) {
+								if ('x0' in request.body) {
+									stage.x0 = parseFloat(request.body.x0);
+								}
+								if ('y0' in request.body) {
+									stage.y0 = parseFloat(request.body.y0);
+								}
+								stage.map = map;
+								stage.instances = instances;
 							});
 						} catch (e) {
 							releaseEntities();
@@ -158,52 +149,48 @@ installHandler('/stages/:stageId', 'delete', function (request, response) {
 });
 
 installHandler('/stages/:stageId/properties/', 'get', function (request, response) {
-	this.stages.individualReadLock(request.params.stageId, function (release) {
-		this.getJSON('stages/' + request.params.stageId, function (stage) {
-			release();
-			response.json(stage.properties);
-		});
+	this.stages.get(request.params.stageId, function (stage) {
+		response.json(stage.properties);
 	});
 });
 
 installHandler('/stages/:stageId/properties/:name', 'get', function (request, response) {
-	this.stages.individualReadLock(request.params.stageId, function (release) {
-		this.getJSON('stages/' + request.params.stageId, function (stage) {
-			release();
+	this.stages.get(request.params.stageId, function (stage) {
+		if (request.params.name in stage.properties) {
 			response.json(stage.properties[request.params.name]);
-		});
+		} else {
+			response.json(400, 'Invalid property name: ' + request.params.name);
+		}
 	});
 });
 
-installHandler('/stages/:stageId/properties/:name', 'put', function (request, response) {
-	this.stages.individualWriteLock(request.params.stageId, function (release) {
-		this.getJSON('stages/' + request.params.stageId, function (stage) {
-			stage.properties[request.params.name] = request.body.value;
-			this.putJSON('stages/' + request.params.stageId, stage, function () {
-				this.broadcast('stages/properties', 'put', {
-					id: request.params.stageId,
-					name: request.params.name,
-					value: request.body.value
-				});
-				release();
-				response.json(true);
-			});
-		});
+installHandler('/stages/:stageId/properties/:name', 'put', function (request) {
+	this.stages.modifySync(request.params.stageId, function (stage) {
+		stage.properties[request.params.name] = request.body.value;
+	}, {
+		key: 'stages/properties',
+		method: 'put',
+		data: {
+			id: request.params.stageId,
+			name: request.params.name,
+			value: request.body.value
+		}
 	});
 });
 
-installHandler('/stages/:stageId/properties/:name', 'delete', function (request, response) {
-	this.stages.individualWriteLock(request.params.stageId, function (release) {
-		this.getJSON('stages/' + request.params.stageId, function (stage) {
+installHandler('/stages/:stageId/properties/:name', 'delete', function (request) {
+	this.stages.modifySync(request.params.stageId, function (stage) {
+		if (request.params.name in stage.properties) {
 			delete stage.properties[request.params.name];
-			this.putJSON('stages/' + request.params.stageId, stage, function () {
-				this.broadcast('stages/properties', 'delete', {
-					id: request.params.stageId,
-					name: request.params.name
-				});
-				release();
-				response.json(true);
-			});
-		});
+		} else {
+			throw 'Invalid property name: ' + request.params.name;
+		}
+	}, {
+		key: 'stages/properties',
+		method: 'delete',
+		data: {
+			id: request.params.stageId,
+			name: request.params.name
+		}
 	});
 });
