@@ -98,7 +98,12 @@ Ext.Loader.setConfig({
 			try {
 				stage = Canvace.stages.get(id);
 			} catch (e) {
-				Ext.MessageBox.alert('Error', 'The specified stage does not exist.');
+				Ext.MessageBox.show({
+					title: 'Error',
+					msg: 'The specified stage does not exist.',
+					buttons: Ext.MessageBox.OK,
+					icon: Ext.MessageBox.ERROR
+				});
 				return;
 			}
 			stage.load(function (data) {

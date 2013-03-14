@@ -1,7 +1,7 @@
 function TileControls() {
 	var controls = new LowerControls('Tiles', 1, false, 'tile', 'tiles');
 
-	controls.onAddElement = function () {
+	controls.onAddElement(function () {
 		var dialog = Ext.create('Ext.window.Window', {
 			title: 'Create new tile',
 			modal: true,
@@ -9,26 +9,32 @@ function TileControls() {
 			layout: 'fit',
 			items: {
 				xtype: 'form',
-				layout: 'table',
+				layout: 'vbox',
 				items: [{
-					xtype: 'number',
+					xtype: 'numberfield',
 					id: 'i-span-field',
+					fieldLabel: 'I span',
 					minValue: 1,
 					value: 1
 				}, {
-					xtype: 'number',
+					xtype: 'numberfield',
 					id: 'j-span-field',
+					fieldLabel: 'J span',
 					minValue: 1,
 					value: 1
 				}, {
 					xtype: 'box'
-					// TODO tile schema
 				}]
 			},
 			buttons: [{
 				text: 'OK',
 				handler: function () {
-					// TODO Canvace.tiles.create(...);
+					Canvace.tiles.create(
+						Ext.getCmp('i-span-field').getValue(),
+						Ext.getCmp('j-span-field').getValue(),
+						0,
+						0
+						);
 					dialog.close();
 				}
 			}, {
@@ -38,7 +44,7 @@ function TileControls() {
 				}
 			}]
 		}).show();
-	};
+	});
 
 	controls.onActivateElement(function (id) {
 		var tile = Canvace.tiles.get(id);

@@ -28,6 +28,14 @@ var Canvace = (function () {
 					method: method,
 					success: function (response) {
 						callback && callback(JSON.parse(response.responseText));
+					},
+					failure: function (response) {
+						Ext.MessageBox.show({
+							title: 'Error',
+							msg: response.toString(),
+							buttons: Ext.MessageBox.OK,
+							icon: Ext.MessageBox.ERROR
+						});
 					}
 				};
 				if (hasData) {
