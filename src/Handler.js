@@ -80,19 +80,29 @@ var Handler = (function () {
 					});
 				});
 			};
-			this.put = function (id, object, callback) {
+			this.put = function (id, object, broadcast, callback) {
+				if (arguments.length < 4) {
+					callback = broadcast;
+					broadcast = function () {};
+				}
 				writeLock(directory + '/' + id, function (release) {
 					thisObject.putJSON(directory + '/' + id, object, function () {
+						broadcast.call(thisObject);
 						release();
 						callback.call(thisObject);
 					});
 				});
 			};
-			this.modify = function (id, modify, callback) {
+			this.modify = function (id, modify, broadcast, callback) {
+				if (arguments.length < 4) {
+					callback = broadcast;
+					broadcast = function () {};
+				}
 				writeLock(directory + '/' + id, function (release) {
 					thisObject.getJSON(directory + '/' + id, function (object) {
 						modify.call(thisObject, object, function () {
 							thisObject.putJSON(directory + '/' + id, object, function () {
+								broadcast.call(thisObject);
 								release();
 								callback.call(thisObject);
 							});
@@ -100,11 +110,16 @@ var Handler = (function () {
 					});
 				});
 			};
-			this.modifySync = function (id, modify, callback) {
+			this.modifySync = function (id, modify, broadcast, callback) {
+				if (arguments.length < 4) {
+					callback = broadcast;
+					broadcast = function () {};
+				}
 				writeLock(directory + '/' + id, function (release) {
 					thisObject.getJSON(directory + '/' + id, function (object) {
 						modify.call(thisObject, object);
 						thisObject.putJSON(directory + '/' + id, object, function () {
+							broadcast.call(thisObject);
 							release();
 							callback.call(thisObject);
 						});
