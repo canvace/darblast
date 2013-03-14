@@ -73,6 +73,11 @@ var Handler = (function () {
 				writeLock(directory + '/' + id, callback);
 			};
 			this.get = function (id, callback) {
+				if (!callback) {
+					callback = function () {
+						response.json(true);
+					};
+				}
 				readLock(directory + '/' + id, function (release) {
 					thisObject.getJSON(directory + '/' + id, function (object) {
 						release();
@@ -84,6 +89,11 @@ var Handler = (function () {
 				if (arguments.length < 4) {
 					callback = broadcast;
 					broadcast = function () {};
+				}
+				if (arguments.length < 3) {
+					callback = function () {
+						response.json(true);
+					};
 				}
 				writeLock(directory + '/' + id, function (release) {
 					thisObject.putJSON(directory + '/' + id, object, function () {
@@ -97,6 +107,11 @@ var Handler = (function () {
 				if (arguments.length < 4) {
 					callback = broadcast;
 					broadcast = function () {};
+				}
+				if (arguments.length < 3) {
+					callback = function () {
+						response.json(true);
+					};
 				}
 				writeLock(directory + '/' + id, function (release) {
 					thisObject.getJSON(directory + '/' + id, function (object) {
@@ -114,6 +129,11 @@ var Handler = (function () {
 				if (arguments.length < 4) {
 					callback = broadcast;
 					broadcast = function () {};
+				}
+				if (arguments.length < 3) {
+					callback = function () {
+						response.json(true);
+					};
 				}
 				writeLock(directory + '/' + id, function (release) {
 					thisObject.getJSON(directory + '/' + id, function (object) {
