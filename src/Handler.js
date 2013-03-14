@@ -88,16 +88,19 @@ var Handler = (function () {
 			this.put = function (id, object, broadcast, callback) {
 				if (arguments.length < 4) {
 					callback = broadcast;
-					broadcast = function () {};
+					broadcast = null;
 				}
 				if (arguments.length < 3) {
 					callback = function () {
+						removePendingLocks();
 						response.json(true);
 					};
 				}
 				writeLock(directory + '/' + id, function (release) {
 					thisObject.putJSON(directory + '/' + id, object, function () {
-						broadcast.call(thisObject);
+						if (broadcast) {
+							thisObject.broadcast(broadcast.key, broadcast.method, broadcast.data);
+						}
 						release();
 						callback.call(thisObject);
 					});
@@ -106,10 +109,11 @@ var Handler = (function () {
 			this.modify = function (id, modify, broadcast, callback) {
 				if (arguments.length < 4) {
 					callback = broadcast;
-					broadcast = function () {};
+					broadcast = null;
 				}
 				if (arguments.length < 3) {
 					callback = function () {
+						removePendingLocks();
 						response.json(true);
 					};
 				}
@@ -117,7 +121,9 @@ var Handler = (function () {
 					thisObject.getJSON(directory + '/' + id, function (object) {
 						modify.call(thisObject, object, function () {
 							thisObject.putJSON(directory + '/' + id, object, function () {
-								broadcast.call(thisObject);
+								if (broadcast) {
+									thisObject.broadcast(broadcast.key, broadcast.method, broadcast.data);
+								}
 								release();
 								callback.call(thisObject);
 							});
@@ -128,10 +134,11 @@ var Handler = (function () {
 			this.modifySync = function (id, modify, broadcast, callback) {
 				if (arguments.length < 4) {
 					callback = broadcast;
-					broadcast = function () {};
+					broadcast = null;
 				}
 				if (arguments.length < 3) {
 					callback = function () {
+						removePendingLocks();
 						response.json(true);
 					};
 				}
@@ -139,7 +146,9 @@ var Handler = (function () {
 					thisObject.getJSON(directory + '/' + id, function (object) {
 						modify.call(thisObject, object);
 						thisObject.putJSON(directory + '/' + id, object, function () {
-							broadcast.call(thisObject);
+							if (broadcast) {
+								thisObject.broadcast(broadcast.key, broadcast.method, broadcast.data);
+							}
 							release();
 							callback.call(thisObject);
 						});
