@@ -72,6 +72,45 @@ var Handler = (function () {
 			this.individualWriteLock = function (id, callback) {
 				writeLock(directory + '/' + id, callback);
 			};
+			this.get = function (id, callback) {
+				readLock(directory + '/' + id, function (release) {
+					thisObject.getJSON(directory + '/' + id, function (object) {
+						release();
+						callback.call(thisObject, object);
+					});
+				});
+			};
+			this.put = function (id, object, callback) {
+				writeLock(directory + '/' + id, function (release) {
+					thisObject.putJSON(directory + '/' + id, object, function () {
+						release();
+						callback.call(thisObject);
+					});
+				});
+			};
+			this.modify = function (id, modify, callback) {
+				writeLock(directory + '/' + id, function (release) {
+					thisObject.getJSON(directory + '/' + id, function (object) {
+						modify.call(thisObject, object, function () {
+							thisObject.putJSON(directory + '/' + id, object, function () {
+								release();
+								callback.call(thisObject);
+							});
+						});
+					});
+				});
+			};
+			this.modifySync = function (id, modify, callback) {
+				writeLock(directory + '/' + id, function (release) {
+					thisObject.getJSON(directory + '/' + id, function (object) {
+						modify.call(thisObject, object);
+						thisObject.putJSON(directory + '/' + id, object, function () {
+							release();
+							callback.call(thisObject);
+						});
+					});
+				});
+			};
 		}
 
 		this.stages = new SpecificLocks('stages');
@@ -243,37 +282,37 @@ var Handler = (function () {
 				callback = count;
 				count = 1;
 			}
-			this.writeLock('info', function (release) {
-				this.getJSON('info', function (project) {
+			thisObject.writeLock('info', function (release) {
+				thisObject.getJSON('info', function (project) {
 					var firstId = project[key + 'Counter'];
 					project[key + 'Counter'] += count;
-					this.putJSON('info', project, function () {
+					thisObject.putJSON('info', project, function () {
 						release();
-						callback.call(this, firstId);
+						callback.call(thisObject, firstId);
 					});
 				});
 			});
 		};
 
 		this.refImage = function (id, callback) {
-			this.images.individualWriteLock(id, function (release) {
-				this.getJSON('images/' + id + '/info', function (image) {
+			thisObject.images.individualWriteLock(id, function (release) {
+				thisObject.getJSON('images/' + id + '/info', function (image) {
 					var count = ++image.refCount;
-					this.putJSON('images/' + id + '/info', image, function () {
+					thisObject.putJSON('images/' + id + '/info', image, function () {
 						release();
-						callback.call(this, count);
+						callback.call(thisObject, count);
 					});
 				});
 			});
 		};
 
 		this.unrefImage = function (id, callback) {
-			this.images.individualWriteLock(id, function (release) {
-				this.getJSON('images/' + id + '/info', function (image) {
+			thisObject.images.individualWriteLock(id, function (release) {
+				thisObject.getJSON('images/' + id + '/info', function (image) {
 					var count = --image.refCount;
-					this.putJSON('images/' + id + '/info', image, function () {
+					thisObject.putJSON('images/' + id + '/info', image, function () {
 						release();
-						callback.call(this, count);
+						callback.call(thisObject, count);
 					});
 				});
 			});
