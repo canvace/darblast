@@ -92,7 +92,7 @@ installHandler([
 		this.getJSON('tiles/' + request.params.tileId, function (tile) {
 			if (tile.used) {
 				releaseTile();
-				response.json(400, 'The specified tile is still in use');
+				response.json(403, 'The specified tile is still in use');
 			} else {
 				this.tiles.globalWriteLock(function (releaseTiles) {
 					this.unlink('tiles/' + request.params.tileId, function () {

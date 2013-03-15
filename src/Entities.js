@@ -74,7 +74,7 @@ installHandler([
 		this.getJSON('entities/' + request.params.entityId, function (entity) {
 			if (entity.used) {
 				releaseEntity();
-				response.json(400, 'The specified entity is still in use');
+				response.json(403, 'The specified entity is still in use');
 			} else {
 				this.entities.globalWriteLock(function (releaseEntities) {
 					this.unlink('entities/' + request.params.entityId, function () {
