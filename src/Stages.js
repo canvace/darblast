@@ -167,14 +167,11 @@ installHandler('/stages/:stageId/properties/:name', 'get', function (request, re
 installHandler('/stages/:stageId/properties/:name', 'put', function (request) {
 	this.stages.modifySync(request.params.stageId, function (stage) {
 		stage.properties[request.params.name] = request.body.value;
-	}, {
-		key: 'stages/properties',
-		method: 'put',
-		data: {
+		this.broadcast('stages/properties', 'put', {
 			id: request.params.stageId,
 			name: request.params.name,
 			value: request.body.value
-		}
+		});
 	});
 });
 
@@ -182,15 +179,12 @@ installHandler('/stages/:stageId/properties/:name', 'delete', function (request)
 	this.stages.modifySync(request.params.stageId, function (stage) {
 		if (request.params.name in stage.properties) {
 			delete stage.properties[request.params.name];
+			this.broadcast('stages/properties', 'delete', {
+				id: request.params.stageId,
+				name: request.params.name
+			});
 		} else {
 			throw 'Invalid property name: ' + request.params.name;
-		}
-	}, {
-		key: 'stages/properties',
-		method: 'delete',
-		data: {
-			id: request.params.stageId,
-			name: request.params.name
 		}
 	});
 });

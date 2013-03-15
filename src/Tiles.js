@@ -55,43 +55,31 @@ installHandler([
 	'/tiles/:tileId',
 	'/stages/:stageId/tiles/:tileId'
 ], 'get', function (request, response) {
-	this.tiles.individualReadLock(request.params.tileId, function (release) {
-		this.getJSON('tiles/' + request.params.tileId, function (tile) {
-			delete tile.frames;
-			delete tile.properties;
-			release();
-			response.json(tile);
-		});
+	this.tiles.get(request.params.tileId, function (tile) {
+		delete tile.frames;
+		delete tile.properties;
+		response.json(tile);
 	});
 });
 
 installHandler([
 	'/tiles/:tileId',
 	'/stages/:stageId/tiles/:tileId'
-], 'put', function (request, response) {
-	this.tiles.individualWriteLock(request.params.tileId, function (release) {
-		this.getJSON('tiles/' + request.params.tileId, function (tile) {
-			if ('static' in request.body) {
-				tile['static'] = !!request.body['static'];
-			}
-			if ('solid' in request.body) {
-				tile.solid = !!request.body.solid;
-			}
-			if ('offset' in request.body) {
-				tile.offset.x = ~~request.body.offset.x;
-				tile.offset.x = ~~request.body.offset.x;
-			}
-			this.putJSON('tiles/' + request.params.tileId, tile, function () {
-				delete tile.layout;
-				delete tile.frames;
-				delete tile.properties;
-				this.broadcast('tiles', 'update', {
-					id: request.params.tileId,
-					descriptor: tile
-				});
-				release();
-				response.json(true);
-			});
+], 'put', function (request) {
+	this.tiles.modifySync(request.params.tileId, function (tile) {
+		if ('static' in request.body) {
+			tile['static'] = !!request.body['static'];
+		}
+		if ('solid' in request.body) {
+			tile.solid = !!request.body.solid;
+		}
+		if ('offset' in request.body) {
+			tile.offset.x = parseFloat(request.body.offset.x);
+			tile.offset.x = parseFloat(request.body.offset.x);
+		}
+		this.broadcast('tiles', 'update', {
+			id: request.params.tileId,
+			descriptor: tile
 		});
 	});
 });
@@ -125,13 +113,10 @@ installHandler([
 	'/tiles/:tileId/frames/',
 	'/stages/:stageId/tiles/:tileId/frames/'
 ], 'get', function (request, response) {
-	this.tiles.individualReadLock(request.params.tileId, function (release) {
-		this.getJSON('tiles/' + request.params.tileId, function (tile) {
-			release();
-			var ids = Object.keys(tile.frames);
-			ids.sort();
-			response.json(ids);
-		});
+	this.tiles.get(request.params.tileId, function (tile) {
+		var ids = Object.keys(tile.frames);
+		ids.sort();
+		response.json(ids);
 	});
 });
 
@@ -139,30 +124,28 @@ installHandler([
 	'/tiles/:tileId/frames/',
 	'/stages/:stageId/tiles/:tileId/frames/'
 ], 'post', function (request, response) {
-	this.tiles.individualWriteLock(request.params.tileId, function (releaseTile) {
+	var id;
+	this.tiles.modify(request.params.tileId, function (tile, next) {
 		this.refImage(request.body.imageId, function () {
-			this.getJSON('tiles/' + request.params.tileId, function (tile) {
-				var id = tile.frameCounter++;
-				tile.frames[id] = {
-					id: request.body.imageId
-				};
-				if ('duration' in request.body) {
-					tile.frames[id].duration = parseInt(request.body.duration, 10);
-				}
-				this.putJSON('tiles/' + request.params.tileId, tile, function () {
-					var data = {
-						id: request.params.tileId,
-						frameId: id
-					};
-					if ('duration' in request.body) {
-						data.duration = request.body.duration;
-					}
-					this.broadcast('tiles/frames', 'create', data);
-					releaseTile();
-					response.json(id);
-				});
-			});
+			id = tile.frameCounter++;
+			tile.frames[id] = {
+				id: request.body.imageId
+			};
+			if ('duration' in request.body) {
+				tile.frames[id].duration = parseInt(request.body.duration, 10);
+			}
+			var data = {
+				id: request.params.tileId,
+				frameId: id
+			};
+			if ('duration' in request.body) {
+				data.duration = request.body.duration;
+			}
+			this.broadcast('tiles/frames', 'create', data);
+			next();
 		});
+	}, function () {
+		response.json(id);
 	});
 });
 
@@ -170,15 +153,12 @@ installHandler([
 	'/tiles/:tileId/frames/:frameId',
 	'/stages/:stageId/tiles/:tileId/frames/:frameId'
 ], 'get', function (request, response) {
-	this.tiles.individualReadLock(request.params.tileId, function (release) {
-		this.getJSON('tiles/' + request.params.tileId, function (tile) {
-			release();
-			if (request.params.frameId in tile.frames) {
-				response.json(tile.frames[request.params.frameId]);
-			} else {
-				response.json(400, 'Invalid frame ID: ' + request.params.frameId);
-			}
-		});
+	this.tiles.get(request.params.tileId, function (tile) {
+		if (request.params.frameId in tile.frames) {
+			response.json(tile.frames[request.params.frameId]);
+		} else {
+			response.json(400, 'Invalid frame ID: ' + request.params.frameId);
+		}
 	});
 });
 
@@ -223,26 +203,20 @@ installHandler([
 installHandler([
 	'/tiles/:tileId/frames/:frameId',
 	'/stages/:stageId/tiles/:tileId/frames/:frameId'
-], 'delete', function (request, response) {
-	this.tiles.individualWriteLock(request.params.tileId, function (releaseTile) {
-		this.getJSON('tiles/' + request.params.tileId, function (tile) {
-			if (request.params.frameId in tile.frames) {
-				this.unrefImage(tile.frames[request.params.frameId].id, function () {
-					delete tile.frames[request.params.frameId];
-					this.putJSON('tiles/' + request.params.tileId, tile, function () {
-						this.broadcast('tiles/frames', 'delete', {
-							id: request.params.tileId,
-							frameId: request.params.frameId
-						});
-						releaseTile();
-						response.json(true);
-					});
+], 'delete', function (request) {
+	this.tiles.modify(request.params.tileId, function (tile, next) {
+		if (request.params.frameId in tile.frames) {
+			this.unrefImage(tile.frames[request.params.frameId].id, function () {
+				delete tile.frames[request.params.frameId];
+				this.broadcast('tiles/frames', 'delete', {
+					id: request.params.tileId,
+					frameId: request.params.frameId
 				});
-			} else {
-				releaseTile();
-				response.json(400, 'Invalid frame ID: ' + request.params.frameId);
-			}
-		});
+				next();
+			});
+		} else {
+			throw 'Invalid frame ID: ' + request.params.frameId;
+		}
 	});
 });
 
@@ -250,11 +224,8 @@ installHandler([
 	'/tiles/:tileId/properties/',
 	'/stages/:stageId/tiles/:tileId/properties/'
 ], 'get', function (request, response) {
-	this.tiles.individualReadLock(request.params.tileId, function (release) {
-		this.getJSON('tiles/' + request.params.tileId, function (tile) {
-			release();
-			response.json(tile.properties);
-		});
+	this.tiles.get(request.params.tileId, function (tile) {
+		response.json(tile.properties);
 	});
 });
 
@@ -262,14 +233,25 @@ installHandler([
 	'/tiles/:tileId/properties/:name',
 	'/stages/:stageId/tiles/:tileId/properties/:name'
 ], 'get', function (request, response) {
-	this.individualReadLock(request.params.tileId, function (release) {
-		this.getJSON('tiles/' + request.params.tileId, function (tile) {
-			release();
-			if (request.params.name in tile.properties) {
-				response.json(tile.properties[request.params.name]);
-			} else {
-				response.json(400, 'Invalid property name: ' + request.params.name);
-			}
+	this.tiles.get(request.params.tileId, function (tile) {
+		if (request.params.name in tile.properties) {
+			response.json(tile.properties[request.params.name]);
+		} else {
+			response.json(400, 'Invalid property name: ' + request.params.name);
+		}
+	});
+});
+
+installHandler([
+	'/tiles/:tileId/properties/:name',
+	'/stages/:stageId/tiles/:tileId/properties/:name'
+], 'put', function (request) {
+	this.tiles.modifySync(request.params.tileId, function (tile) {
+		tile.properties[request.params.name] = request.body.value;
+		this.broadcast('tiles/properties', 'update', {
+			id: request.params.tileId,
+			name: request.params.name,
+			value: request.body.value
 		});
 	});
 });
@@ -277,43 +259,16 @@ installHandler([
 installHandler([
 	'/tiles/:tileId/properties/:name',
 	'/stages/:stageId/tiles/:tileId/properties/:name'
-], 'put', function (request, response) {
-	this.tiles.individualWriteLock(request.params.tileId, function (release) {
-		this.getJSON('tiles/' + request.params.tileId, function (tile) {
-			tile.properties[request.params.name] = request.body.value;
-			this.putJSON('tiles/' + request.params.tileId, tile, function () {
-				this.broadcast('tiles/properties', 'put', {
-					id: request.params.tileId,
-					name: request.params.name,
-					value: request.body.value
-				});
-				release();
-				response.json(true);
+], 'delete', function (request) {
+	this.tiles.modifySync(request.params.tileId, function (tile) {
+		if (request.params.name in tile.properties) {
+			delete tile.properties[request.params.name];
+			this.broadcast('tiles/properties', 'delete', {
+				id: request.params.tileId,
+				name: request.params.name
 			});
-		});
-	});
-});
-
-installHandler([
-	'/tiles/:tileId/properties/:name',
-	'/stages/:stageId/tiles/:tileId/properties/:name'
-], 'delete', function (request, response) {
-	this.individualWriteLock(request.params.tileId, function (release) {
-		this.getJSON('tiles/' + request.params.tileId, function (tile) {
-			if (request.params.name in tile.properties) {
-				delete tile.properties[request.params.name];
-				this.putJSON('tiles/' + request.params.tileId, tile, function () {
-					this.broadcast('tiles/properties', 'delete', {
-						id: request.params.tileId,
-						name: request.params.name
-					});
-					release();
-					response.json(true);
-				});
-			} else {
-				release();
-				response.json(false);
-			}
-		});
+		} else {
+			throw 'Invalid property name: ' + request.params.name;
+		}
 	});
 });
