@@ -8,7 +8,6 @@ function TileControls() {
 			resizable: false,
 			layout: 'fit',
 			items: {
-				xtype: 'form',
 				layout: 'vbox',
 				items: [{
 					xtype: 'numberfield',

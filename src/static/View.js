@@ -92,23 +92,20 @@ function View(matrix, x0, y0) {
 			[0, 1, 1],
 			[1, 1, 1]
 		];
-		return function (di, dj, dk, options) {
-			if (!options) {
-				options = {};
-			}
+		return function (di, dj, dk) {
 			var canvas = document.createElement('canvas');
 			var left = 0;
 			var top = 0;
 			var right = 0;
 			var bottom = 0;
-			for (var i in points) {
-				var x = Math.round(mat[0][0] * points[i][0] * di + mat[0][1] * points[i][1] * dj + mat[0][2] * points[i][2] * dk);
-				var y = Math.round(mat[1][0] * points[i][0] * di + mat[1][1] * points[i][1] * dj + mat[1][2] * points[i][2] * dk);
+			points.forEach(function (point) {
+				var x = Math.round(mat[0][0] * point[0] * di + mat[0][1] * point[1] * dj + mat[0][2] * point[2] * dk);
+				var y = Math.round(mat[1][0] * point[0] * di + mat[1][1] * point[1] * dj + mat[1][2] * point[2] * dk);
 				left = Math.min(left, x);
 				top = Math.min(top, y);
 				right = Math.max(right, x);
 				bottom = Math.max(bottom, y);
-			}
+			});
 			canvas.width = right - left + 1;
 			canvas.height = bottom - top + 1;
 			var context = canvas.getContext('2d');
@@ -138,20 +135,50 @@ function View(matrix, x0, y0) {
 					mat[1][0] * i1 + mat[1][1] * j1 + mat[1][2] * k1
 					);
 			});
-			if (options.fill) {
-				context.fillStyle = 'blue';
-				context.globalAlpha = 0.5;
-				context.fill();
-			} else {
-				context.stroke();
-			}
-			if (options.asDataURL) {
-				return canvas.toDataURL();
-			} else {
-				return canvas;
-			}
+			context.stroke();
+			return canvas;
 		};
 	}());
+
+	this.generateTileHighlight = function () {
+		var canvas = document.createElement('canvas');
+		var left = Math.min(
+			0,
+			Math.round(mat[0][0]),
+			Math.round(mat[0][1]),
+			Math.round(mat[0][0] + mat[0][1])
+			);
+		var top = Math.min(
+			0,
+			Math.round(mat[1][0]),
+			Math.round(mat[1][1]),
+			Math.round(mat[1][0] + mat[1][1])
+			);
+		var right = Math.max(
+			0,
+			Math.round(mat[0][0]),
+			Math.round(mat[0][1]),
+			Math.round(mat[0][0] + mat[0][1])
+			);
+		var bottom = Math.max(
+			0,
+			Math.round(mat[1][0]),
+			Math.round(mat[1][1]),
+			Math.round(mat[1][0] + mat[1][1])
+			);
+		canvas.width = right - left + 1;
+		canvas.height = bottom - top + 1;
+		var context = canvas.getContext('2d');
+		context.translate(-left, -top);
+		context.fillStyle = 'blue';
+		context.globalAlpha = 0.5;
+		context.lineTo(mat[0][0], mat[1][0]);
+		context.lineTo(mat[0][0] + mat[0][1], mat[1][0] + mat[1][1]);
+		context.lineTo(mat[0][1], mat[1][1]);
+		context.lineTo(0, 0);
+		context.fill();
+		return canvas;
+	};
 
 	this.getOrigin = function () {
 		return {

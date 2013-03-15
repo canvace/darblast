@@ -22,7 +22,6 @@ function EntityControls() {
 				}, {
 					title: 'Positioning'
 				}, {
-					xtype: 'form',
 					title: 'Physics',
 					layout: 'vbox',
 					items: {
