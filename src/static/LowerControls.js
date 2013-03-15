@@ -18,6 +18,7 @@ var LowerControls = (function () {
 
 		var view = Ext.create('Ext.view.View', {
 			cls: 'view',
+			autoScroll: true,
 			store: {
 				fields: [{
 					name: 'id'
@@ -86,6 +87,7 @@ var LowerControls = (function () {
 				xtype: 'treepanel',
 				region: 'west',
 				split: true,
+				autoScroll: true,
 				width: 250,
 				tbar: [{
 					icon: '/resources/images/icons/add.png',

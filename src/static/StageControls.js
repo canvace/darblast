@@ -3,6 +3,7 @@ function StageControls() {
 
 	var tree = Ext.create('Ext.tree.Panel', {
 		region: 'center',
+		autoScroll: true,
 		tbar: {
 			xtype: 'toolbar',
 			items: [{
