@@ -82,26 +82,34 @@ function TileControls() {
 					title: 'Frames'
 				}, {
 					title: 'Positioning',
-					layout: 'table',
+					layout: {
+						type: 'table',
+						columns: 2
+					},
 					items: [{
 						xtype: 'box',
+						rowspan: 2,
 						resizable: true,
 						width: 200,
 						height: 200
 					}, {
-						xtype: 'numberfield',
+						xtype: 'textfield',
 						fieldLabel: 'X offset',
+						labelAlign: 'top',
+						value: tile.getOffset().x,
 						listeners: {
 							blur: function (field) {
-								tile.setOffsetX(field.getValue());
+								tile.setOffsetX(parseFloat(field.getValue()));
 							}
 						}
 					}, {
-						xtype: 'numberfield',
+						xtype: 'textfield',
 						fieldLabel: 'Y offset',
+						labelAlign: 'top',
+						value: tile.getOffset().y,
 						listeners: {
 							blur: function (field) {
-								tile.setOffsetY(field.getValue());
+								tile.setOffsetY(parseFloat(field.getValue()));
 							}
 						}
 					}]

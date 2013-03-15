@@ -158,6 +158,8 @@ function Elements(type, Element, ready) {
 		this.getFirstFrameId = function () {
 			if (element.frames.length) {
 				return element.frames[0].imageId;
+			} else {
+				return false;
 			}
 		};
 		this.forEachFrame = function (callback) {

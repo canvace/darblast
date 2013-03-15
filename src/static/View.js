@@ -92,7 +92,10 @@ function View(matrix, x0, y0) {
 			[0, 1, 1],
 			[1, 1, 1]
 		];
-		return function (di, dj, dk, fill) {
+		return function (di, dj, dk, options) {
+			if (!options) {
+				options = {};
+			}
 			var canvas = document.createElement('canvas');
 			var left = 0;
 			var top = 0;
@@ -108,7 +111,6 @@ function View(matrix, x0, y0) {
 			}
 			canvas.width = right - left + 1;
 			canvas.height = bottom - top + 1;
-			canvas.style.backgroundColor = 'white';
 			var context = canvas.getContext('2d');
 			context.translate(-left, -top);
 			(function (drawLine) {
@@ -136,14 +138,18 @@ function View(matrix, x0, y0) {
 					mat[1][0] * i1 + mat[1][1] * j1 + mat[1][2] * k1
 					);
 			});
-			if (fill) {
+			if (options.fill) {
 				context.fillStyle = 'blue';
 				context.globalAlpha = 0.5;
 				context.fill();
 			} else {
 				context.stroke();
 			}
-			return canvas;
+			if (options.asDataURL) {
+				return canvas.toDataURL();
+			} else {
+				return canvas;
+			}
 		};
 	}());
 

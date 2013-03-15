@@ -48,7 +48,9 @@ function Renderer() {
 	var layerTransparency = true;
 	var showGrid = true;
 
-	var selectionFragment = Canvace.view.generateBox(1, 1, 0, true);
+	var selectionFragment = Canvace.view.generateBox(1, 1, 0, {
+		fill: true
+	});
 
 	function render() {
 		context.globalAlpha = 1;

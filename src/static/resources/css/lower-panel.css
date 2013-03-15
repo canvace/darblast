@@ -6,7 +6,7 @@
 	text-align: center;
 }
 
-.view .thumb img {
+.view .thumb img,.view .thumb canvas {
 	max-height: 100%;
 	max-width: 100%;
 }
