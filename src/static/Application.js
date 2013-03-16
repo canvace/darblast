@@ -149,6 +149,17 @@ Ext.Loader.setConfig({
 		loader.allQueued();
 	};
 
+	Ext.define('Darblast.form.field.Number', {
+		extend: 'Ext.form.field.Number',
+		alias: 'widget.matrixcell',
+		value: 0,
+		size: 4,
+		allowBlank: false,
+		allowDecimals: false,
+		hideTrigger: true,
+		selectOnFocus: true
+	});
+
 	Canvace.showStartScreen = function () {
 		var startDialog = Ext.create('Ext.window.Window', {
 			title: 'Canvace Development Environment',
@@ -175,7 +186,39 @@ Ext.Loader.setConfig({
 					}, {
 						xtype: 'fieldset',
 						title: 'Projection matrix',
-						items: []
+						defaultType: 'matrixcell',
+						layout: {
+							type: 'table',
+							columns: 3
+						},
+						items: [{
+							name: 'matrix-schema-0-0',
+							value: -48
+						}, {
+							name: 'matrix-schema-0-1',
+							value: 48
+						}, {
+							name: 'matrix-schema-0-2',
+							value: 0
+						}, {
+							name: 'matrix-schema-1-0',
+							value: 24
+						}, {
+							name: 'matrix-schema-1-1',
+							value: 24
+						}, {
+							name: 'matrix-schema-1-2',
+							value: -48
+						}, {
+							name: 'matrix-schema-2-0',
+							value: 1
+						}, {
+							name: 'matrix-schema-2-1',
+							value: 1
+						}, {
+							name: 'matrix-schema-2-2',
+							value: 1
+						}]
 					}],
 					buttons: [{
 						text: 'Create',
