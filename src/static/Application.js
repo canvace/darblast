@@ -186,38 +186,48 @@ Ext.Loader.setConfig({
 					}, {
 						xtype: 'fieldset',
 						title: 'Projection matrix',
-						defaultType: 'matrixcell',
 						layout: {
-							type: 'table',
-							columns: 3
+							type: 'hbox',
+							align: 'stretch'
 						},
 						items: [{
-							name: 'matrix-schema-0-0',
-							value: -48
+							xtype: 'container',
+							defaultType: 'matrixcell',
+							layout: {
+								type: 'table',
+								columns: 3
+							},
+							items: [{
+								name: 'matrix-schema-0-0',
+								value: -48
+							}, {
+								name: 'matrix-schema-0-1',
+								value: 48
+							}, {
+								name: 'matrix-schema-0-2',
+								value: 0
+							}, {
+								name: 'matrix-schema-1-0',
+								value: 24
+							}, {
+								name: 'matrix-schema-1-1',
+								value: 24
+							}, {
+								name: 'matrix-schema-1-2',
+								value: -48
+							}, {
+								name: 'matrix-schema-2-0',
+								value: 1
+							}, {
+								name: 'matrix-schema-2-1',
+								value: 1
+							}, {
+								name: 'matrix-schema-2-2',
+								value: 1
+							}]
 						}, {
-							name: 'matrix-schema-0-1',
-							value: 48
-						}, {
-							name: 'matrix-schema-0-2',
-							value: 0
-						}, {
-							name: 'matrix-schema-1-0',
-							value: 24
-						}, {
-							name: 'matrix-schema-1-1',
-							value: 24
-						}, {
-							name: 'matrix-schema-1-2',
-							value: -48
-						}, {
-							name: 'matrix-schema-2-0',
-							value: 1
-						}, {
-							name: 'matrix-schema-2-1',
-							value: 1
-						}, {
-							name: 'matrix-schema-2-2',
-							value: 1
+							xtype: 'container',
+							html: '<canvas width="150" height="150"></canvas>'
 						}]
 					}],
 					buttons: [{
