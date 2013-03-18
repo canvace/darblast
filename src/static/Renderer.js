@@ -49,6 +49,7 @@ function Renderer() {
 	var showGrid = true;
 
 	var selectionFragment = Canvace.view.generateTileHighlight();
+	var metrics = Canvace.view.calculateBoxMetrics(1, 1, 0);
 
 	function render() {
 		context.globalAlpha = 1;
@@ -81,7 +82,7 @@ function Renderer() {
 		}
 		Canvace.selection.forEach(function (i, j, k) {
 			var p = Canvace.view.project(i, j, k);
-			context.drawImage(selectionFragment, p[0], p[1]);
+			context.drawImage(selectionFragment, p[0] + metrics.left, p[1] + metrics.top);
 		});
 	}
 
