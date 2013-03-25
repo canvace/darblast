@@ -86,31 +86,39 @@ function TileControls() {
 						columns: 2
 					},
 					items: [{
-						xtype: 'box',
-						rowspan: 2,
-						resizable: true,
-						width: 200,
-						height: 200
-					}, {
-						xtype: 'textfield',
-						fieldLabel: 'X offset',
-						labelAlign: 'top',
-						value: tile.getOffset().x,
-						listeners: {
-							blur: function (field) {
-								tile.setOffsetX(parseFloat(field.getValue()));
-							}
-						}
-					}, {
-						xtype: 'textfield',
-						fieldLabel: 'Y offset',
-						labelAlign: 'top',
-						value: tile.getOffset().y,
-						listeners: {
-							blur: function (field) {
-								tile.setOffsetY(parseFloat(field.getValue()));
-							}
-						}
+						xtype: 'container',
+						layout: 'hbox',
+						items: [{
+							xtype: 'box',
+							rowspan: 2,
+							resizable: true,
+							width: 200,
+							height: 200
+						}, {
+							xtype: 'container',
+							layout: 'vbox',
+							items: [{
+								xtype: 'textfield',
+								fieldLabel: 'X offset',
+								labelAlign: 'top',
+								value: tile.getOffset().x,
+								listeners: {
+									blur: function (field) {
+										tile.setOffsetX(parseFloat(field.getValue()));
+									}
+								}
+							}, {
+								xtype: 'textfield',
+								fieldLabel: 'Y offset',
+								labelAlign: 'top',
+								value: tile.getOffset().y,
+								listeners: {
+									blur: function (field) {
+										tile.setOffsetY(parseFloat(field.getValue()));
+									}
+								}
+							}]
+						}]
 					}]
 				}, {
 					title: 'Properties'
