@@ -117,7 +117,9 @@ var LowerControls = (function () {
 					icon: '/resources/images/icons/pencil.png',
 					tooltip: 'Edit selected ' + element + '...',
 					handler: function () {
-						handlers.fire('element/activate');
+						handlers.fire('element/activate', function (handler) {
+							handler(selection.getLastSelected().get('id'));
+						});
 					}
 				}, {
 					icon: '/resources/images/icons/folder_edit.png',

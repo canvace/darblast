@@ -69,12 +69,12 @@ function Selection() {
 
 	this.setCurrentArea = function (x0, y0, x1, y1) {
 		var k = Canvace.layers.getSelected();
-		var cell0 = Canvace.view.unproject(x0, y0, k);
-		var cell1 = Canvace.view.unproject(x1, y1, k);
-		var i0 = Math.floor(Math.min(cell0[0], cell1[0]));
-		var j0 = Math.floor(Math.min(cell0[1], cell1[1]));
-		var i1 = Math.floor(Math.max(cell0[0], cell1[0]));
-		var j1 = Math.floor(Math.max(cell0[1], cell1[1]));
+		var cell0 = Canvace.view.getCell(x0, y0, k);
+		var cell1 = Canvace.view.getCell(x1, y1, k);
+		var i0 = Math.min(cell0.i, cell1.i);
+		var j0 = Math.min(cell0.j, cell1.j);
+		var i1 = Math.max(cell0.i, cell1.i);
+		var j1 = Math.max(cell0.j, cell1.j);
 		currentArea.clear();
 		for (var i = i0; i <= i1; i++) {
 			for (var j = j0; j <= j1; j++) {
