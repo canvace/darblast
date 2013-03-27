@@ -198,36 +198,36 @@ Ext.Loader.setConfig({
 								columns: 3
 							},
 							items: [{
-								name: 'matrix-schema-0-0',
+								id: 'matrix-field-11',
 								value: -48
 							}, {
-								name: 'matrix-schema-0-1',
+								id: 'matrix-field-12',
 								value: 48
 							}, {
-								name: 'matrix-schema-0-2',
+								id: 'matrix-field-13',
 								value: 0
 							}, {
-								name: 'matrix-schema-1-0',
+								id: 'matrix-field-21',
 								value: 24
 							}, {
-								name: 'matrix-schema-1-1',
+								id: 'matrix-field-22',
 								value: 24
 							}, {
-								name: 'matrix-schema-1-2',
+								id: 'matrix-field-23',
 								value: -48
 							}, {
-								name: 'matrix-schema-2-0',
+								id: 'matrix-field-31',
 								value: 1
 							}, {
-								name: 'matrix-schema-2-1',
+								id: 'matrix-field-32',
 								value: 1
 							}, {
-								name: 'matrix-schema-2-2',
+								id: 'matrix-field-33',
 								value: 1
 							}]
 						}, {
 							xtype: 'container',
-							html: '<canvas width="150" height="150"></canvas>'
+							html: '<canvas id="projection-canvas" width="150" height="150"></canvas>'
 						}]
 					}],
 					buttons: [{
@@ -296,5 +296,6 @@ Ext.Loader.setConfig({
 			}]
 		});
 		startDialog.show();
+		new Projection();
 	};
 }());
