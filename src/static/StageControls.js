@@ -8,15 +8,23 @@ function StageControls() {
 			xtype: 'toolbar',
 			items: [{
 				icon: '/resources/images/icons/add.png',
-				tooltip: 'New stage...'
+				tooltip: 'New stage...',
+				handler: function () {
+					Ext.MessageBox.prompt('Create new stage', 'Enter a new stage name:', function (button, text) {
+						if (button === 'ok') {
+							Canvace.stages.create(text);
+						}
+					});
+				}
 			}, {
 				icon: '/resources/images/icons/pencil.png',
 				tooltip: 'Load stage',
-				disabled: true
+				handler: function () {
+					// TODO rename stage
+				}
 			}, {
 				icon: '/resources/images/icons/delete.png',
-				tooltip: 'Remove stage',
-				disabled: true
+				tooltip: 'Remove stage'
 			}]
 		},
 		root: {

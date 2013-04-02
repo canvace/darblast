@@ -81,43 +81,54 @@ function TileControls() {
 					title: 'Frames'
 				}, {
 					title: 'Positioning',
-					layout: {
-						type: 'table',
-						columns: 2
-					},
+					layout: 'hbox',
 					items: [{
+						xtype: 'box',
+						rowspan: 2,
+						resizable: true,
+						width: 200,
+						height: 200
+					}, {
 						xtype: 'container',
-						layout: 'hbox',
+						layout: 'vbox',
 						items: [{
-							xtype: 'box',
-							rowspan: 2,
-							resizable: true,
-							width: 200,
-							height: 200
+							xtype: 'checkbox',
+							boxLabel: 'Transparency',
+							checked: false,
+							listeners: {
+								change: function () {
+									// TODO
+								}
+							}
 						}, {
-							xtype: 'container',
-							layout: 'vbox',
-							items: [{
-								xtype: 'textfield',
-								fieldLabel: 'X offset',
-								labelAlign: 'top',
-								value: tile.getOffset().x,
-								listeners: {
-									blur: function (field) {
-										tile.setOffsetX(parseFloat(field.getValue()));
-									}
+							xtype: 'checkbox',
+							boxLabel: 'Animate',
+							checked: true,
+							listeners: {
+								change: function () {
+									// TODO
 								}
-							}, {
-								xtype: 'textfield',
-								fieldLabel: 'Y offset',
-								labelAlign: 'top',
-								value: tile.getOffset().y,
-								listeners: {
-									blur: function (field) {
-										tile.setOffsetY(parseFloat(field.getValue()));
-									}
+							}
+						}, {
+							xtype: 'textfield',
+							fieldLabel: 'X offset',
+							labelAlign: 'top',
+							value: tile.getOffset().x,
+							listeners: {
+								blur: function (field) {
+									tile.setOffsetX(parseFloat(field.getValue()));
 								}
-							}]
+							}
+						}, {
+							xtype: 'textfield',
+							fieldLabel: 'Y offset',
+							labelAlign: 'top',
+							value: tile.getOffset().y,
+							listeners: {
+								blur: function (field) {
+									tile.setOffsetY(parseFloat(field.getValue()));
+								}
+							}
 						}]
 					}]
 				}, {

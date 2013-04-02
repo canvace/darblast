@@ -2,9 +2,7 @@ function Tools() {
 	var activeTool;
 
 	function bindCommandHandler(command) {
-		return function () {
-			command.activate();
-		};
+		return command.activate;
 	}
 
 	function bindToolHandler(tool) {
@@ -23,12 +21,10 @@ function Tools() {
 	}, {
 		icon: '/resources/images/tools/undo.png',
 		tooltip: 'Undo',
-		disabled: true,
 		handler: bindCommandHandler(new UndoCommand())
 	}, {
 		icon: '/resources/images/tools/redo.png',
 		tooltip: 'Redo',
-		disabled: true,
 		handler: bindCommandHandler(new RedoCommand())
 	}, {
 		xtype: 'tbseparator'

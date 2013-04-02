@@ -120,6 +120,10 @@ function Stages(ready) {
 		return new Stage(id);
 	};
 
+	this.create = function (name) {
+		Canvace.Ajax.post('stages', name);
+	};
+
 	this.onCreate = function (handler) {
 		return createHandlers.registerHandler(0, handler);
 	};
