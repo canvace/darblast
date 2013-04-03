@@ -78,7 +78,7 @@ function Stages(ready) {
 	Canvace.poller.poll('stages', 'create', function (parameters) {
 		Canvace.Ajax.get('stages/' + parameters.id + '/properties/', function (properties) {
 			stages[parameters.id] = properties;
-			createHandlers.fire(parameters.id, function (handler) {
+			createHandlers.fire(0, function (handler) {
 				handler(parameters.id);
 			});
 		});

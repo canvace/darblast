@@ -24,7 +24,10 @@ function StageControls() {
 				}
 			}, {
 				icon: '/resources/images/icons/delete.png',
-				tooltip: 'Remove stage'
+				tooltip: 'Remove stage',
+				handler: function () {
+					// TODO delete stage
+				}
 			}]
 		},
 		root: {
@@ -51,7 +54,7 @@ function StageControls() {
 
 	Canvace.stages.forEach(addNode);
 	Canvace.stages.onCreate(function (id) {
-		addNode(Canvace.get(id));
+		addNode(Canvace.stages.get(id));
 	});
 
 	container.add(tree);
