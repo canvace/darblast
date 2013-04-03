@@ -26,7 +26,31 @@ function StageControls() {
 				icon: '/resources/images/icons/delete.png',
 				tooltip: 'Remove stage',
 				handler: function () {
-					// TODO delete stage
+					var selectedNodes = tree.getSelectionModel().getSelection();
+					if (selectedNodes.length) {
+						Ext.MessageBox.show({
+							title: 'Confirm stage deletion',
+							msg: 'Do you actually want to permanently delete the stages ' + (function (names) {
+								var lastName = names.pop();
+								if (names.length) {
+									return names.join(', ') + ' and ' + lastName;
+								} else {
+									return lastName;
+								}
+							}(selectedNodes.map(function (node) {
+								return '"' + node.get('id') + '"';
+							}))) + ' and all of their associated data?',
+							buttons: Ext.MessageBox.OKCANCEL,
+							icon: Ext.MessageBox.WARNING,
+							fn: function (button) {
+								if (button === 'ok') {
+									selectedNodes.forEach(function (stageEntry) {
+										Canvace.stages.get(stageEntry.get('id'))._delete();
+									});
+								}
+							}
+						});
+					}
 				}
 			}]
 		},
@@ -40,8 +64,10 @@ function StageControls() {
 	var projectNode = tree.getRootNode();
 
 	function addNode(stage) {
+		var id = stage.getId();
 		var node = projectNode.appendChild({
-			text: stage.getId(),
+			id: id,
+			text: id,
 			leaf: true
 		});
 		stage.onRename(function (newId) {
