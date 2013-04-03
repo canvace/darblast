@@ -121,7 +121,9 @@ function Stages(ready) {
 	};
 
 	this.create = function (name) {
-		Canvace.Ajax.post('stages', name);
+		Canvace.Ajax.post('stages/', {
+			name: name
+		});
 	};
 
 	this.onCreate = function (handler) {

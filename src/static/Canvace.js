@@ -32,7 +32,7 @@ var Canvace = (function () {
 					failure: function (response) {
 						Ext.MessageBox.show({
 							title: 'Error',
-							msg: response.toString(),
+							msg: JSON.parse(response.responseText).toString(),
 							buttons: Ext.MessageBox.OK,
 							icon: Ext.MessageBox.ERROR
 						});

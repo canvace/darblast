@@ -84,6 +84,7 @@ function Renderer() {
 			var p = Canvace.view.project(i, j, k);
 			context.drawImage(selectionFragment, p[0] + metrics.left, p[1] + metrics.top);
 		});
+		Canvace.cursor.draw(context);
 	}
 
 	this.render = render;

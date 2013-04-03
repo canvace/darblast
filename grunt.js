@@ -31,6 +31,7 @@ module.exports = function (grunt) {
 					'src/static/Selection.js',
 					'src/static/TileClipboard.js',
 					'src/static/EntityClipboard.js',
+					'src/static/Cursor.js',
 					'src/static/Renderer.js',
 					'src/static/ToolGroup.js',
 					'src/static/UndoCommand.js',

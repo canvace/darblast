@@ -141,6 +141,16 @@ var Handler = (function () {
 		this.tiles = new SpecificLocks('tiles');
 		this.entities = new SpecificLocks('entities');
 
+		this.exists = function (path, callback) {
+			fs.exists(request.session.projectPath + path, function (exists) {
+				try {
+					callback.call(thisObject, exists);
+				} catch (e) {
+					error(e);
+				}
+			});
+		};
+
 		this.unlink = function (path, callback) {
 			fs.unlink(request.session.projectPath + path, function (e) {
 				if (e) {
