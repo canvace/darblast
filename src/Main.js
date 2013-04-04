@@ -98,12 +98,27 @@ app.get('/install', function (request, response) {
 installSessionlessHandler('/', 'get', function (request, response) {
 	if ('projectPath' in request.session) {
 		this.readdir(request.session.projectPath + 'stages', function (stages) {
-			response.render('main.handlebars', {
-				projectId: JSON.stringify(this.getProjectId()),
-				stageId: JSON.stringify(stages[0]),
-				newMinorVersion: newMinorVersion,
-				newMajorVersion: newMajorVersion
-			});
+			if ('stage' in request.query) {
+				var index = stages.indexOf(request.query.stage);
+				if (index < 0) {
+					// TODO render error page
+				} else {
+					response.render('main.handlebars', {
+						projectId: JSON.stringify(this.getProjectId()),
+						stageId: JSON.stringify(stages[index]),
+						newMinorVersion: newMinorVersion,
+						newMajorVersion: newMajorVersion
+					});
+				}
+			} else {
+				// TODO what if the project doesn't have any stages?
+				response.render('main.handlebars', {
+					projectId: JSON.stringify(this.getProjectId()),
+					stageId: JSON.stringify(stages[0]),
+					newMinorVersion: newMinorVersion,
+					newMajorVersion: newMajorVersion
+				});
+			}
 		});
 	} else {
 		response.render('main.handlebars', {

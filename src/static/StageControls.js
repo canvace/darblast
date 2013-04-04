@@ -17,8 +17,17 @@ function StageControls() {
 					});
 				}
 			}, {
-				icon: '/resources/images/icons/pencil.png',
+				icon: '/resources/images/icons/application_get.png',
 				tooltip: 'Load stage',
+				handler: function () {
+					var selectedNodes = tree.getSelectionModel().getSelection();
+					if (selectedNodes.length) {
+						window.location = '/?stage=' + encodeURIComponent(selectedNodes[0].get('id'));
+					}
+				}
+			}, {
+				icon: '/resources/images/icons/pencil.png',
+				tooltip: 'Rename stage',
 				handler: function () {
 					// TODO rename stage
 				}
@@ -58,6 +67,11 @@ function StageControls() {
 			text: 'Current project',
 			expandable: true,
 			expanded: true
+		},
+		listeners: {
+			itemdblclick: function (view, record) {
+				window.location = '/?stage=' + encodeURIComponent(record.get('id'));
+			}
 		}
 	});
 
