@@ -1,5 +1,6 @@
 function Stages(ready) {
 	var stages = {};
+	var currentStageId;
 
 	Canvace.Ajax.get('stages/', function (ids) {
 		var loader = new Loader(ready);
@@ -12,6 +13,8 @@ function Stages(ready) {
 	});
 
 	var createHandlers = new EventHandlers();
+	var loadHandlers = new EventHandlers();
+	var unloadHandlers = new EventHandlers();
 	var renameHandlers = new EventHandlers();
 	var deleteHandlers = new EventHandlers();
 	var putPropertyHandlers = new EventHandlers();
@@ -31,7 +34,16 @@ function Stages(ready) {
 		this.getId = function () {
 			return id;
 		};
+		this.isCurrent = function () {
+			return id === currentStageId;
+		};
 
+		this.onLoad = function (handler) {
+			return loadHandlers.registerHandler(id, handler);
+		};
+		this.onUnload = function (handler) {
+			return unloadHandlers.registerHandler(id, handler);
+		};
 		this.onRename = function (handler) {
 			return renameHandlers.registerHandler(id, handler);
 		};
@@ -40,7 +52,14 @@ function Stages(ready) {
 		};
 
 		this.load = function (callback) {
-			Canvace.Ajax.get('stages/' + id, callback);
+			Canvace.Ajax.get('stages/' + id, function (data) {
+				if (typeof currentStageId !== 'undefined') {
+					unloadHandlers.fire(currentStageId);
+				}
+				currentStageId = id;
+				loadHandlers.fire(id);
+				callback && callback(data);
+			});
 		};
 		this.save = function (data, callback) {
 			Canvace.Ajax.put('stages/' + id, {
@@ -52,6 +71,9 @@ function Stages(ready) {
 			}, callback);
 		};
 
+		this.getProperties = function () {
+			return properties;
+		};
 		this.getProperty = function (name) {
 			return properties[name];
 		};
@@ -92,6 +114,9 @@ function Stages(ready) {
 		deleteHandlers.rehash(parameters.oldId, parameters.newId);
 		putPropertyHandlers.rehash(parameters.oldId, parameters.newId);
 		deletePropertyHandlers.rehash(parameters.oldId, parameters.newId);
+		if (currentStageId === parameters.oldId) {
+			currentStageId = parameters.newId;
+		}
 		renameHandlers.fire(parameters.newId, function (handler) {
 			handler(parameters.newId);
 		});

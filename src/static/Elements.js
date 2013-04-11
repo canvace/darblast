@@ -188,6 +188,9 @@ function Elements(type, Element, ready) {
 			return labels;
 		};
 
+		this.getProperties = function () {
+			return element.properties;
+		};
 		this.getProperty = function (name) {
 			return element.properties[name];
 		};

@@ -1,6 +1,13 @@
 function StageControls() {
 	var container = Ext.getCmp('stage-controls');
 
+	var propertyGrid = new PropertyControls(container, {
+		region: 'south',
+		split: true,
+		title: 'Properties',
+		height: 300
+	});
+
 	var tree = Ext.create('Ext.tree.Panel', {
 		region: 'center',
 		autoScroll: true,
@@ -33,7 +40,7 @@ function StageControls() {
 				}
 			}, {
 				icon: '/resources/images/icons/delete.png',
-				tooltip: 'Remove stage',
+				tooltip: 'Delete stage...',
 				handler: function () {
 					var selectedNodes = tree.getSelectionModel().getSelection();
 					if (selectedNodes.length) {
@@ -69,22 +76,46 @@ function StageControls() {
 			expanded: true
 		},
 		listeners: {
-			itemdblclick: function (view, record) {
-				window.location = '/?stage=' + encodeURIComponent(record.get('id'));
+			itemclick: function (view, record) {
+				new propertyGrid.Bond(Canvace.stages.get(record.get('id')));
 			}
-		}
+		},
+		plugins: [Ext.create('Ext.grid.plugin.CellEditing', {
+			clicksToEdit: 1
+		})]
 	});
 
 	var projectNode = tree.getRootNode();
 
 	function addNode(stage) {
 		var id = stage.getId();
-		var node = projectNode.appendChild({
-			id: id,
-			text: id,
-			leaf: true
+		var node;
+		if (stage.isCurrent()) {
+			node = projectNode.appendChild({
+				id: id,
+				text: id + ' (current stage)',
+				leaf: true
+			});
+		} else {
+			node = projectNode.appendChild({
+				id: id,
+				text: id,
+				leaf: true,
+				href: '/?stage=' + encodeURIComponent(id)
+			});
+		}
+		stage.onLoad(function () {
+			node.set('href', '');
+			node.set('text', id + ' (current stage)');
+		});
+		stage.onUnload(function () {
+			node.set('text', id);
+			node.set('href', '/?stage=' + encodeURIComponent(id));
 		});
 		stage.onRename(function (newId) {
+			if (!stage.isCurrent()) {
+				node.set('href', '/?stage=' + encodeURIComponent(newId));
+			}
 			node.set('text', newId);
 		});
 		stage.onDelete(function () {
@@ -98,10 +129,4 @@ function StageControls() {
 	});
 
 	container.add(tree);
-	container.add({
-		region: 'south',
-		split: true,
-		title: 'Properties',
-		height: 300
-	});
 }
