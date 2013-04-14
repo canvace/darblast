@@ -1,77 +1,101 @@
-function PropertyControls(container, config) {
-	var createHandlers = new EventHandlers();
-	var editHandlers = new EventHandlers();
-	var deleteHandlers = new EventHandlers();
+Ext.define('Canvace.data.Property', {
+	extend: 'Ext.data.Model',
+	fields: [{
+		name: 'name',
+		type: 'string'
+	}, 'value']
+});
 
-	var store = container.add(Ext.Object.merge(config || {}, {
-		xtype: 'grid',
+function PropertyControls(container, config) {
+	var store = container.add(Ext.create('Ext.grid.Panel', Ext.Object.merge(config || {}, {
+		tbar: [{
+			text: 'Add property...',
+			handler: function () {
+				var dialog;
+				function Panel(title, valueField) {
+					var nameField = Ext.create('Ext.form.TextField', {
+						fieldLabel: 'Name'
+					});
+					return {
+						title: title,
+						layout: 'vbox',
+						items: [nameField, valueField],
+						buttons: [{
+							text: 'Add',
+							handler: function () {
+								store.add({
+									name: nameField.getValue(),
+									value: valueField.getValue()
+								});
+								dialog.close();
+								store.sync();
+							}
+						}]
+					};
+				}
+				dialog = Ext.create('Ext.window.Window', {
+					title: 'Add new property',
+					modal: true,
+					resizable: false,
+					layout: 'accordion',
+					items: [new Panel('Boolean property', Ext.create('Ext.form.field.ComboBox', {
+						fieldLabel: 'Value',
+						store: [[true, 'true'], [false, 'false']],
+						value: true
+					})), new Panel('Numeric property', Ext.create('Ext.form.NumberField', {
+						fieldLabel: 'Value',
+						value: 0
+					})), new Panel('String property', Ext.create('Ext.form.field.TextArea', {
+						fieldLabel: 'Value'
+					}))],
+					buttons: [{
+						text: 'Cancel',
+						handler: function () {
+							dialog.close();
+						}
+					}]
+				});
+				dialog.show();
+			}
+		}, {
+			text: 'Add sub-property...',
+			handler: function () {
+				// TODO
+			}
+		}],
+		store: {
+			model: 'Canvace.data.Property'
+		},
 		columns: [{
+			dataIndex: 'name',
 			text: 'Name',
+			hideable: false,
 			sortable: true
 		}, {
-			text: 'Value'
-		}, {}],
-		plugins: [{
-			ptype: 'cellediting'
+			dataIndex: 'value',
+			text: 'Value',
+			hideable: false,
+			sortable: false
+			//plugins: ['cellediting']
 		}, {
-			ptype: 'rowexpander'
+			xtype: 'actioncolumn',
+			hideable: false,
+			sortable: false,
+			items: [{
+				icon: '/resources/images/icons/delete.png',
+				tooltip: 'Delete property',
+				handler: function (view, rowIndex) {
+					view.getStore().removeAt(rowIndex);
+				}
+			}]
 		}]
-	})).getStore();
+	}))).getStore();
 
-	this.Bond = function (object) {
-		store.removeAll();
+	this.bind = function () {
+		// TODO
+	};
 
-		var id = object.getId();
-
-		object.onRename(function (newId) {
-			createHandlers.rehash(id, newId);
-			editHandlers.rehash(id, newId);
-			deleteHandlers.rehash(id, newId);
-			id = newId;
-		});
-
-		(function walk(properties) {
-			for (var key in properties) {
-				(function () {
-					function add(type, value) {
-						store.add({
-							fields: [{
-								name: 'Name',
-								type: 'string',
-								defaultValue: key
-							}, {
-								name: 'Value',
-								type: type,
-								defaultValue: value
-							}]
-						});
-					}
-					switch (typeof properties[key]) {
-					case 'boolean':
-						add('boolean', properties[key]);
-						break;
-					case 'number':
-						add('float', properties[key]);
-						break;
-					case 'object':
-						walk(properties[key]);
-						break;
-					default:
-						add('string', properties[key].toString());
-						break;
-					}
-				}());
-			}
-		}(object.getProperties()));
-
-		this.onCreate = function (handler) {
-			return createHandlers.registerHandler(id, handler);
-		};
-		this.onEdit = function (handler) {
-			return editHandlers.registerHandler(id, handler);
-		};
-		this.onDelete = function (handler) {
-			return deleteHandlers.registerHandler(id, handler);
-		};
+	this.unbind = function () {
+		// TODO
 	};
 }

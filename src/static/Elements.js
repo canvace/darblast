@@ -194,13 +194,13 @@ function Elements(type, Element, ready) {
 		this.getProperty = function (name) {
 			return element.properties[name];
 		};
-		this.putProperty = function (name, value) {
+		this.putProperty = function (name, value, callback) {
 			Canvace.Ajax.put(type + '/' + id + '/properties/' + name, {
 				value: value
-			});
+			}, callback);
 		};
-		this.deleteProperty = function (name) {
-			Canvace.Ajax._delete(type + '/' + id + '/properties/' + name);
+		this.deleteProperty = function (name, callback) {
+			Canvace.Ajax._delete(type + '/' + id + '/properties/' + name, callback);
 		};
 		this.onPutProperty = function (handler) {
 			return putPropertyHandlers.registerHandler(id, handler);

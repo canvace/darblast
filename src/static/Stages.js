@@ -77,13 +77,13 @@ function Stages(ready) {
 		this.getProperty = function (name) {
 			return properties[name];
 		};
-		this.putProperty = function (name, value) {
+		this.putProperty = function (name, value, callback) {
 			Canvace.Ajax.put('stages/' + id + '/properties/' + name, {
 				value: value
-			});
+			}, callback);
 		};
-		this.deleteProperty = function (name) {
-			Canvace.Ajax._delete('stages/' + id + '/properties/' + name);
+		this.deleteProperty = function (name, callback) {
+			Canvace.Ajax._delete('stages/' + id + '/properties/' + name, callback);
 		};
 		this.onPutProperty = function (handler) {
 			return putPropertyHandlers.registerHandler(id, handler);
