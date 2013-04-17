@@ -146,13 +146,15 @@ module.exports = function (grunt) {
 
 		uglify: {
 			client: {
-				src: 'src/static/app.js',
-				dest: 'bin/static/app.js'
+				files: {
+					'bin/static/app.js': 'src/static/app.js'
+				}
 			},
 
 			server: {
-				src: 'src/canvace.js',
-				dest: 'bin/canvace.js'
+				files: {
+					'bin/canvace.js': 'src/canvace.js'
+				}
 			}
 		},
 
