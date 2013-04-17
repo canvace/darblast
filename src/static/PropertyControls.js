@@ -1,5 +1,5 @@
 function PropertyControls(container, config) {
-	var store = Ext.create('Ext.data.TreeStore', {
+	var store = new Ext.data.TreeStore({
 		fields: [{
 			name: 'name',
 			type: 'string'
@@ -14,7 +14,7 @@ function PropertyControls(container, config) {
 		var dialog;
 
 		function Panel(title, valueField) {
-			var nameField = Ext.create('Ext.form.TextField', {
+			var nameField = new Ext.form.TextField({
 				fieldLabel: 'Name'
 			});
 			return {
@@ -35,19 +35,19 @@ function PropertyControls(container, config) {
 			};
 		}
 
-		dialog = Ext.create('Ext.window.Window', {
+		dialog = new Ext.window.Window({
 			title: 'Add new property',
 			modal: true,
 			resizable: false,
 			layout: 'accordion',
-			items: [new Panel('Boolean property', Ext.create('Ext.form.field.ComboBox', {
+			items: [new Panel('Boolean property', new Ext.form.field.ComboBox({
 				fieldLabel: 'Value',
 				store: [[true, 'true'], [false, 'false']],
 				value: true
-			})), new Panel('Numeric property', Ext.create('Ext.form.NumberField', {
+			})), new Panel('Numeric property', new Ext.form.NumberField({
 				fieldLabel: 'Value',
 				value: 0
-			})), new Panel('String property', Ext.create('Ext.form.field.TextArea', {
+			})), new Panel('String property', new Ext.form.field.TextArea({
 				fieldLabel: 'Value'
 			}))],
 			buttons: [{
@@ -60,7 +60,7 @@ function PropertyControls(container, config) {
 		dialog.show();
 	}
 
-	container.add(Ext.create('Ext.tree.Panel', Ext.Object.merge(config || {}, {
+	container.add(new Ext.tree.Panel(Ext.Object.merge(config || {}, {
 		tbar: [{
 			icon: '/resources/images/icons/add.png',
 			text: 'Add property...',

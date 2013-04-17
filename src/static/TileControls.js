@@ -2,7 +2,7 @@ function TileControls() {
 	var controls = new LowerControls('Tiles', 1, false, 'tile', 'tiles');
 
 	controls.onAddElement(function () {
-		var dialog = Ext.create('Ext.window.Window', {
+		var dialog = new Ext.window.Window({
 			title: 'Create new tile',
 			modal: true,
 			resizable: false,
@@ -47,7 +47,7 @@ function TileControls() {
 
 	controls.onActivateElement(function (id) {
 		var tile = Canvace.tiles.get(id);
-		var dialog = Ext.create('Ext.window.Window', {
+		var dialog = new Ext.window.Window({
 			title: 'Tile configuration',
 			modal: true,
 			resizable: false,

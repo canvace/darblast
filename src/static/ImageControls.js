@@ -2,7 +2,7 @@ function ImageControls() {
 	var controls = new LowerControls('Images', 0, true, 'image', 'images');
 
 	controls.onAddElement(function () {
-		var dialog = Ext.create('Ext.window.Window', {
+		var dialog = new Ext.window.Window({
 			title: 'Load new images',
 			modal: true,
 			resizable: false,
@@ -50,7 +50,7 @@ function ImageControls() {
 
 	controls.onActivateElement(function (id) {
 		var image = Canvace.images.get(id);
-		var dialog = Ext.create('Ext.window.Window', {
+		var dialog = new Ext.window.Window({
 			title: 'Edit image',
 			modal: true,
 			resizable: false,

@@ -9,7 +9,7 @@ function EntityControls() {
 
 	controls.onActivateElement(function (id) {
 		var entity = Canvace.entities.get(id);
-		var dialog = Ext.create('Ext.window.Window', {
+		var dialog = new Ext.window.Window({
 			title: 'Entity configuration',
 			modal: true,
 			resizable: false,

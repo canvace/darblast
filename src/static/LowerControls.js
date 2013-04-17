@@ -16,7 +16,7 @@ var LowerControls = (function () {
 		this.onActivateElement = bindOn('element/activate');
 		this.onDeleteElement = bindOn('element/delete');
 
-		var view = Ext.create('Ext.view.View', {
+		var view = new Ext.view.View({
 			cls: 'view',
 			autoScroll: true,
 			store: {

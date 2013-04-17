@@ -23,7 +23,7 @@ function ToolGroup(icon, tooltip, tools) {
 		});
 	}
 
-	return group = Ext.create('Ext.button.Split', {
+	return group = new Ext.button.Split({
 		toggleGroup: 'tool',
 		allowDepress: false,
 		scale: 'large',

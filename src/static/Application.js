@@ -162,7 +162,7 @@ Ext.Loader.setConfig({
 	});
 
 	Canvace.showStartScreen = function () {
-		var startDialog = Ext.create('Ext.window.Window', {
+		var startDialog = new Ext.window.Window({
 			title: 'Canvace Development Environment',
 			modal: true,
 			closable: false,

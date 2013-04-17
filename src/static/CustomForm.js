@@ -38,7 +38,7 @@ function CustomForm(config) {
 	});
 	delete config.failure;
 
-	var form = Ext.create('Ext.form.Panel', config);
+	var form = new Ext.form.Panel(config);
 
 	var superSubmit = form.submit;
 	form.submit = function (options) {

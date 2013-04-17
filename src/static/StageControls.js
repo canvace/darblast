@@ -9,7 +9,7 @@ function StageControls() {
 		height: 300
 	});
 
-	var tree = Ext.create('Ext.tree.Panel', {
+	var tree = new Ext.tree.Panel({
 		region: 'center',
 		autoScroll: true,
 		tbar: {
@@ -81,7 +81,7 @@ function StageControls() {
 				propertyGrid.bind(Canvace.stages.get(record.get('id')));
 			}
 		},
-		plugins: [Ext.create('Ext.grid.plugin.CellEditing', {
+		plugins: [new Ext.grid.plugin.CellEditing({
 			clicksToEdit: 1
 		})]
 	});
