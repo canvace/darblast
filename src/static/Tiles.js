@@ -3,11 +3,11 @@ function Tiles(ready) {
 		Element.call(this, id);
 
 		this.isStatic = function () {
-			return tile['static'];
+			return tile.static;
 		};
 		this.setStatic = function (value) {
 			var data = {};
-			data['static'] = !!value;
+			data.static = !!value;
 			Canvace.Ajax.put('tiles/' + id, data);
 		};
 

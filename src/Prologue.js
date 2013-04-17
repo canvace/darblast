@@ -152,7 +152,7 @@ if (config.debug) {
 	}));
 }
 
-app.use(express['static'](__dirname + '/static'));
+app.use(express.static(__dirname + '/static'));
 app.use(express.query());
 app.use(express.bodyParser());
 app.set('views', __dirname + '/views');
