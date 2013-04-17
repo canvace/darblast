@@ -4,6 +4,7 @@ function StageControls() {
 	var propertyGrid = new PropertyControls(container, {
 		region: 'south',
 		split: true,
+		collapsible: true,
 		title: 'Properties',
 		height: 300
 	});
@@ -77,7 +78,7 @@ function StageControls() {
 		},
 		listeners: {
 			itemclick: function (view, record) {
-				new propertyGrid.Bond(Canvace.stages.get(record.get('id')));
+				propertyGrid.bind(Canvace.stages.get(record.get('id')));
 			}
 		},
 		plugins: [Ext.create('Ext.grid.plugin.CellEditing', {
