@@ -77,8 +77,12 @@ function StageControls() {
 			expanded: true
 		},
 		listeners: {
-			itemclick: function (view, record) {
-				propertyGrid.bind(Canvace.stages.get(record.get('id')));
+			selectionchange: function (selection, records) {
+				if (records.length) {
+					propertyGrid.bind(Canvace.stages.get(records[0].get('id')));
+				} else {
+					propertyGrid.unbind();
+				}
 			}
 		},
 		plugins: [new Ext.grid.plugin.CellEditing({

@@ -77,7 +77,8 @@ function PropertyControls(container, config) {
 		rootVisible: false,
 		rowLines: true,
 		columnLines: true,
-		lines: false,
+		lines: true,
+		useArrows: true,
 		store: store,
 		columns: [{
 			dataIndex: 'name',
@@ -101,16 +102,12 @@ function PropertyControls(container, config) {
 					record.remove();
 				}
 			}]
-		}],
-		listeners: {
-			selectionchange: function () {
-				// TODO
-			}
-		}
+		}]
 	})));
 
+	var root = store.getRootNode();
+
 	this.bind = function (object) {
-		var root = store.getRootNode();
 		root.removeAll();
 		(function walk(properties, node) {
 			for (var key in properties) {
@@ -140,6 +137,6 @@ function PropertyControls(container, config) {
 	};
 
 	this.unbind = function () {
-		store.getRootNode().removeAll();
+		root.removeAll();
 	};
 }
