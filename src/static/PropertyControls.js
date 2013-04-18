@@ -27,6 +27,7 @@ function PropertyControls(container, config) {
 										parentNode.appendChild({
 											expandable: false,
 											leaf: true,
+											icon: Ext.BLANK_IMAGE_URL,
 											name: nameField.getValue(),
 											value: valueField.getValue()
 										});
@@ -38,6 +39,7 @@ function PropertyControls(container, config) {
 							parentNode.appendChild({
 								expandable: false,
 								leaf: true,
+								icon: Ext.BLANK_IMAGE_URL,
 								name: nameField.getValue(),
 								value: valueField.getValue()
 							});
@@ -56,7 +58,8 @@ function PropertyControls(container, config) {
 			items: [new Panel('Boolean property', new Ext.form.field.ComboBox({
 				fieldLabel: 'Value',
 				store: [[true, 'true'], [false, 'false']],
-				value: true
+				value: true,
+				editable: false
 			})), new Panel('Numeric property', new Ext.form.NumberField({
 				fieldLabel: 'Value',
 				value: 0
@@ -73,17 +76,23 @@ function PropertyControls(container, config) {
 		dialog.show();
 	}
 
-	var rootNode = container.add(new Ext.tree.Panel(Ext.Object.merge(config || {}, {
-		store: {
-			fields: [{
-				name: 'name',
-				type: 'string'
-			}, 'value'],
-			root: {
-				expandable: true,
-				expanded: true
-			}
-		},
+	var store = new Ext.data.TreeStore({
+		fields: [{
+			name: 'name',
+			type: 'string'
+		}, 'value'],
+		root: {
+			expandable: true,
+			expanded: true,
+			icon: Ext.BLANK_IMAGE_URL,
+			name: '(no selection)'
+		}
+	});
+
+	var bound = false;
+
+	container.add(new Ext.tree.Panel(Ext.Object.merge(config || {}, {
+		store: store,
 		rowLines: true,
 		columnLines: true,
 		lines: false,
@@ -97,15 +106,15 @@ function PropertyControls(container, config) {
 			dataIndex: 'value',
 			text: 'Value',
 			hideable: false,
-			sortable: false,
-			plugins: [{
-				ptype: 'cellediting',
-				listeners: {
-					beforeedit: function (editor, event) {
-						return !event.record.get('expandable');
-					}
-				}
-			}]
+			sortable: false
+			//plugins: [{
+			//	ptype: 'cellediting',
+			//	listeners: {
+			//		beforeedit: function (editor, event) {
+			//			return !event.record.get('expandable');
+			//		}
+			//	}
+			//}]
 		}, {
 			xtype: 'actioncolumn',
 			hideable: false,
@@ -117,7 +126,7 @@ function PropertyControls(container, config) {
 					new NewPropertyDialog(record);
 				},
 				isDisabled: function (view, rowIndex, columnIndex, item, record) {
-					return record.isLeaf();
+					return !bound || record.isLeaf();
 				}
 			}, {
 				icon: '/resources/images/icons/delete.png',
@@ -130,11 +139,16 @@ function PropertyControls(container, config) {
 				}
 			}]
 		}]
-	}))).getStore().getRootNode();
+	})));
 
 	this.bind = function (object, name) {
-		rootNode.removeAll();
-		rootNode.set('name', name);
+		bound = true;
+		var rootNode = store.setRootNode({
+			expandable: true,
+			expanded: true,
+			icon: Ext.BLANK_IMAGE_URL,
+			name: name
+		});
 		(function walk(properties, node) {
 			for (var key in properties) {
 				switch (typeof properties[key]) {
@@ -143,6 +157,7 @@ function PropertyControls(container, config) {
 				case 'number':
 					node.appendChild({
 						leaf: true,
+						icon: Ext.BLANK_IMAGE_URL,
 						name: key,
 						value: properties[key]
 					});
@@ -151,12 +166,14 @@ function PropertyControls(container, config) {
 					if (properties[key] !== null) {
 						walk(properties[key], node.appendChild({
 							expandable: true,
+							icon: Ext.BLANK_IMAGE_URL,
 							name: key,
 							value: '(object)'
 						}));
 					} else {
 						node.appendChild({
 							leaf: true,
+							icon: Ext.BLANK_IMAGE_URL,
 							name: key,
 							value: 'null'
 						});
@@ -165,6 +182,7 @@ function PropertyControls(container, config) {
 				default:
 					node.appendChild({
 						leaf: true,
+						icon: Ext.BLANK_IMAGE_URL,
 						name: key,
 						value: properties[key].toString()
 					});
@@ -175,7 +193,12 @@ function PropertyControls(container, config) {
 	};
 
 	this.unbind = function () {
-		rootNode.removeAll();
-		rootNode.set('name', '(no selection)');
+		bound = false;
+		store.setRootNode({
+			expandable: true,
+			expanded: true,
+			icon: Ext.BLANK_IMAGE_URL,
+			name: '(no selection)'
+		});
 	};
 }
