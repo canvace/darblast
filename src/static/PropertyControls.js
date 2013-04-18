@@ -15,13 +15,26 @@ function PropertyControls(container, config) {
 					handler: function () {
 						var name = nameField.getValue();
 						var previous = parentNode.findChild('name', name);
-						if (!previous || (Ext.MessageBox.show({
-							title: 'Error',
-							msg: 'The property "' + name + '" already exists do you want to overwrite it?',
-							buttons: Ext.MessageBox.OKCANCEL,
-							icon: Ext.MessageBox.ERROR
-						}) === Ext.MessageBox.OK)) {
-							previous && previous.remove();
+						if (previous) {
+							Ext.MessageBox.show({
+								title: 'Error',
+								msg: 'The property "' + name + '" already exists do you want to overwrite it?',
+								buttons: Ext.MessageBox.OKCANCEL,
+								icon: Ext.MessageBox.ERROR,
+								fn: function (buttonId) {
+									if (buttonId === Ext.MessageBox.OK) {
+										previous.remove();
+										parentNode.appendChild({
+											expandable: false,
+											leaf: true,
+											name: nameField.getValue(),
+											value: valueField.getValue()
+										});
+										dialog.close();
+									}
+								}
+							});
+						} else {
 							parentNode.appendChild({
 								expandable: false,
 								leaf: true,
@@ -71,7 +84,11 @@ function PropertyControls(container, config) {
 				expanded: true
 			}
 		},
+		rowLines: true,
+		columnLines: true,
+		lines: false,
 		columns: [{
+			xtype: 'treecolumn',
 			dataIndex: 'name',
 			text: 'Name',
 			hideable: false,
@@ -109,14 +126,15 @@ function PropertyControls(container, config) {
 					record.remove();
 				},
 				isDisabled: function (view, rowIndex) {
-					return !!rowIndex;
+					return !rowIndex;
 				}
 			}]
 		}]
 	}))).getStore().getRootNode();
 
-	this.bind = function (object) {
+	this.bind = function (object, name) {
 		rootNode.removeAll();
+		rootNode.set('name', name);
 		(function walk(properties, node) {
 			for (var key in properties) {
 				switch (typeof properties[key]) {
@@ -150,6 +168,7 @@ function PropertyControls(container, config) {
 						name: key,
 						value: properties[key].toString()
 					});
+					break;
 				}
 			}
 		}(object.getProperties(), rootNode));
@@ -157,5 +176,6 @@ function PropertyControls(container, config) {
 
 	this.unbind = function () {
 		rootNode.removeAll();
+		rootNode.set('name', '(no selection)');
 	};
 }
