@@ -150,17 +150,6 @@ Ext.Loader.setConfig({
 		loader.allQueued();
 	};
 
-	Ext.define('Darblast.form.field.Number', {
-		extend: 'Ext.form.field.Number',
-		alias: 'widget.matrixcell',
-		value: 0,
-		size: 4,
-		allowBlank: false,
-		allowDecimals: false,
-		hideTrigger: true,
-		selectOnFocus: true
-	});
-
 	Canvace.showStartScreen = function () {
 		var startDialog = new Ext.window.Window({
 			title: 'Canvace Development Environment',
@@ -193,10 +182,17 @@ Ext.Loader.setConfig({
 						},
 						items: [{
 							xtype: 'container',
-							defaultType: 'matrixcell',
 							layout: {
 								type: 'table',
 								columns: 3
+							},
+							defaultType: 'numberfield',
+							defaults: {
+								size: 4,
+								allowBlank: false,
+								allowDecimals: true,
+								hideTrigger: true,
+								selectOnFocus: true
 							},
 							items: [{
 								id: 'matrix-field-11',

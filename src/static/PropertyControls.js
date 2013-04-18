@@ -117,7 +117,7 @@ function PropertyControls(container, config) {
 					new NewPropertyDialog(record);
 				},
 				isDisabled: function (view, rowIndex, columnIndex, item, record) {
-					return record.isExpandable();
+					return record.isLeaf();
 				}
 			}, {
 				icon: '/resources/images/icons/delete.png',

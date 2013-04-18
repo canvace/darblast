@@ -79,7 +79,8 @@ function StageControls() {
 		listeners: {
 			selectionchange: function (selection, records) {
 				if (records.length) {
-					propertyGrid.bind(Canvace.stages.get(records[0].get('id')));
+					var stage = Canvace.stages.get(records[0].get('id'));
+					propertyGrid.bind(stage, stage.getId());
 				} else {
 					propertyGrid.unbind();
 				}

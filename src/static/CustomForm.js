@@ -1,13 +1,16 @@
+Ext.define('Darblast.form.ErrorReader', {
+	extend: 'Ext.data.reader.Reader',
+	alias: 'reader.success',
+	read: function () {
+		return {
+			success: true,
+			records: null
+		};
+	}
+});
+
 function CustomForm(config) {
-	config.xtype = 'form';
-	config.errorReader = {
-		read: function () {
-			return {
-				success: true,
-				records: null
-			};
-		}
-	};
+	config.errorReader = 'success';
 
 	function makeCallback(original) {
 		if (original) {
