@@ -1,16 +1,5 @@
 function PropertyControls(container, config) {
-	var store = new Ext.data.TreeStore({
-		fields: [{
-			name: 'name',
-			type: 'string'
-		}, 'value'],
-		root: {
-			expandable: true,
-			expanded: true
-		}
-	});
-
-	function NewPropertyDialog() {
+	function NewPropertyDialog(parentNode) {
 		var dialog;
 
 		function Panel(title, valueField) {
@@ -24,12 +13,23 @@ function PropertyControls(container, config) {
 				buttons: [{
 					text: 'Add',
 					handler: function () {
-						store.getRootNode().appendChild({
-							name: nameField.getValue(),
-							value: valueField.getValue()
-						});
-						dialog.close();
-						store.sync();
+						var name = nameField.getValue();
+						var previous = parentNode.findChild('name', name);
+						if (!previous || (Ext.MessageBox.show({
+							title: 'Error',
+							msg: 'The property "' + name + '" already exists do you want to overwrite it?',
+							buttons: Ext.MessageBox.OKCANCEL,
+							icon: Ext.MessageBox.ERROR
+						}) === Ext.MessageBox.OK)) {
+							previous && previous.remove();
+							parentNode.appendChild({
+								expandable: false,
+								leaf: true,
+								name: nameField.getValue(),
+								value: valueField.getValue()
+							});
+							dialog.close();
+						}
 					}
 				}]
 			};
@@ -60,26 +60,17 @@ function PropertyControls(container, config) {
 		dialog.show();
 	}
 
-	container.add(new Ext.tree.Panel(Ext.Object.merge(config || {}, {
-		tbar: [{
-			icon: '/resources/images/icons/add.png',
-			text: 'Add property...',
-			handler: function () {
-				new NewPropertyDialog();
+	var rootNode = container.add(new Ext.tree.Panel(Ext.Object.merge(config || {}, {
+		store: {
+			fields: [{
+				name: 'name',
+				type: 'string'
+			}, 'value'],
+			root: {
+				expandable: true,
+				expanded: true
 			}
-		}, {
-			icon: '/resources/images/icons/add.png',
-			text: 'Add sub-property...',
-			handler: function () {
-				// TODO
-			}
-		}],
-		rootVisible: false,
-		rowLines: true,
-		columnLines: true,
-		lines: true,
-		useArrows: true,
-		store: store,
+		},
 		columns: [{
 			dataIndex: 'name',
 			text: 'Name',
@@ -89,54 +80,82 @@ function PropertyControls(container, config) {
 			dataIndex: 'value',
 			text: 'Value',
 			hideable: false,
-			sortable: false
-			//plugins: ['cellediting']
+			sortable: false,
+			plugins: [{
+				ptype: 'cellediting',
+				listeners: {
+					beforeedit: function (editor, event) {
+						return !event.record.get('expandable');
+					}
+				}
+			}]
 		}, {
 			xtype: 'actioncolumn',
 			hideable: false,
 			sortable: false,
 			items: [{
+				icon: '/resources/images/icons/add.png',
+				tooltip: 'Add sub-property...',
+				handler: function (view, rowIndex, columnIndex, item, event, record) {
+					new NewPropertyDialog(record);
+				},
+				isDisabled: function (view, rowIndex, columnIndex, item, record) {
+					return record.isExpandable();
+				}
+			}, {
 				icon: '/resources/images/icons/delete.png',
 				tooltip: 'Delete property',
 				handler: function (view, rowIndex, columnIndex, item, event, record) {
 					record.remove();
+				},
+				isDisabled: function (view, rowIndex) {
+					return !!rowIndex;
 				}
 			}]
 		}]
-	})));
-
-	var root = store.getRootNode();
+	}))).getStore().getRootNode();
 
 	this.bind = function (object) {
-		root.removeAll();
+		rootNode.removeAll();
 		(function walk(properties, node) {
 			for (var key in properties) {
 				switch (typeof properties[key]) {
-				case 'null':
 				case 'undefined':
 				case 'boolean':
 				case 'number':
 					node.appendChild({
+						leaf: true,
 						name: key,
 						value: properties[key]
 					});
 					break;
 				case 'object':
-					walk(properties[key], node.appendChild({
-						name: key
-					}));
+					if (properties[key] !== null) {
+						walk(properties[key], node.appendChild({
+							expandable: true,
+							name: key,
+							value: '(object)'
+						}));
+					} else {
+						node.appendChild({
+							leaf: true,
+							name: key,
+							value: 'null'
+						});
+					}
 					break;
 				default:
 					node.appendChild({
+						leaf: true,
 						name: key,
 						value: properties[key].toString()
 					});
 				}
 			}
-		}(object.getProperties(), root));
+		}(object.getProperties(), rootNode));
 	};
 
 	this.unbind = function () {
-		root.removeAll();
+		rootNode.removeAll();
 	};
 }
