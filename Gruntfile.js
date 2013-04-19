@@ -185,7 +185,9 @@ module.exports = function (grunt) {
 						dest: 'bin/static/extjs/'
 					},
 					{
-						src: ['src/static/app.js'],
+						expand: true,
+						cwd: 'src/static/',
+						src: ['app.js'],
 						dest: 'bin/static/'
 					}
 				]
@@ -209,7 +211,9 @@ module.exports = function (grunt) {
 						dest: 'bin/views/'
 					},
 					{
-						src: ['src/canvace.js'],
+						expand: true,
+						cwd: 'src/',
+						src: ['canvace.js'],
 						dest: 'bin/'
 					}
 				]
