@@ -28,20 +28,18 @@ function MultiSet() {
 
 	this.forEach = function (action) {
 		for (var id in elements) {
-			if (elements.hasOwnProperty(id)) {
-				if (action(elements[id], (function (id) {
-					return function () {
-						if (elements.hasOwnProperty(id)) {
-							delete elements[id];
-							count--;
-							return true;
-						} else {
-							return false;
-						}
-					};
-				}(id))) === false) {
-					return true;
-				}
+			if (action(elements[id], (function (id) {
+				return function () {
+					if (elements.hasOwnProperty(id)) {
+						delete elements[id];
+						count--;
+						return true;
+					} else {
+						return false;
+					}
+				};
+			}(id))) === false) {
+				return true;
 			}
 		}
 		return false;
@@ -49,9 +47,7 @@ function MultiSet() {
 
 	this.fastForEach = function (action) {
 		for (var id in elements) {
-			if (elements.hasOwnProperty(id)) {
-				action(elements[id]);
-			}
+			action(elements[id]);
 		}
 	};
 
