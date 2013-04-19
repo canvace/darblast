@@ -1,5 +1,5 @@
-/bin
-/node_modules
+/bin/
+/node_modules/
 /src/canvace.js
 /src/static/app.js
 /projects/

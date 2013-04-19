@@ -1,7 +1,5 @@
 module.exports = function (grunt) {
-
 	grunt.initConfig({
-
 		clean: {
 			all: ['bin']
 		},
@@ -65,7 +63,6 @@ module.exports = function (grunt) {
 				],
 				dest: 'src/static/app.js'
 			},
-
 			server: {
 				src: [
 					'src/Prologue.js',
@@ -114,7 +111,6 @@ module.exports = function (grunt) {
 					src: ['src/static/app.js']
 				}
 			},
-
 			server: {
 				options: {
 					camelcase: true,
@@ -150,7 +146,6 @@ module.exports = function (grunt) {
 					'bin/static/app.js': 'src/static/app.js'
 				}
 			},
-
 			server: {
 				files: {
 					'bin/canvace.js': 'src/canvace.js'
@@ -161,29 +156,62 @@ module.exports = function (grunt) {
 		copy: {
 			client: {
 				files: [
-					{ expand: true, cwd: 'src/static/resources/', src: ['**'], dest: 'bin/static/resources/' },
-					{ expand: true, cwd: 'src/static/extjs/', src: ['**'], dest: 'bin/static/extjs/' }
+					{
+						expand: true,
+						cwd: 'src/static/resources/',
+						src: ['**'],
+						dest: 'bin/static/resources/'
+					},
+					{
+						expand: true,
+						cwd: 'src/static/extjs/',
+						src: ['**'],
+						dest: 'bin/static/extjs/'
+					}
 				]
 			},
-
 			client_debug: {
 				files: [
-					{ expand: true, cwd: 'src/static/resources/', src: ['**'], dest: 'bin/static/resources/' },
-					{ expand: true, cwd: 'src/static/extjs/', src: ['**'], dest: 'bin/static/extjs/' },
-					{ src: ['src/static/app.js'], dest: 'bin/static/' }
+					{
+						expand: true,
+						cwd: 'src/static/resources/',
+						src: ['**'],
+						dest: 'bin/static/resources/'
+					},
+					{
+						expand: true,
+						cwd: 'src/static/extjs/',
+						src: ['**'],
+						dest: 'bin/static/extjs/'
+					},
+					{
+						src: ['src/static/app.js'],
+						dest: 'bin/static/'
+					}
 				]
 			},
-
 			server: {
 				files: [
-					{ expand: true, cwd: 'src/views/', src: ['**'], dest: 'bin/views/' }
+					{
+						expand: true,
+						cwd: 'src/views/',
+						src: ['**'],
+						dest: 'bin/views/'
+					}
 				]
 			},
-
 			server_debug: {
 				files: [
-					{ expand: true, cwd: 'src/views/', src: ['**'], dest: 'bin/views/' },
-					{ src: ['src/canvace.js'], dest: 'bin/' }
+					{
+						expand: true,
+						cwd: 'src/views/',
+						src: ['**'],
+						dest: 'bin/views/'
+					},
+					{
+						src: ['src/canvace.js'],
+						dest: 'bin/'
+					}
 				]
 			}
 		}
@@ -199,5 +227,4 @@ module.exports = function (grunt) {
 	// Register tasks
 	grunt.registerTask('default', ['clean', 'concat', 'jshint', 'uglify', 'copy:client', 'copy:server']);
 	grunt.registerTask('debug', ['clean', 'concat', 'jshint', 'copy:client_debug', 'copy:server_debug']);
-
 };

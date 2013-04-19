@@ -1,44 +1,44 @@
 {
-  "name": "canvace",
-  "version": "1.0.0",
-  "description": "The Canvace Visual Development Environment.",
-  "main": "Gruntfile.js",
-  "dependencies": {
-    "npm": "~1.2.18",
-    "openurl": "~1.1.0",
-    "rwlock": "~2.1.2",
-    "multiset": "~1.0.0",
-    "express": "~3.2.0",
-    "consolidate": "~0.9.0",
-    "handlebars": "~1.0.10",
-    "socket.io": "~0.9.14"
-  },
-  "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-copy": "~0.4.1",
-    "grunt-contrib-clean": "~0.4.1",
-    "grunt-contrib-concat": "~0.2.0",
-    "grunt-contrib-jshint": "~0.4.3",
-    "grunt-contrib-uglify": "~0.2.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/canvace/darblast.git"
-  },
-  "keywords": [
-    "canvace",
-    "darblast",
-    "devenv",
-    "development",
-    "environment",
-    "html5"
-  ],
-  "homepage": "http://www.canvace.com/",
-  "bugs": "https://github.com/canvace/darblast/issues",
-  "author": "Alberto La Rocca <alberto.larocca@canvace.com> (https://github.com/71104)",
-  "contributors": [
-    "Daniele Cocca <daniele.cocca@canvace.com> (https://github.com/jmc-88)"
-  ],
-  "license": "GPLv3 + MIT",
-  "readmeFilename": "README.md"
+	"name": "canvace",
+	"version": "1.0.0",
+	"description": "The Canvace Visual Development Environment.",
+	"main": "Gruntfile.js",
+	"dependencies": {
+		"npm": "~1.2.18",
+		"openurl": "~1.1.0",
+		"rwlock": "~2.1.2",
+		"multiset": "~1.0.0",
+		"express": "~3.2.0",
+		"consolidate": "~0.9.0",
+		"handlebars": "~1.0.10",
+		"socket.io": "~0.9.14"
+	},
+	"devDependencies": {
+		"grunt": "~0.4.1",
+		"grunt-contrib-copy": "~0.4.1",
+		"grunt-contrib-clean": "~0.4.1",
+		"grunt-contrib-concat": "~0.2.0",
+		"grunt-contrib-jshint": "~0.4.3",
+		"grunt-contrib-uglify": "~0.2.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/canvace/darblast.git"
+	},
+	"keywords": [
+		"canvace",
+		"darblast",
+		"devenv",
+		"development",
+		"environment",
+		"html5"
+	],
+	"homepage": "http://www.canvace.com/",
+	"bugs": "https://github.com/canvace/darblast/issues",
+	"author": "Alberto La Rocca <alberto.larocca@canvace.com> (https://github.com/71104)",
+	"contributors": [
+		"Daniele Cocca <daniele.cocca@canvace.com> (https://github.com/jmc-88)"
+	],
+	"license": "GPLv3 + MIT",
+	"readmeFilename": "README.md"
 }
