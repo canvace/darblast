@@ -155,68 +155,56 @@ module.exports = function (grunt) {
 
 		copy: {
 			client: {
-				files: [
-					{
-						expand: true,
-						cwd: 'src/static/resources/',
-						src: ['**'],
-						dest: 'bin/static/resources/'
-					},
-					{
-						expand: true,
-						cwd: 'src/static/extjs/',
-						src: ['**'],
-						dest: 'bin/static/extjs/'
-					}
-				]
+				files: [{
+					expand: true,
+					cwd: 'src/static/resources/',
+					src: ['**'],
+					dest: 'bin/static/resources/'
+				}, {
+					expand: true,
+					cwd: 'src/static/extjs/',
+					src: ['**'],
+					dest: 'bin/static/extjs/'
+				}]
 			},
 			client_debug: {
-				files: [
-					{
-						expand: true,
-						cwd: 'src/static/resources/',
-						src: ['**'],
-						dest: 'bin/static/resources/'
-					},
-					{
-						expand: true,
-						cwd: 'src/static/extjs/',
-						src: ['**'],
-						dest: 'bin/static/extjs/'
-					},
-					{
-						expand: true,
-						cwd: 'src/static/',
-						src: ['app.js'],
-						dest: 'bin/static/'
-					}
-				]
+				files: [{
+					expand: true,
+					cwd: 'src/static/resources/',
+					src: ['**'],
+					dest: 'bin/static/resources/'
+				}, {
+					expand: true,
+					cwd: 'src/static/extjs/',
+					src: ['**'],
+					dest: 'bin/static/extjs/'
+				}, {
+					expand: true,
+					cwd: 'src/static/',
+					src: ['app.js'],
+					dest: 'bin/static/'
+				}]
 			},
 			server: {
-				files: [
-					{
-						expand: true,
-						cwd: 'src/views/',
-						src: ['**'],
-						dest: 'bin/views/'
-					}
-				]
+				files: [{
+					expand: true,
+					cwd: 'src/views/',
+					src: ['**'],
+					dest: 'bin/views/'
+				}]
 			},
 			server_debug: {
-				files: [
-					{
-						expand: true,
-						cwd: 'src/views/',
-						src: ['**'],
-						dest: 'bin/views/'
-					},
-					{
-						expand: true,
-						cwd: 'src/',
-						src: ['canvace.js'],
-						dest: 'bin/'
-					}
-				]
+				files: [{
+					expand: true,
+					cwd: 'src/views/',
+					src: ['**'],
+					dest: 'bin/views/'
+				}, {
+					expand: true,
+					cwd: 'src/',
+					src: ['canvace.js'],
+					dest: 'bin/'
+				}]
 			}
 		}
 	});
@@ -229,6 +217,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 
 	// Register tasks
-	grunt.registerTask('default', ['clean', 'concat', 'jshint', 'uglify', 'copy:client', 'copy:server']);
-	grunt.registerTask('debug', ['clean', 'concat', 'jshint', 'copy:client_debug', 'copy:server_debug']);
+	grunt.registerTask('default', ['concat', 'jshint', 'uglify', 'copy:client', 'copy:server']);
+	grunt.registerTask('debug', ['concat', 'jshint', 'copy:client_debug', 'copy:server_debug']);
+	grunt.registerTask('clean', ['clean']);
 };

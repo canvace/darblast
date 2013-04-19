@@ -200,7 +200,7 @@ function PropertyControls(container, config) {
 						leaf: true,
 						icon: Ext.BLANK_IMAGE_URL,
 						name: name,
-						value: 'null'
+						value: null
 					});
 				}
 				break;
