@@ -36,7 +36,7 @@ installHandler([
 				frames: {},
 				properties: {}
 			};
-			tile['static'] = true;
+			tile.static = true;
 			this.putJSON('tiles/' + id, tile, function () {
 				delete tile.frames;
 				delete tile.properties;
@@ -68,7 +68,7 @@ installHandler([
 ], 'put', function (request) {
 	this.tiles.modifySync(request.params.tileId, function (tile) {
 		if ('static' in request.body) {
-			tile['static'] = !!request.body['static'];
+			tile.static = !!request.body.static;
 		}
 		if ('solid' in request.body) {
 			tile.solid = !!request.body.solid;

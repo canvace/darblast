@@ -1,5 +1,9 @@
 module.exports = function (grunt) {
 	grunt.initConfig({
+		clean: {
+			all: ['bin']
+		},
+
 		concat: {
 			client: {
 				src: [
@@ -75,10 +79,7 @@ module.exports = function (grunt) {
 				dest: 'src/canvace.js'
 			}
 		},
-		lint: {
-			client: 'src/static/app.js',
-			server: 'src/canvace.js'
-		},
+
 		jshint: {
 			client: {
 				options: {
@@ -101,10 +102,13 @@ module.exports = function (grunt) {
 					multistr: true,
 					smarttabs: true,
 					supernew: true,
-					browser: true
+					browser: true,
+					globals: {
+						Ext: true
+					}
 				},
-				globals: {
-					Ext: false
+				files: {
+					src: ['src/static/app.js']
 				}
 			},
 			server: {
@@ -129,100 +133,98 @@ module.exports = function (grunt) {
 					smarttabs: true,
 					supernew: true,
 					node: true
+				},
+				files: {
+					src: ['src/canvace.js']
 				}
 			}
 		},
-		min: {
+
+		uglify: {
 			client: {
-				src: 'src/static/app.js',
-				dest: 'bin/static/app.js'
+				files: {
+					'bin/static/app.js': 'src/static/app.js'
+				}
 			},
 			server: {
-				src: 'src/canvace.js',
-				dest: 'bin/canvace.js'
+				files: {
+					'bin/canvace.js': 'src/canvace.js'
+				}
 			}
 		},
+
 		copy: {
 			client: {
-				src: [
-					'src/static/extjs',
-					'src/static/resources'
-				],
-				dest: 'bin/static'
+				files: [
+					{
+						expand: true,
+						cwd: 'src/static/resources/',
+						src: ['**'],
+						dest: 'bin/static/resources/'
+					},
+					{
+						expand: true,
+						cwd: 'src/static/extjs/',
+						src: ['**'],
+						dest: 'bin/static/extjs/'
+					}
+				]
 			},
 			client_debug: {
-				src: [
-					'src/static/extjs',
-					'src/static/resources',
-					'src/static/app.js'
-				],
-				dest: 'bin/static'
+				files: [
+					{
+						expand: true,
+						cwd: 'src/static/resources/',
+						src: ['**'],
+						dest: 'bin/static/resources/'
+					},
+					{
+						expand: true,
+						cwd: 'src/static/extjs/',
+						src: ['**'],
+						dest: 'bin/static/extjs/'
+					},
+					{
+						src: ['src/static/app.js'],
+						dest: 'bin/static/'
+					}
+				]
 			},
 			server: {
-				src: 'src/views',
-				dest: 'bin'
+				files: [
+					{
+						expand: true,
+						cwd: 'src/views/',
+						src: ['**'],
+						dest: 'bin/views/'
+					}
+				]
 			},
 			server_debug: {
-				src: [
-					'src/views',
-					'src/canvace.js'
-				],
-				dest: 'bin'
+				files: [
+					{
+						expand: true,
+						cwd: 'src/views/',
+						src: ['**'],
+						dest: 'bin/views/'
+					},
+					{
+						src: ['src/canvace.js'],
+						dest: 'bin/'
+					}
+				]
 			}
 		}
 	});
 
-	grunt.registerMultiTask('copy', 'Copies files and directories recursively.', (function () {
-		var fs = require('fs');
-		var path = require('path');
-		return function () {
-			if (typeof this.file.src === 'string') {
-				this.file.src = [this.file.src];
-			}
-			for (var i in this.file.src) {
-				(function process(itemPath, destPath) {
-					var name = path.basename(itemPath);
-					function removeOther() {
-						(function remove(path) {
-							if (fs.existsSync(path)) {
-								var stat = fs.statSync(path);
-								if (stat.isFile()) {
-									fs.unlinkSync(path);
-								} else if (stat.isDirectory()) {
-									fs.readdirSync(path).forEach(function (subItem) {
-										remove(path + '/' + subItem);
-									});
-									fs.rmdirSync(path);
-								}
-							}
-						}(destPath + '/' + name));
-					}
-					var stat = fs.statSync(itemPath);
-					var otherStat;
-					try {
-						otherStat = fs.statSync(destPath + '/' + name);
-					} catch (e) {
-						otherStat = null;
-					}
-					if (stat.isFile()) {
-						if (!otherStat || (!otherStat.isFile() || (stat.mtime.getTime() > otherStat.mtime.getTime()))) {
-							removeOther();
-							fs.writeFileSync(destPath + '/' + name, fs.readFileSync(itemPath));
-						}
-					} else if (stat.isDirectory()) {
-						if (!otherStat || (!otherStat.isDirectory() || (stat.mtime.getTime() > otherStat.mtime.getTime()))) {
-							removeOther();
-							fs.mkdirSync(destPath + '/' + name);
-						}
-						fs.readdirSync(itemPath).forEach(function (subItem) {
-							process(itemPath + '/' + subItem, destPath + '/' + name);
-						});
-					}
-				}(this.file.src[i], this.file.dest));
-			}
-		};
-	}()));
+	// Load task handlers
+	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.loadNpmTasks('grunt-contrib-clean');
+	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
 
-	grunt.registerTask('default', 'concat lint min copy:client copy:server');
-	grunt.registerTask('debug', 'concat lint copy:client_debug copy:server_debug');
+	// Register tasks
+	grunt.registerTask('default', ['clean', 'concat', 'jshint', 'uglify', 'copy:client', 'copy:server']);
+	grunt.registerTask('debug', ['clean', 'concat', 'jshint', 'copy:client_debug', 'copy:server_debug']);
 };
