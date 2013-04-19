@@ -19,12 +19,16 @@ function Tools() {
 	var toolButtons = [{
 		xtype: 'tbseparator'
 	}, {
+		id: 'undo-button',
 		icon: '/resources/images/tools/undo.png',
 		tooltip: 'Undo',
+		disabled: true,
 		handler: bindCommandHandler(new UndoCommand())
 	}, {
+		id: 'redo-button',
 		icon: '/resources/images/tools/redo.png',
 		tooltip: 'Redo',
+		disabled: true,
 		handler: bindCommandHandler(new RedoCommand())
 	}, {
 		xtype: 'tbseparator'
