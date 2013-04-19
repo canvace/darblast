@@ -1,5 +1,7 @@
 function PropertyControls(container, config) {
-	function NewPropertyDialog(parentNode) {
+	var boundObject;
+
+	function NewPropertyDialog() {
 		var dialog;
 
 		function Panel(title, valueField) {
@@ -14,8 +16,7 @@ function PropertyControls(container, config) {
 					text: 'Add',
 					handler: function () {
 						var name = nameField.getValue();
-						var previous = parentNode.findChild('name', name);
-						if (previous) {
+						if (typeof boundObject.getProperty(name) !== 'undefined') {
 							Ext.MessageBox.show({
 								title: 'Error',
 								msg: 'The property "' + name + '" already exists do you want to overwrite it?',
@@ -23,26 +24,13 @@ function PropertyControls(container, config) {
 								icon: Ext.MessageBox.ERROR,
 								fn: function (buttonId) {
 									if (buttonId === Ext.MessageBox.OK) {
-										previous.remove();
-										parentNode.appendChild({
-											expandable: false,
-											leaf: true,
-											icon: Ext.BLANK_IMAGE_URL,
-											name: nameField.getValue(),
-											value: valueField.getValue()
-										});
+										boundObject.putProperty(name, valueField.getValue());
 										dialog.close();
 									}
 								}
 							});
 						} else {
-							parentNode.appendChild({
-								expandable: false,
-								leaf: true,
-								icon: Ext.BLANK_IMAGE_URL,
-								name: nameField.getValue(),
-								value: valueField.getValue()
-							});
+							boundObject.putProperty(name, valueField.getValue());
 							dialog.close();
 						}
 					}
@@ -85,7 +73,7 @@ function PropertyControls(container, config) {
 			expandable: true,
 			expanded: true,
 			icon: Ext.BLANK_IMAGE_URL,
-			name: '(no selection)'
+			name: '(none)'
 		}
 	});
 
@@ -107,18 +95,11 @@ function PropertyControls(container, config) {
 			text: 'Value',
 			hideable: false,
 			sortable: false
-			//plugins: [{
-			//	ptype: 'cellediting',
-			//	listeners: {
-			//		beforeedit: function (editor, event) {
-			//			return !event.record.get('expandable');
-			//		}
-			//	}
-			//}]
 		}, {
 			xtype: 'actioncolumn',
 			hideable: false,
 			sortable: false,
+			width: 48,
 			items: [{
 				icon: '/resources/images/icons/add.png',
 				tooltip: 'Add sub-property...',
@@ -138,67 +119,124 @@ function PropertyControls(container, config) {
 					return !rowIndex;
 				}
 			}]
+		}],
+		plugins: [{
+			ptype: 'cellediting',
+			clicksToEdit: 1,
+			listeners: {
+				beforeedit: function (editor, event) {
+					if ((event.column.dataIndex === 'value') && event.record.isLeaf()) {
+						switch (typeof event.record.get('value')) {
+						case 'boolean':
+							event.column.setEditor({
+								xtype: 'combobox',
+								store: [[true, 'true'], [false, 'false']],
+								editable: false
+							});
+							break;
+						case 'number':
+							event.column.setEditor({
+								xtype: 'numberfield',
+								allowOnlyWhitespace: false
+							});
+							break;
+						case 'object':
+							return false;
+						default:
+							event.column.setEditor({
+								xtype: 'textfield'
+							});
+							break;
+						}
+					} else {
+						return false;
+					}
+				}
+			}
 		}]
 	})));
 
-	this.bind = function (object, name) {
-		bound = true;
-		var rootNode = store.setRootNode({
-			expandable: true,
-			expanded: true,
-			icon: Ext.BLANK_IMAGE_URL,
-			name: name
-		});
-		(function walk(properties, node) {
-			for (var key in properties) {
-				switch (typeof properties[key]) {
-				case 'undefined':
-				case 'boolean':
-				case 'number':
-					node.appendChild({
-						leaf: true,
-						icon: Ext.BLANK_IMAGE_URL,
-						name: key,
-						value: properties[key]
-					});
-					break;
-				case 'object':
-					if (properties[key] !== null) {
-						walk(properties[key], node.appendChild({
-							expandable: true,
-							icon: Ext.BLANK_IMAGE_URL,
-							name: key,
-							value: '(object)'
-						}));
-					} else {
-						node.appendChild({
-							leaf: true,
-							icon: Ext.BLANK_IMAGE_URL,
-							name: key,
-							value: 'null'
-						});
-					}
-					break;
-				default:
-					node.appendChild({
-						leaf: true,
-						icon: Ext.BLANK_IMAGE_URL,
-						name: key,
-						value: properties[key].toString()
-					});
-					break;
-				}
-			}
-		}(object.getProperties(), rootNode));
-	};
+	var unbindHandlers = new EventHandlers();
 
-	this.unbind = function () {
-		bound = false;
+	function rebind(newLabel) {
+		unbindHandlers.fireAll();
+		bound = !!newLabel;
 		store.setRootNode({
 			expandable: true,
 			expanded: true,
 			icon: Ext.BLANK_IMAGE_URL,
-			name: '(no selection)'
+			name: newLabel || '(none)'
 		});
+	}
+
+	this.bind = function (object, name) {
+		rebind(name);
+		boundObject = object;
+
+		var walk;
+
+		function addNode(parent, name, value) {
+			switch (typeof value) {
+			case 'undefined':
+			case 'boolean':
+			case 'number':
+				parent.appendChild({
+					leaf: true,
+					icon: Ext.BLANK_IMAGE_URL,
+					name: name,
+					value: value
+				});
+				break;
+			case 'object':
+				if (value !== null) {
+					walk(value, parent.appendChild({
+						expandable: true,
+						icon: Ext.BLANK_IMAGE_URL,
+						name: name,
+						value: '(object)'
+					}));
+				} else {
+					parent.appendChild({
+						leaf: true,
+						icon: Ext.BLANK_IMAGE_URL,
+						name: name,
+						value: 'null'
+					});
+				}
+				break;
+			default:
+				parent.appendChild({
+					leaf: true,
+					icon: Ext.BLANK_IMAGE_URL,
+					name: name,
+					value: value.toString()
+				});
+				break;
+			}
+		}
+
+		walk = function (properties, node) {
+			for (var key in properties) {
+				addNode(node, key, properties[key]);
+			}
+		};
+
+		walk(object.getProperties(), store.getRootNode());
+
+		unbindHandlers.registerTrigger(0, object.onPutProperty(function (name) {
+			var previous = store.getRootNode().findChild('name', name);
+			if (previous) {
+				previous.remove();
+			}
+			// TODO insert new node
+		}));
+		unbindHandlers.registerTrigger(0, object.onDeleteProperty(function (name) {
+			var node = store.getRootNode().findChild('name', name);
+			if (node) {
+				node.remove();
+			}
+		}));
 	};
+
+	this.unbind = rebind;
 }
