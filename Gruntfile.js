@@ -219,5 +219,4 @@ module.exports = function (grunt) {
 	// Register tasks
 	grunt.registerTask('default', ['concat', 'jshint', 'uglify', 'copy:client', 'copy:server']);
 	grunt.registerTask('debug', ['concat', 'jshint', 'copy:client_debug', 'copy:server_debug']);
-	grunt.registerTask('clean', ['clean']);
 };
