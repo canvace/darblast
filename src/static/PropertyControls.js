@@ -8,7 +8,7 @@ Ext.define('Darblast.properties.Proxy', {
 		this.object = null;
 	},
 	isBound: function () {
-		return !!this.Object;
+		return !!this.object;
 	},
 	create: function (operation, callback, scope) {
 		if (this.object) {
