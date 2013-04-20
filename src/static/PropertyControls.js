@@ -15,88 +15,69 @@ Ext.define('Darblast.properties.Proxy', {
 			operation.getRecords().forEach(function () {
 				// TODO
 			});
-		} else {
-			operation.setSuccessful();
-			operation.setCompleted();
-			callback.call(scope, operation);
 		}
+		operation.setSuccessful();
+		operation.setCompleted();
+		callback.call(scope, operation);
 	},
 	read: function (operation, callback, scope) {
 		if (this.object) {
-			var rootNode = new Ext.data.TreeModel({
-				expandable: true,
-				expanded: true,
-				icon: Ext.BLANK_IMAGE_URL,
-				name: this.object.getId()
-			});
-			var count = 0;
-			(function walk(properties, node) {
-				for (var key in properties) {
-					switch (typeof properties[key]) {
-					case 'boolean':
-					case 'number':
-						count++;
-						node.appendChild({
-							expandable: false,
-							leaf: true,
-							icon: Ext.BLANK_IMAGE_URL,
-							name: key,
-							value: properties[key]
-						});
-						break;
-					case 'object':
-						if (properties[key] !== null) {
-							count++;
-							walk(properties[key], node.appendChild({
-								expandable: true,
-								expanded: false,
-								icon: Ext.BLANK_IMAGE_URL,
-								name: key,
-								value: '(object)'
-							}));
-						} else {
-							count++;
-							node.appendChild({
+			operation.resultSet = new Ext.data.ResultSet({
+				records: (function walk(properties) {
+					var children = [];
+					for (var key in properties) {
+						switch (typeof properties[key]) {
+						case 'boolean':
+						case 'number':
+							children.push(new Ext.data.TreeModel({
 								expandable: false,
 								leaf: true,
 								icon: Ext.BLANK_IMAGE_URL,
 								name: key,
-								value: null
-							});
+								value: properties[key]
+							}));
+							break;
+						case 'object':
+							if (properties[key] !== null) {
+								children.push(new Ext.data.TreeModel({
+									expandable: true,
+									expanded: false,
+									icon: Ext.BLANK_IMAGE_URL,
+									name: key,
+									value: '(object)',
+									children: walk(properties[key])
+								}));
+							} else {
+								children.push(new Ext.data.TreeModel({
+									expandable: false,
+									leaf: true,
+									icon: Ext.BLANK_IMAGE_URL,
+									name: key,
+									value: properties[key]
+								}));
+							}
+							break;
+						default:
+							children.push(new Ext.data.TreeModel({
+								expandable: false,
+								leaf: true,
+								icon: Ext.BLANK_IMAGE_URL,
+								name: key,
+								value: properties[key].toString()
+							}));
+							break;
 						}
-						break;
-					default:
-						count++;
-						node.appendChild({
-							expandable: false,
-							leaf: true,
-							icon: Ext.BLANK_IMAGE_URL,
-							name: key,
-							value: properties[key].toString()
-						});
-						break;
 					}
-				}
-			}(this.object.getProperties(), rootNode));
-			operation.resultSet = new Ext.data.ResultSet({
-				records: [rootNode],
+					return children;
+				}(this.object.getProperties())),
 				success: true,
-				loaded: true,
-				count: count,
-				totale: count
+				loaded: true
 			});
 		} else {
 			operation.resultSet = new Ext.data.ResultSet({
-				records: [{
-					expandable: false,
-					leaf: true,
-					icon: Ext.BLANK_IMAGE_URL,
-					name: '(no selection)'
-				}],
+				records: [],
 				success: true,
-				loaded: true,
-				count: 1,
-				totale: 1
+				loaded: true
 			});
 		}
 		operation.setSuccessful();
@@ -108,22 +89,20 @@ Ext.define('Darblast.properties.Proxy', {
 			operation.getRecords().forEach(function () {
 				// TODO
 			});
-		} else {
-			operation.setSuccessful();
-			operation.setCompleted();
-			callback.call(scope, operation);
 		}
+		operation.setSuccessful();
+		operation.setCompleted();
+		callback.call(scope, operation);
 	},
 	destroy: function (operation, callback, scope) {
 		if (this.object) {
 			operation.getRecords().forEach(function () {
 				// TODO
 			});
-		} else {
-			operation.setSuccessful();
-			operation.setCompleted();
-			callback.call(scope, operation);
 		}
+		operation.setSuccessful();
+		operation.setCompleted();
+		callback.call(scope, operation);
 	}
 });
 
@@ -294,12 +273,24 @@ function PropertyControls(container, config) {
 	var store = panel.getStore();
 	proxy = store.getProxy();
 
-	this.bind = function (object) {
+	this.bind = function (object, name) {
+		store.setRootNode({
+			expandable: true,
+			expanded: true,
+			name: name,
+			icon: Ext.BLANK_IMAGE_URL
+		});
 		proxy.bind(object);
 		store.load();
 	};
 
 	this.unbind = function () {
+		store.setRootNode({
+			expandable: false,
+			leaf: true,
+			icon: Ext.BLANK_IMAGE_URL,
+			name: '(no selection)'
+		});
 		proxy.unbind();
 		store.load();
 	};
