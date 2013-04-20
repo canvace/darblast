@@ -12,6 +12,7 @@ Ext.define('Darblast.properties.Proxy', {
 	},
 	create: function (operation, callback, scope) {
 		if (this.object) {
+			operation.setStarted();
 			operation.getRecords().forEach(function () {
 				// TODO
 			});
@@ -22,6 +23,7 @@ Ext.define('Darblast.properties.Proxy', {
 	},
 	read: function (operation, callback, scope) {
 		if (this.object) {
+			operation.setStarted();
 			var Model = this.model;
 			operation.resultSet = new Ext.data.ResultSet({
 				records: (function walk(properties) {
@@ -88,6 +90,7 @@ Ext.define('Darblast.properties.Proxy', {
 	},
 	update: function (operation, callback, scope) {
 		if (this.object) {
+			operation.setStarted();
 			operation.getRecords().forEach(function () {
 				// TODO
 			});
@@ -98,6 +101,7 @@ Ext.define('Darblast.properties.Proxy', {
 	},
 	destroy: function (operation, callback, scope) {
 		if (this.object) {
+			operation.setStarted();
 			operation.getRecords().forEach(function () {
 				// TODO
 			});
@@ -276,24 +280,24 @@ function PropertyControls(container, config) {
 	proxy = store.getProxy();
 
 	this.bind = function (object, name) {
+		proxy.bind(object);
 		store.setRootNode({
 			expandable: true,
 			expanded: true,
 			name: name,
 			icon: Ext.BLANK_IMAGE_URL
 		});
-		proxy.bind(object);
 		store.load();
 	};
 
 	this.unbind = function () {
+		proxy.unbind();
 		store.setRootNode({
 			expandable: false,
 			leaf: true,
 			icon: Ext.BLANK_IMAGE_URL,
 			name: '(no selection)'
 		});
-		proxy.unbind();
 		store.load();
 	};
 }
