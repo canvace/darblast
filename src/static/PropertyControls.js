@@ -10,16 +10,44 @@ Ext.define('Darblast.properties.Proxy', {
 	isBound: function () {
 		return !!this.object;
 	},
-	create: function (operation, callback, scope) {
+	put: function (operation, callback, scope) {
 		if (this.object) {
+			debugger;
 			operation.setStarted();
-			operation.getRecords().forEach(function () {
-				// TODO
+			var fullProperties = this.object.getProperties();
+			var updatedKeys = {};
+			operation.getRecords().forEach(function (record) {
+				var path = record.getPath('name').split('/'); // FIXME what if some name contains slashes?
+				path.splice(0, 2);
+				updatedKeys[path[0]] = true;
+				var lastKey = path.pop();
+				var properties = fullProperties;
+				path.forEach(function (key) {
+					properties = properties[key];
+				});
+				properties[lastKey] = record.get('value');
+				record.commit();
 			});
+			var loader = new Loader(function () {
+				operation.setSuccessful();
+				operation.setCompleted();
+				callback.call(scope, operation);
+			});
+			var object = this.object;
+			for (var key in updatedKeys) {
+				loader.queue(function (callback) {
+					object.putProperty(key, fullProperties[key], callback);
+				});
+			}
+			loader.allQueued();
+		} else {
+			operation.setSuccessful();
+			operation.setCompleted();
+			callback.call(scope, operation);
 		}
-		operation.setSuccessful();
-		operation.setCompleted();
-		callback.call(scope, operation);
+	},
+	create: function () {
+		this.put.apply(this, arguments);
 	},
 	read: function (operation, callback, scope) {
 		if (this.object) {
@@ -88,16 +116,8 @@ Ext.define('Darblast.properties.Proxy', {
 		operation.setCompleted();
 		callback.call(scope, operation);
 	},
-	update: function (operation, callback, scope) {
-		if (this.object) {
-			operation.setStarted();
-			operation.getRecords().forEach(function () {
-				// TODO
-			});
-		}
-		operation.setSuccessful();
-		operation.setCompleted();
-		callback.call(scope, operation);
+	update: function () {
+		this.put.apply(this, arguments);
 	},
 	destroy: function (operation, callback, scope) {
 		if (this.object) {
