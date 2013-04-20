@@ -22,14 +22,16 @@ Ext.define('Darblast.properties.Proxy', {
 	},
 	read: function (operation, callback, scope) {
 		if (this.object) {
+			var Model = this.model;
 			operation.resultSet = new Ext.data.ResultSet({
 				records: (function walk(properties) {
 					var children = [];
 					for (var key in properties) {
 						switch (typeof properties[key]) {
+						case 'undefined':
 						case 'boolean':
 						case 'number':
-							children.push(new Ext.data.TreeModel({
+							children.push(new Model({
 								expandable: false,
 								leaf: true,
 								icon: Ext.BLANK_IMAGE_URL,
@@ -39,7 +41,7 @@ Ext.define('Darblast.properties.Proxy', {
 							break;
 						case 'object':
 							if (properties[key] !== null) {
-								children.push(new Ext.data.TreeModel({
+								children.push(new Model({
 									expandable: true,
 									expanded: false,
 									icon: Ext.BLANK_IMAGE_URL,
@@ -48,17 +50,17 @@ Ext.define('Darblast.properties.Proxy', {
 									children: walk(properties[key])
 								}));
 							} else {
-								children.push(new Ext.data.TreeModel({
+								children.push(new Model({
 									expandable: false,
 									leaf: true,
 									icon: Ext.BLANK_IMAGE_URL,
 									name: key,
-									value: properties[key]
+									value: null
 								}));
 							}
 							break;
 						default:
-							children.push(new Ext.data.TreeModel({
+							children.push(new Model({
 								expandable: false,
 								leaf: true,
 								icon: Ext.BLANK_IMAGE_URL,
