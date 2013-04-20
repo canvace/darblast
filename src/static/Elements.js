@@ -189,7 +189,7 @@ function Elements(type, Element, ready) {
 		};
 
 		this.getProperties = function () {
-			return element.properties;
+			return Ext.merge({}, element.properties);
 		};
 		this.getProperty = function (name) {
 			return element.properties[name];

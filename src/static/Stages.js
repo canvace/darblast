@@ -72,7 +72,7 @@ function Stages(ready) {
 		};
 
 		this.getProperties = function () {
-			return properties;
+			return Ext.merge({}, properties);
 		};
 		this.getProperty = function (name) {
 			return properties[name];
