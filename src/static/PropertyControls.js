@@ -65,6 +65,7 @@ function PropertyControls(container, config) {
 	}
 
 	var store = new Ext.data.TreeStore({
+		autoSync: true,
 		fields: [{
 			name: 'name',
 			type: 'string'
@@ -223,12 +224,13 @@ function PropertyControls(container, config) {
 
 		walk(object.getProperties(), store.getRootNode());
 
-		unbindHandlers.registerTrigger(0, object.onPutProperty(function (name) {
-			var previous = store.getRootNode().findChild('name', name);
+		unbindHandlers.registerTrigger(0, object.onPutProperty(function (name, value) {
+			var root = store.getRootNode();
+			var previous = root.findChild('name', name);
 			if (previous) {
 				previous.remove();
 			}
-			// TODO insert new node
+			addNode(root, name, value);
 		}));
 		unbindHandlers.registerTrigger(0, object.onDeleteProperty(function (name) {
 			var node = store.getRootNode().findChild('name', name);
