@@ -1,7 +1,134 @@
-function PropertyControls(container, config) {
-	var boundObject;
+Ext.define('Darblast.properties.Proxy', {
+	extend: 'Ext.data.proxy.Proxy',
+	alias: 'proxy.darblast.properties',
+	bind: function (object) {
+		this.object = object;
+	},
+	unbind: function () {
+		this.object = null;
+	},
+	isBound: function () {
+		return !!this.Object;
+	},
+	create: function (operation, callback, scope) {
+		if (this.object) {
+			operation.getRecords().forEach(function () {
+				// TODO
+			});
+		} else {
+			operation.setSuccessful();
+			operation.setCompleted();
+			callback.call(scope, operation);
+		}
+	},
+	read: function (operation, callback, scope) {
+		if (this.object) {
+			var rootNode = new Ext.data.TreeModel({
+				expandable: true,
+				expanded: true,
+				icon: Ext.BLANK_IMAGE_URL,
+				name: this.object.getId()
+			});
+			var count = 0;
+			(function walk(properties, node) {
+				for (var key in properties) {
+					switch (typeof properties[key]) {
+					case 'boolean':
+					case 'number':
+						count++;
+						node.appendChild({
+							expandable: false,
+							leaf: true,
+							icon: Ext.BLANK_IMAGE_URL,
+							name: key,
+							value: properties[key]
+						});
+						break;
+					case 'object':
+						if (properties[key] !== null) {
+							count++;
+							walk(properties[key], node.appendChild({
+								expandable: true,
+								expanded: false,
+								icon: Ext.BLANK_IMAGE_URL,
+								name: key,
+								value: '(object)'
+							}));
+						} else {
+							count++;
+							node.appendChild({
+								expandable: false,
+								leaf: true,
+								icon: Ext.BLANK_IMAGE_URL,
+								name: key,
+								value: null
+							});
+						}
+						break;
+					default:
+						count++;
+						node.appendChild({
+							expandable: false,
+							leaf: true,
+							icon: Ext.BLANK_IMAGE_URL,
+							name: key,
+							value: properties[key].toString()
+						});
+						break;
+					}
+				}
+			}(this.object.getProperties(), rootNode));
+			operation.resultSet = new Ext.data.ResultSet({
+				records: [rootNode],
+				success: true,
+				loaded: true,
+				count: count,
+				totale: count
+			});
+		} else {
+			operation.resultSet = new Ext.data.ResultSet({
+				records: [{
+					expandable: false,
+					leaf: true,
+					icon: Ext.BLANK_IMAGE_URL,
+					name: '(no selection)'
+				}],
+				success: true,
+				loaded: true,
+				count: 1,
+				totale: 1
+			});
+		}
+		operation.setSuccessful();
+		operation.setCompleted();
+		callback.call(scope, operation);
+	},
+	update: function (operation, callback, scope) {
+		if (this.object) {
+			operation.getRecords().forEach(function () {
+				// TODO
+			});
+		} else {
+			operation.setSuccessful();
+			operation.setCompleted();
+			callback.call(scope, operation);
+		}
+	},
+	destroy: function (operation, callback, scope) {
+		if (this.object) {
+			operation.getRecords().forEach(function () {
+				// TODO
+			});
+		} else {
+			operation.setSuccessful();
+			operation.setCompleted();
+			callback.call(scope, operation);
+		}
+	}
+});
 
-	function NewPropertyDialog() {
+function PropertyControls(container, config) {
+	function NewPropertyDialog(parentNode) {
 		var dialog;
 
 		function Panel(title, valueField) {
@@ -16,7 +143,8 @@ function PropertyControls(container, config) {
 					text: 'Add',
 					handler: function () {
 						var name = nameField.getValue();
-						if (typeof boundObject.getProperty(name) !== 'undefined') {
+						var previous = parentNode.findChild('name', name);
+						if (previous) {
 							Ext.MessageBox.show({
 								title: 'Error',
 								msg: 'The property "' + name + '" already exists do you want to overwrite it?',
@@ -24,13 +152,19 @@ function PropertyControls(container, config) {
 								icon: Ext.MessageBox.ERROR,
 								fn: function (buttonId) {
 									if (buttonId === Ext.MessageBox.OK) {
-										boundObject.putProperty(name, valueField.getValue());
+										previous.set('value', valueField.getValue());
 										dialog.close();
 									}
 								}
 							});
 						} else {
-							boundObject.putProperty(name, valueField.getValue());
+							parentNode.appendChild({
+								expandable: false,
+								leaf: true,
+								icon: Ext.BLANK_IMAGE_URL,
+								name: name,
+								value: valueField.getValue()
+							});
 							dialog.close();
 						}
 					}
@@ -64,24 +198,24 @@ function PropertyControls(container, config) {
 		dialog.show();
 	}
 
-	var store = new Ext.data.TreeStore({
-		autoSync: true,
-		fields: [{
-			name: 'name',
-			type: 'string'
-		}, 'value'],
-		root: {
-			expandable: true,
-			expanded: true,
-			icon: Ext.BLANK_IMAGE_URL,
-			name: '(none)'
-		}
-	});
+	var proxy;
 
-	var bound = false;
-
-	container.add(new Ext.tree.Panel(Ext.Object.merge(config || {}, {
-		store: store,
+	var panel = container.add(new Ext.tree.Panel(Ext.Object.merge(config || {}, {
+		store: {
+			autoLoad: true,
+			autoSync: true,
+			fields: [{
+				name: 'name',
+				type: 'string'
+			}, 'value'],
+			proxy: 'darblast.properties',
+			root: {
+				expandable: false,
+				leaf: false,
+				icon: Ext.BLANK_IMAGE_URL,
+				name: '(no selection)'
+			}
+		},
 		rowLines: true,
 		columnLines: true,
 		lines: false,
@@ -108,7 +242,7 @@ function PropertyControls(container, config) {
 					new NewPropertyDialog(record);
 				},
 				isDisabled: function (view, rowIndex, columnIndex, item, record) {
-					return !bound || record.isLeaf();
+					return !proxy || !proxy.isBound() || record.isLeaf();
 				}
 			}, {
 				icon: '/resources/images/icons/delete.png',
@@ -157,88 +291,16 @@ function PropertyControls(container, config) {
 		}]
 	})));
 
-	var unbindHandlers = new EventHandlers();
+	var store = panel.getStore();
+	proxy = store.getProxy();
 
-	function rebind(newLabel) {
-		unbindHandlers.fireAll();
-		bound = !!newLabel;
-		store.setRootNode({
-			expandable: true,
-			expanded: true,
-			icon: Ext.BLANK_IMAGE_URL,
-			name: newLabel || '(none)'
-		});
-	}
-
-	this.bind = function (object, name) {
-		rebind(name);
-		boundObject = object;
-
-		var walk;
-
-		function addNode(parent, name, value) {
-			switch (typeof value) {
-			case 'undefined':
-			case 'boolean':
-			case 'number':
-				parent.appendChild({
-					leaf: true,
-					icon: Ext.BLANK_IMAGE_URL,
-					name: name,
-					value: value
-				});
-				break;
-			case 'object':
-				if (value !== null) {
-					walk(value, parent.appendChild({
-						expandable: true,
-						icon: Ext.BLANK_IMAGE_URL,
-						name: name,
-						value: '(object)'
-					}));
-				} else {
-					parent.appendChild({
-						leaf: true,
-						icon: Ext.BLANK_IMAGE_URL,
-						name: name,
-						value: null
-					});
-				}
-				break;
-			default:
-				parent.appendChild({
-					leaf: true,
-					icon: Ext.BLANK_IMAGE_URL,
-					name: name,
-					value: value.toString()
-				});
-				break;
-			}
-		}
-
-		walk = function (properties, node) {
-			for (var key in properties) {
-				addNode(node, key, properties[key]);
-			}
-		};
-
-		walk(object.getProperties(), store.getRootNode());
-
-		unbindHandlers.registerTrigger(0, object.onPutProperty(function (name, value) {
-			var root = store.getRootNode();
-			var previous = root.findChild('name', name);
-			if (previous) {
-				previous.remove();
-			}
-			addNode(root, name, value);
-		}));
-		unbindHandlers.registerTrigger(0, object.onDeleteProperty(function (name) {
-			var node = store.getRootNode().findChild('name', name);
-			if (node) {
-				node.remove();
-			}
-		}));
+	this.bind = function (object) {
+		proxy.bind(object);
+		store.load();
 	};
 
-	this.unbind = rebind;
+	this.unbind = function () {
+		proxy.unbind();
+		store.load();
+	};
 }
