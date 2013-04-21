@@ -16,7 +16,11 @@ function Projection() {
 	context.setTransform(1, 0, 0, 1, 75, 75);
 	context.fillStyle = '#FFFFFF';
 
-	function repaint() {
+	function repaint(updateGrippers) {
+		if (typeof updateGrippers === 'undefined') {
+			updateGrippers = true;
+		}
+
 		function drawAxis(i, j, k) {
 			context.moveTo(0, 0);
 			var x = i * matrix[0][0] + j * matrix[0][1] + k * matrix[0][2];
@@ -70,12 +74,14 @@ function Projection() {
 		drawLine(1, 1, 0, 1, 1, 1);
 		context.stroke();
 
-		['i', 'j', 'k'].forEach(function (axis) {
-			var component = Ext.getCmp('projection-gripper-' + axis);
-			component.showAt(
-				matrix[0][component.matrixColumn],
-				matrix[1][component.matrixColumn]);
-		});
+		if (updateGrippers) {
+			['i', 'j', 'k'].forEach(function (axis) {
+				var component = Ext.getCmp('projection-gripper-' + axis);
+				component.showAt(
+					67 + matrix[0][component.matrixColumn],
+					67 + matrix[1][component.matrixColumn]);
+			});
+		}
 	}
 
 	(function (bindBlur) {
@@ -91,22 +97,15 @@ function Projection() {
 		};
 	});
 
-	/* TODO: rewrite this part!
-	function gripperDragHandler() {
-		var column = parseInt($(this).attr('data-column'), 10);
-		var position = $(this).position();
-		Ext.getCmp('matrix-field-1' + (column + 1)).setValue(matrix[0][column] = position.left);
-		Ext.getCmp('matrix-field-2' + (column + 1)).setValue(matrix[1][column] = position.top);
-		repaint();
-	}
-
-	$('.projection-gripper-control').draggable({
-		containment: '#projection-controls',
-		grid: [4, 4],
-		drag: gripperDragHandler,
-		stop: gripperDragHandler
+	['i', 'j', 'k'].forEach(function (axis) {
+		Ext.getCmp('projection-gripper-' + axis).on('move', function (self) {
+			var p = self.getPosition(true);
+			var c = self.matrixColumn;
+			Ext.getCmp('matrix-field-1' + (c + 1)).setValue(matrix[0][c] = -67 + p[0]);
+			Ext.getCmp('matrix-field-2' + (c + 1)).setValue(matrix[1][c] = -67 + p[1]);
+			repaint(false);
+		});
 	});
-	*/
 
 	this.getMatrix = function () {
 		return matrix;

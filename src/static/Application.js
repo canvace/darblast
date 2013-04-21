@@ -154,11 +154,10 @@ Ext.Loader.setConfig({
 		extend: 'Ext.Img',
 		alias: 'widget.projectiongripper',
 
-		floating: true,
-		shadow: false,
 		draggable: true,
-		constrain: true,
-		constrainTo: Ext.getBody(),
+		floating: {
+			shadow: false
+		},
 
 		constructor: function (config) {
 			this.callParent(arguments);
