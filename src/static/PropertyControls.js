@@ -35,7 +35,6 @@ Ext.define('Darblast.properties.Proxy', {
 						return result;
 					}
 				}(record));
-				record.commit();
 			});
 			var loader = new Loader(function () {
 				operation.setSuccessful();
@@ -131,9 +130,45 @@ Ext.define('Darblast.properties.Proxy', {
 	destroy: function (operation, callback, scope) {
 		if (this.object) {
 			operation.setStarted();
-			operation.getRecords().forEach(function () {
-				// TODO
+			var fullProperties = this.object.getProperties();
+			var updatedKeys = {};
+			var deletedKeys = {};
+			operation.getRecords().forEach(function (record) {
+				var path = record.getPath('name').split('/'); // FIXME what if some name contains slashes?
+				path.splice(0, 2);
+				if (path.length > 1) {
+					updatedKeys[path[0]] = true;
+					var lastKey = path.pop();
+					var properties = fullProperties;
+					path.forEach(function (key) {
+						properties = properties[key];
+					});
+					delete properties[lastKey];
+				} else {
+					deletedKeys[path[0]] = true;
+				}
 			});
+			var loader = new Loader(function () {
+				operation.setSuccessful();
+				operation.setCompleted();
+				callback.call(scope, operation);
+			});
+			var object = this.object;
+			(function () {
+				for (var key in updatedKeys) {
+					loader.queue(function (callback) {
+						object.putProperty(key, fullProperties[key], callback);
+					});
+				}
+			}());
+			(function () {
+				for (var key in deletedKeys) {
+					loader.queue(function (callback) {
+						object.deleteProperty(key, callback);
+					});
+				}
+			}());
+			loader.allQueued();
 		}
 		operation.setSuccessful();
 		operation.setCompleted();
@@ -288,7 +323,7 @@ function PropertyControls(container, config) {
 				icon: '/resources/images/icons/delete.png',
 				tooltip: 'Delete property',
 				handler: function (view, rowIndex, columnIndex, item, event, record) {
-					record.remove();
+					record.destroy();
 				},
 				isDisabled: function (view, rowIndex) {
 					return !rowIndex;
