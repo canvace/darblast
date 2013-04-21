@@ -22,6 +22,8 @@ var Canvace = (function () {
 						callback = data;
 						hasData = false;
 					}
+				} else {
+					hasData = true;
 				}
 				var settings = {
 					url: url,

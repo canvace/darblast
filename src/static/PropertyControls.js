@@ -12,7 +12,6 @@ Ext.define('Darblast.properties.Proxy', {
 	},
 	put: function (operation, callback, scope) {
 		if (this.object) {
-			debugger;
 			operation.setStarted();
 			var fullProperties = this.object.getProperties();
 			var updatedKeys = {};
@@ -25,7 +24,17 @@ Ext.define('Darblast.properties.Proxy', {
 				path.forEach(function (key) {
 					properties = properties[key];
 				});
-				properties[lastKey] = record.get('value');
+				properties[lastKey] = (function walk(node) {
+					if (node.isLeaf()) {
+						return node.get('value');
+					} else {
+						var result = {};
+						node.eachChild(function (child) {
+							result[child.get('name')] = walk(child);
+						});
+						return result;
+					}
+				}(record));
 				record.commit();
 			});
 			var loader = new Loader(function () {
