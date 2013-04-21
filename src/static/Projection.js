@@ -70,9 +70,8 @@ function Projection() {
 		drawLine(1, 1, 0, 1, 1, 1);
 		context.stroke();
 
-		Ext.each(['i', 'j', 'k'], function (axis) {
+		['i', 'j', 'k'].forEach(function (axis) {
 			var component = Ext.getCmp('projection-gripper-' + axis);
-
 			component.showAt(
 				matrix[0][component.matrixColumn],
 				matrix[1][component.matrixColumn]);
