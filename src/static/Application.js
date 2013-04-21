@@ -150,6 +150,24 @@ Ext.Loader.setConfig({
 		loader.allQueued();
 	};
 
+	Ext.define('Canvace.projection.Gripper', {
+		extend: 'Ext.Img',
+		alias: 'widget.projectiongripper',
+
+		draggable: true,
+		floating: {
+			shadow: false
+		},
+
+		constructor: function (config) {
+			this.callParent(arguments);
+
+			if (!('matrixColumn' in config)) {
+				throw '"matrixColumn" is mandatory';
+			}
+		}
+	});
+
 	Canvace.showStartScreen = function () {
 		var startDialog = new Ext.window.Window({
 			title: 'Canvace Development Environment',
@@ -224,7 +242,26 @@ Ext.Loader.setConfig({
 							}]
 						}, {
 							xtype: 'container',
-							html: '<canvas id="projection-canvas" width="150" height="150"></canvas>'
+							layout: 'absolute',
+							items: [{
+								xtype: 'container',
+								html: '<canvas id="projection-canvas" width="150" height="150"></canvas>'
+							}, {
+								xtype: 'projectiongripper',
+								id: 'projection-gripper-i',
+								src: '/resources/images/grippers/i.png',
+								matrixColumn: 0
+							}, {
+								xtype: 'projectiongripper',
+								id: 'projection-gripper-j',
+								src: '/resources/images/grippers/j.png',
+								matrixColumn: 1
+							}, {
+								xtype: 'projectiongripper',
+								id: 'projection-gripper-k',
+								src: '/resources/images/grippers/k.png',
+								matrixColumn: 2
+							}]
 						}]
 					}],
 					buttons: [{
