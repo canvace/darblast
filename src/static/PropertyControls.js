@@ -141,6 +141,18 @@ Ext.define('Darblast.properties.Proxy', {
 	}
 });
 
+Ext.define('Darblast.form.field.NullCheckbox', {
+	extend: 'Ext.form.field.Checkbox',
+	alias: 'widget.darblast.nullcheckbox',
+	getValue: function () {
+		if (this.callParent()) {
+			return null;
+		} else {
+			return {};
+		}
+	}
+});
+
 function PropertyControls(container, config) {
 	function NewPropertyDialog(parentNode) {
 		var dialog;
@@ -172,13 +184,23 @@ function PropertyControls(container, config) {
 								}
 							});
 						} else {
-							parentNode.appendChild({
-								expandable: false,
-								leaf: true,
-								icon: Ext.BLANK_IMAGE_URL,
-								name: name,
-								value: valueField.getValue()
-							});
+							var value = valueField.getValue();
+							if ((typeof value !== 'object') || (value === null)) {
+								parentNode.appendChild({
+									expandable: false,
+									leaf: true,
+									icon: Ext.BLANK_IMAGE_URL,
+									name: name,
+									value: value
+								});
+							} else {
+								parentNode.appendChild({
+									expandable: true,
+									icon: Ext.BLANK_IMAGE_URL,
+									name: name,
+									value: '(object)'
+								});
+							}
 							dialog.close();
 						}
 					}
@@ -201,6 +223,9 @@ function PropertyControls(container, config) {
 				value: 0
 			})), new Panel('String property', new Ext.form.field.TextArea({
 				fieldLabel: 'Value'
+			})), new Panel('Object property', new Ext.create('Darblast.form.field.NullCheckbox', {
+				boxLabel: 'Set to null',
+				checked: false
 			}))],
 			buttons: [{
 				text: 'Cancel',
