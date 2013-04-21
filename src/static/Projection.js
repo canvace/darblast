@@ -69,15 +69,14 @@ function Projection() {
 		drawLine(0, 1, 0, 0, 1, 1);
 		drawLine(1, 1, 0, 1, 1, 1);
 		context.stroke();
-		/* TODO: rewrite this part!
 
-		$('.projection-gripper-control').css('left', function () {
-			return matrix[0][$(this).attr('data-column')];
+		Ext.each(['i', 'j', 'k'], function (axis) {
+			var component = Ext.getCmp('projection-gripper-' + axis);
+
+			component.showAt(
+				matrix[0][component.matrixColumn],
+				matrix[1][component.matrixColumn]);
 		});
-		$('.projection-gripper-control').css('top', function () {
-			return matrix[1][$(this).attr('data-column')];
-		});
-		*/
 	}
 
 	(function (bindBlur) {
