@@ -258,14 +258,14 @@ function Elements(type, Element, ready) {
 	});
 
 	Canvace.poller.poll(type + '/properties', 'put', function (parameters) {
-		elements[parameters.id][parameters.name] = parameters.value;
+		elements[parameters.id].properties[parameters.name] = parameters.value;
 		putPropertyHandlers.fire(parameters.id, function (handler) {
 			handler(parameters.name, parameters.value);
 		});
 	});
 
 	Canvace.poller.poll(type + '/properties', 'delete', function (parameters) {
-		delete elements[parameters.id][parameters.name];
+		delete elements[parameters.id].properties[parameters.name];
 		deletePropertyHandlers.fire(parameters.id, function (handler) {
 			handler(parameters.name);
 		});

@@ -196,6 +196,7 @@ function PropertyControls(container, config) {
 							} else {
 								parentNode.appendChild({
 									expandable: true,
+									expanded: false,
 									icon: Ext.BLANK_IMAGE_URL,
 									name: name,
 									value: '(object)'

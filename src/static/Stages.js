@@ -128,15 +128,15 @@ function Stages(ready) {
 	});
 
 	Canvace.poller.poll('stages/properties', 'put', function (parameters) {
-		putPropertyHandlers.fire(parameters.stageId, function (handler) {
-			stages[parameters.stageId][parameters.name] = parameters.value;
+		stages[parameters.id][parameters.name] = parameters.value;
+		putPropertyHandlers.fire(parameters.id, function (handler) {
 			handler(parameters.name, parameters.value);
 		});
 	});
 
 	Canvace.poller.poll('stages/properties', 'delete', function (parameters) {
-		deletePropertyHandlers.fire(parameters.stageId, function (handler) {
-			delete stages[parameters.stageId][parameters.name];
+		delete stages[parameters.id][parameters.name];
+		deletePropertyHandlers.fire(parameters.id, function (handler) {
 			handler(parameters.name);
 		});
 	});
