@@ -13,41 +13,7 @@ Ext.define('Darblast.properties.Proxy', {
 	put: function (operation, callback, scope) {
 		if (this.object) {
 			operation.setStarted();
-			var fullProperties = this.object.getProperties();
-			var updatedKeys = {};
-			operation.getRecords().forEach(function (record) {
-				var path = record.getPath('name').split('/'); // FIXME what if some name contains slashes?
-				path.splice(0, 2);
-				updatedKeys[path[0]] = true;
-				var lastKey = path.pop();
-				var properties = fullProperties;
-				path.forEach(function (key) {
-					properties = properties[key];
-				});
-				properties[lastKey] = (function walk(node) {
-					if (node.isLeaf()) {
-						return node.get('value');
-					} else {
-						var result = {};
-						node.eachChild(function (child) {
-							result[child.get('name')] = walk(child);
-						});
-						return result;
-					}
-				}(record));
-			});
-			var loader = new Loader(function () {
-				operation.setSuccessful();
-				operation.setCompleted();
-				callback.call(scope, operation);
-			});
-			var object = this.object;
-			for (var key in updatedKeys) {
-				loader.queue(function (callback) {
-					object.putProperty(key, fullProperties[key], callback);
-				});
-			}
-			loader.allQueued();
+			// TODO
 		} else {
 			operation.setSuccessful();
 			operation.setCompleted();
@@ -130,45 +96,7 @@ Ext.define('Darblast.properties.Proxy', {
 	destroy: function (operation, callback, scope) {
 		if (this.object) {
 			operation.setStarted();
-			var fullProperties = this.object.getProperties();
-			var updatedKeys = {};
-			var deletedKeys = {};
-			operation.getRecords().forEach(function (record) {
-				var path = record.getPath('name').split('/'); // FIXME what if some name contains slashes?
-				path.splice(0, 2);
-				if (path.length > 1) {
-					updatedKeys[path[0]] = true;
-					var lastKey = path.pop();
-					var properties = fullProperties;
-					path.forEach(function (key) {
-						properties = properties[key];
-					});
-					delete properties[lastKey];
-				} else {
-					deletedKeys[path[0]] = true;
-				}
-			});
-			var loader = new Loader(function () {
-				operation.setSuccessful();
-				operation.setCompleted();
-				callback.call(scope, operation);
-			});
-			var object = this.object;
-			(function () {
-				for (var key in updatedKeys) {
-					loader.queue(function (callback) {
-						object.putProperty(key, fullProperties[key], callback);
-					});
-				}
-			}());
-			(function () {
-				for (var key in deletedKeys) {
-					loader.queue(function (callback) {
-						object.deleteProperty(key, callback);
-					});
-				}
-			}());
-			loader.allQueued();
+			// TODO
 		}
 		operation.setSuccessful();
 		operation.setCompleted();
