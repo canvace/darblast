@@ -1,19 +1,50 @@
-var config;
-try {
-	config = require('./config.json');
-} catch (e) {
-	config = {};
-}
-
-var fs = require('fs');
 var path = require('path');
+var fs = require('fs');
+
+var configDirectory = (function (homeDirectory) {
+	var dir;
+
+	dir = homeDirectory;
+	if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) {
+		return __dirname;
+	}
+
+	dir = path.join(dir, '.Canvace');
+	if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) {
+		try {
+			fs.mkdirSync(dir);
+		} catch (e) {
+			return __dirname;
+		}
+	}
+
+	dir = path.join(dir, 'Darblast');
+	if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) {
+		try {
+			fs.mkdirSync(dir);
+		} catch (e) {
+			return __dirname;
+		}
+	}
+
+	return dir;
+}(path.normalize(process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'])));
+
+var config = (function () {
+	try {
+		return require(path.join(configDirectory, 'config.json'));
+	} catch (e) {
+		return {};
+	}
+}());
+
 var util = require('util');
 var npm = require('npm');
 
 var users = (function () {
 	var content;
 	try {
-		content = fs.readFileSync(__dirname + '/users.json', 'ascii');
+		content = fs.readFileSync(path.join(configDirectory, 'users.json'), 'ascii');
 	} catch (e) {
 		return null;
 	}
@@ -64,7 +95,7 @@ var users = (function () {
 		}
 	}
 	function storeUsers() {
-		fs.writeFileSync(__dirname + '/users.json', JSON.stringify(users), 'ascii');
+		fs.writeFileSync(path.join(configDirectory, 'users.json'), JSON.stringify(users), 'ascii');
 	}
 	if (process.argv.length > 2) {
 		switch (process.argv[2]) {
@@ -77,7 +108,7 @@ var users = (function () {
 				showHelp(true);
 			} else {
 				config.port = parseInt(process.argv[4], 10);
-				fs.writeFileSync(__dirname + '/config.json', JSON.stringify(config));
+				fs.writeFileSync(path.join(configDirectory, 'config.json'), JSON.stringify(config));
 			}
 			break;
 		case 'setuser':
@@ -95,7 +126,7 @@ var users = (function () {
 		case 'clearusers':
 			requireArguments(3);
 			users = null;
-			fs.unlinkSync(__dirname + '/users.json');
+			fs.unlinkSync(path.join(configDirectory, 'users.json'));
 			break;
 		default:
 			showHelp(true);
@@ -125,7 +156,7 @@ if (!config.dontCheckForUpdates) {
 				}
 			}
 			if (Object.keys(unknownVersions).length) {
-				fs.writeFile(__dirname + '/config.json', JSON.stringify(config));
+				fs.writeFile(path.join(configDirectory, 'config.json'), JSON.stringify(config));
 			}
 			// TODO compare versions and possibly set newXxxVersion flags
 		});
