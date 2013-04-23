@@ -234,7 +234,7 @@ function PropertyControls(container, config) {
 									name: name,
 									value: value,
 									path: parentNode.get('path').concat([name])
-								});
+								}).commit();
 							} else {
 								parentNode.appendChild({
 									expandable: true,
@@ -243,7 +243,7 @@ function PropertyControls(container, config) {
 									name: name,
 									value: '(object)',
 									path: parentNode.get('path').concat([name])
-								});
+								}).commit();
 							}
 							parentNode.commit();
 							dialog.close();

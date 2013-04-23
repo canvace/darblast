@@ -248,7 +248,7 @@ installHandler([
 ], 'put', function (request) {
 	this.tiles.modifySync(request.params.tileId, function (tile) {
 		tile.properties[request.params.name] = request.body.value;
-		this.broadcast('tiles/properties', 'update', {
+		this.broadcast('tiles/properties', 'put', {
 			id: request.params.tileId,
 			name: request.params.name,
 			value: request.body.value

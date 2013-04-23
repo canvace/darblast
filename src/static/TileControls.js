@@ -50,7 +50,7 @@ function TileControls() {
 		var dialog = new Ext.window.Window({
 			title: 'Tile configuration',
 			modal: true,
-			resizable: false,
+			resizable: true,
 			layout: 'fit',
 			items: {
 				xtype: 'tabpanel',
@@ -132,7 +132,9 @@ function TileControls() {
 						}]
 					}]
 				}, {
-					title: 'Properties'
+					id: 'tile-properties-tab',
+					title: 'Properties',
+					layout: 'fit'
 				}]
 			},
 			buttons: [{
@@ -141,7 +143,9 @@ function TileControls() {
 					dialog.close();
 				}
 			}]
-		}).show();
+		});
+		new PropertyControls(Ext.getCmp('tile-properties-tab')).bind(tile, 'Tile ' + id);
+		dialog.show();
 	});
 
 	controls.onDeleteElement(function (ids) {

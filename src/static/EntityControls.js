@@ -36,12 +36,7 @@ function EntityControls() {
 					}
 				}, {
 					title: 'Properties',
-					layout: 'fit',
-					items: {
-						xtype: 'grid',
-						columns: 2,
-						store: []
-					}
+					layout: 'fit'
 				}]
 			}],
 			buttons: [{

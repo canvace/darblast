@@ -230,7 +230,7 @@ installHandler([
 ], 'put', function (request) {
 	this.entities.modifySync(request.params.entityId, function (entity) {
 		entity.properties[request.params.name] = request.body.value;
-		this.broadcast('entities/properties', 'update', {
+		this.broadcast('entities/properties', 'put', {
 			id: request.params.entityId,
 			name: request.params.name,
 			value: request.body.value
