@@ -6,6 +6,8 @@
 	}
 	server.listen(port, function () {
 		console.log('Canvace Development Environment running on port ' + port);
-		require('openurl').open('http://localhost:' + port + '/');
+		if (!config.hasOwnProperty('browser') || config.browser !== false) {
+			require('openurl').open('http://localhost:' + port + '/');
+		}
 	});
 }(parseInt(config.port, 10)));
