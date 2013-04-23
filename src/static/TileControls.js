@@ -79,17 +79,22 @@ function TileControls() {
 					}]
 				}, {
 					title: 'Frames',
-					layout: 'vbox',
+					layout: 'hbox',
 					items: [{
-						xtype: 'image',
-						minWidth: 300,
-						minHeight: 300
+						xtype: 'box',
+						resizable: true,
+						width: 200,
+						height: 200
 					}, {
 						xtype: 'container',
 						layout: 'vbox',
 						items: [{
-							xtype: 'container',
-							html: 'Frame <b>#</b> out of <b>#</b>'
+							xtype: 'box',
+							id: 'frame-index',
+							autoEl: {
+								tag: 'div',
+								html: 'Frame <b>#</b> out of <b>#</b>'
+							}
 						}, {
 							xtype: 'numberfield',
 							fieldLabel: 'Duration',
@@ -105,7 +110,12 @@ function TileControls() {
 								}
 							}
 						}]
-					}]
+					}],
+					listeners: {
+						show: function () {
+							Ext.get('frame-index').setHTML('Frame <b>0</b> out of <b>0</b>');
+						}
+					}
 				}, {
 					title: 'Positioning',
 					layout: 'hbox',
