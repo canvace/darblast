@@ -1,16 +1,3 @@
-/*global Darblast: false */
-
-Ext.define('Darblast.properties.Model', {
-	extend: 'Ext.data.TreeModel',
-	fields: [{
-		name: 'name',
-		type: 'string'
-	}, 'value', {
-		name: 'path',
-		persist: false
-	}]
-});
-
 Ext.define('Darblast.properties.Proxy', {
 	extend: 'Ext.data.proxy.Proxy',
 	alias: 'proxy.darblast.properties',
@@ -72,6 +59,7 @@ Ext.define('Darblast.properties.Proxy', {
 	read: function (operation, callback, scope) {
 		if (this.object) {
 			operation.setStarted();
+			var Model = this.model;
 			operation.resultSet = new Ext.data.ResultSet({
 				records: (function walk(properties, path) {
 					var children = [];
@@ -80,7 +68,7 @@ Ext.define('Darblast.properties.Proxy', {
 						case 'undefined':
 						case 'boolean':
 						case 'number':
-							children.push(new Darblast.properties.Model({
+							children.push(new Model({
 								expandable: false,
 								leaf: true,
 								icon: Ext.BLANK_IMAGE_URL,
@@ -92,7 +80,7 @@ Ext.define('Darblast.properties.Proxy', {
 						case 'object':
 							if (properties[key] !== null) {
 								var subPath = path.concat(key);
-								children.push(new Darblast.properties.Model({
+								children.push(new Model({
 									expandable: true,
 									expanded: false,
 									icon: Ext.BLANK_IMAGE_URL,
@@ -102,7 +90,7 @@ Ext.define('Darblast.properties.Proxy', {
 									children: walk(properties[key], subPath)
 								}));
 							} else {
-								children.push(new Darblast.properties.Model({
+								children.push(new Model({
 									expandable: false,
 									leaf: true,
 									icon: Ext.BLANK_IMAGE_URL,
@@ -113,7 +101,7 @@ Ext.define('Darblast.properties.Proxy', {
 							}
 							break;
 						default:
-							children.push(new Darblast.properties.Model({
+							children.push(new Model({
 								expandable: false,
 								leaf: true,
 								icon: Ext.BLANK_IMAGE_URL,
@@ -244,7 +232,8 @@ function PropertyControls(container, config) {
 									leaf: true,
 									icon: Ext.BLANK_IMAGE_URL,
 									name: name,
-									value: value
+									value: value,
+									path: parentNode.get('path').concat([name])
 								});
 							} else {
 								parentNode.appendChild({
@@ -252,9 +241,11 @@ function PropertyControls(container, config) {
 									expanded: false,
 									icon: Ext.BLANK_IMAGE_URL,
 									name: name,
-									value: '(object)'
+									value: '(object)',
+									path: parentNode.get('path').concat([name])
 								});
 							}
+							parentNode.commit();
 							dialog.close();
 						}
 					}
@@ -297,7 +288,13 @@ function PropertyControls(container, config) {
 		store: {
 			autoLoad: true,
 			autoSync: true,
-			model: 'Darblast.properties.Model',
+			fields: [{
+				name: 'name',
+				type: 'string'
+			}, 'value', {
+				name: 'path',
+				persist: false
+			}],
 			proxy: 'darblast.properties',
 			root: {
 				expandable: false,
@@ -392,8 +389,9 @@ function PropertyControls(container, config) {
 		store.setRootNode({
 			expandable: true,
 			expanded: true,
+			icon: Ext.BLANK_IMAGE_URL,
 			name: name,
-			icon: Ext.BLANK_IMAGE_URL
+			path: []
 		});
 	};
 
