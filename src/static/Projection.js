@@ -79,7 +79,8 @@ function Projection() {
 				var component = Ext.getCmp('projection-gripper-' + axis);
 				component.showAt(
 					67 + matrix[0][component.matrixColumn],
-					67 + matrix[1][component.matrixColumn]);
+					67 + matrix[1][component.matrixColumn]
+					);
 			});
 		}
 	}

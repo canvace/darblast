@@ -1,6 +1,42 @@
+Ext.define('Darblast.properties.Reader', {
+	extend: 'Ext.data.reader.Json',
+	alias: 'reader.darblast.properties',
+	read: function (data) {
+		data = data[this.root];
+		var records = [];
+		for (var key in data) {
+			if ((typeof data[key] !== 'object') || (data[key] === null)) {
+				records.push(new this.model({
+					expandable: false,
+					leaf: true,
+					icon: Ext.BLANK_IMAGE_URL,
+					name: key,
+					value: data[key]
+				}));
+			} else {
+				records.push(new this.model({
+					expandable: true,
+					expanded: false,
+					icon: Ext.BLANK_IMAGE_URL,
+					name: key,
+					value: '(object)',
+					children: data[key]
+				}));
+			}
+		}
+		return new Ext.data.ResultSet({
+			success: true,
+			records: records,
+			count: records.length,
+			total: records.length
+		});
+	}
+});
+
 Ext.define('Darblast.properties.Proxy', {
 	extend: 'Ext.data.proxy.Proxy',
 	alias: 'proxy.darblast.properties',
+	reader: 'darblast.properties',
 	bind: function (object) {
 		this.object = object;
 	},
@@ -26,59 +62,10 @@ Ext.define('Darblast.properties.Proxy', {
 	read: function (operation, callback, scope) {
 		if (this.object) {
 			operation.setStarted();
-			var Model = this.model;
-			operation.resultSet = new Ext.data.ResultSet({
-				records: (function walk(properties) {
-					var children = [];
-					for (var key in properties) {
-						switch (typeof properties[key]) {
-						case 'undefined':
-						case 'boolean':
-						case 'number':
-							children.push(new Model({
-								expandable: false,
-								leaf: true,
-								icon: Ext.BLANK_IMAGE_URL,
-								name: key,
-								value: properties[key]
-							}));
-							break;
-						case 'object':
-							if (properties[key] !== null) {
-								children.push(new Model({
-									expandable: true,
-									expanded: false,
-									icon: Ext.BLANK_IMAGE_URL,
-									name: key,
-									value: '(object)',
-									children: walk(properties[key])
-								}));
-							} else {
-								children.push(new Model({
-									expandable: false,
-									leaf: true,
-									icon: Ext.BLANK_IMAGE_URL,
-									name: key,
-									value: null
-								}));
-							}
-							break;
-						default:
-							children.push(new Model({
-								expandable: false,
-								leaf: true,
-								icon: Ext.BLANK_IMAGE_URL,
-								name: key,
-								value: properties[key].toString()
-							}));
-							break;
-						}
-					}
-					return children;
-				}(this.object.getProperties())),
-				success: true,
-				loaded: true
-			});
+			var reader = this.getReader();
+			var data = {};
+			data[reader.root] = this.object.getProperties();
+			operation.resultSet = reader.read(data);
 		} else {
 			operation.resultSet = new Ext.data.ResultSet({
 				records: [],
@@ -302,10 +289,9 @@ function PropertyControls(container, config) {
 		store.setRootNode({
 			expandable: true,
 			expanded: true,
-			name: name,
-			icon: Ext.BLANK_IMAGE_URL
+			icon: Ext.BLANK_IMAGE_URL,
+			name: name
 		});
-		store.load();
 	};
 
 	this.unbind = function () {
@@ -316,6 +302,5 @@ function PropertyControls(container, config) {
 			icon: Ext.BLANK_IMAGE_URL,
 			name: '(no selection)'
 		});
-		store.load();
 	};
 }
