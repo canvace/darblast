@@ -9,3 +9,8 @@ $ canvace
 ```
 
 Dual-licensed under the MIT and GPLv3 licenses.
+
+Screenshots
+-----------
+
+TBD
