@@ -12,7 +12,7 @@ function EntityControls() {
 		var dialog = new Ext.window.Window({
 			title: 'Entity configuration',
 			modal: true,
-			resizable: false,
+			resizable: true,
 			layout: 'fit',
 			items: [{
 				xtype: 'tabpanel',
@@ -35,6 +35,7 @@ function EntityControls() {
 						}
 					}
 				}, {
+					id: 'entity-properties-tab',
 					title: 'Properties',
 					layout: 'fit'
 				}]
@@ -45,7 +46,9 @@ function EntityControls() {
 					dialog.close();
 				}
 			}]
-		}).show();
+		});
+		new PropertyControls(Ext.getCmp('entity-properties-tab')).bind(entity, 'Entity ' + id);
+		dialog.show();
 	});
 
 	controls.onDeleteElement(function (ids) {
