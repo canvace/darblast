@@ -50,7 +50,7 @@ function TileControls() {
 		var dialog = new Ext.window.Window({
 			title: 'Tile configuration',
 			modal: true,
-			resizable: false,
+			resizable: true,
 			layout: 'fit',
 			items: {
 				xtype: 'tabpanel',
@@ -78,7 +78,34 @@ function TileControls() {
 						}
 					}]
 				}, {
-					title: 'Frames'
+					title: 'Frames',
+					layout: 'vbox',
+					items: [{
+						xtype: 'image',
+						minWidth: 300,
+						minHeight: 300
+					}, {
+						xtype: 'container',
+						layout: 'vbox',
+						items: [{
+							xtype: 'container',
+							html: 'Frame <b>#</b> out of <b>#</b>'
+						}, {
+							xtype: 'numberfield',
+							fieldLabel: 'Duration',
+							minValue: 0,
+							value: 100
+						}, {
+							xtype: 'checkbox',
+							boxLabel: 'Loop animation',
+							checked: false,
+							listeners: {
+								change: function () {
+									// TODO
+								}
+							}
+						}]
+					}]
 				}, {
 					title: 'Positioning',
 					layout: 'hbox',
