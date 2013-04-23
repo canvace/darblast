@@ -1,3 +1,16 @@
+/*global Darblast: false */
+
+Ext.define('Darblast.properties.Model', {
+	extend: 'Ext.data.TreeModel',
+	fields: [{
+		name: 'name',
+		type: 'string'
+	}, 'value', {
+		name: 'path',
+		persist: false
+	}]
+});
+
 Ext.define('Darblast.properties.Proxy', {
 	extend: 'Ext.data.proxy.Proxy',
 	alias: 'proxy.darblast.properties',
@@ -16,8 +29,7 @@ Ext.define('Darblast.properties.Proxy', {
 			var fullProperties = this.object.getProperties();
 			var updatedKeys = {};
 			operation.getRecords().forEach(function (record) {
-				var path = record.getPath('name').split('/'); // FIXME what if some name contains slashes?
-				path.splice(0, 2);
+				var path = record.get('path');
 				updatedKeys[path[0]] = true;
 				var lastKey = path.pop();
 				var properties = fullProperties;
@@ -60,50 +72,54 @@ Ext.define('Darblast.properties.Proxy', {
 	read: function (operation, callback, scope) {
 		if (this.object) {
 			operation.setStarted();
-			var Model = this.model;
 			operation.resultSet = new Ext.data.ResultSet({
-				records: (function walk(properties) {
+				records: (function walk(properties, path) {
 					var children = [];
 					for (var key in properties) {
 						switch (typeof properties[key]) {
 						case 'undefined':
 						case 'boolean':
 						case 'number':
-							children.push(new Model({
+							children.push(new Darblast.properties.Model({
 								expandable: false,
 								leaf: true,
 								icon: Ext.BLANK_IMAGE_URL,
 								name: key,
-								value: properties[key]
+								value: properties[key],
+								path: path.concat(key)
 							}));
 							break;
 						case 'object':
 							if (properties[key] !== null) {
-								children.push(new Model({
+								var subPath = path.concat(key);
+								children.push(new Darblast.properties.Model({
 									expandable: true,
 									expanded: false,
 									icon: Ext.BLANK_IMAGE_URL,
 									name: key,
 									value: '(object)',
-									children: walk(properties[key])
+									path: subPath,
+									children: walk(properties[key], subPath)
 								}));
 							} else {
-								children.push(new Model({
+								children.push(new Darblast.properties.Model({
 									expandable: false,
 									leaf: true,
 									icon: Ext.BLANK_IMAGE_URL,
 									name: key,
-									value: null
+									value: null,
+									path: path.concat(key)
 								}));
 							}
 							break;
 						default:
-							children.push(new Model({
+							children.push(new Darblast.properties.Model({
 								expandable: false,
 								leaf: true,
 								icon: Ext.BLANK_IMAGE_URL,
 								name: key,
-								value: properties[key].toString()
+								value: properties[key].toString(),
+								path: path.concat(key)
 							}));
 							break;
 						}
@@ -112,7 +128,7 @@ Ext.define('Darblast.properties.Proxy', {
 						record.commit();
 					});
 					return children;
-				}(this.object.getProperties())),
+				}(this.object.getProperties(), [])),
 				success: true,
 				loaded: true
 			});
@@ -137,8 +153,7 @@ Ext.define('Darblast.properties.Proxy', {
 			var updatedKeys = {};
 			var deletedKeys = {};
 			operation.getRecords().forEach(function (record) {
-				var path = record.getPath('name').split('/'); // FIXME what if some name contains slashes?
-				path.splice(0, 2);
+				var path = record.get('path');
 				if (path.length > 1) {
 					updatedKeys[path[0]] = true;
 					var lastKey = path.pop();
@@ -282,10 +297,7 @@ function PropertyControls(container, config) {
 		store: {
 			autoLoad: true,
 			autoSync: true,
-			fields: [{
-				name: 'name',
-				type: 'string'
-			}, 'value'],
+			model: 'Darblast.properties.Model',
 			proxy: 'darblast.properties',
 			root: {
 				expandable: false,
@@ -364,6 +376,9 @@ function PropertyControls(container, config) {
 					} else {
 						return false;
 					}
+				},
+				edit: function (editor, event) {
+					event.record.commit();
 				}
 			}
 		}]
