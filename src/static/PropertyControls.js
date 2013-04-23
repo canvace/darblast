@@ -1,42 +1,6 @@
-Ext.define('Darblast.properties.Reader', {
-	extend: 'Ext.data.reader.Json',
-	alias: 'reader.darblast.properties',
-	read: function (data) {
-		data = data[this.root];
-		var records = [];
-		for (var key in data) {
-			if ((typeof data[key] !== 'object') || (data[key] === null)) {
-				records.push(new this.model({
-					expandable: false,
-					leaf: true,
-					icon: Ext.BLANK_IMAGE_URL,
-					name: key,
-					value: data[key]
-				}));
-			} else {
-				records.push(new this.model({
-					expandable: true,
-					expanded: false,
-					icon: Ext.BLANK_IMAGE_URL,
-					name: key,
-					value: '(object)',
-					children: data[key]
-				}));
-			}
-		}
-		return new Ext.data.ResultSet({
-			success: true,
-			records: records,
-			count: records.length,
-			total: records.length
-		});
-	}
-});
-
 Ext.define('Darblast.properties.Proxy', {
 	extend: 'Ext.data.proxy.Proxy',
 	alias: 'proxy.darblast.properties',
-	reader: 'darblast.properties',
 	bind: function (object) {
 		this.object = object;
 	},
@@ -49,7 +13,41 @@ Ext.define('Darblast.properties.Proxy', {
 	put: function (operation, callback, scope) {
 		if (this.object) {
 			operation.setStarted();
-			// TODO
+			var fullProperties = this.object.getProperties();
+			var updatedKeys = {};
+			operation.getRecords().forEach(function (record) {
+				var path = record.getPath('name').split('/'); // FIXME what if some name contains slashes?
+				path.splice(0, 2);
+				updatedKeys[path[0]] = true;
+				var lastKey = path.pop();
+				var properties = fullProperties;
+				path.forEach(function (key) {
+					properties = properties[key];
+				});
+				properties[lastKey] = (function walk(node) {
+					if (node.isLeaf()) {
+						return node.get('value');
+					} else {
+						var result = {};
+						node.eachChild(function (child) {
+							result[child.get('name')] = walk(child);
+						});
+						return result;
+					}
+				}(record));
+			});
+			var loader = new Loader(function () {
+				operation.setSuccessful();
+				operation.setCompleted();
+				callback.call(scope, operation);
+			});
+			var object = this.object;
+			for (var key in updatedKeys) {
+				loader.queue(function (callback) {
+					object.putProperty(key, fullProperties[key], callback);
+				});
+			}
+			loader.allQueued();
 		} else {
 			operation.setSuccessful();
 			operation.setCompleted();
@@ -62,10 +60,62 @@ Ext.define('Darblast.properties.Proxy', {
 	read: function (operation, callback, scope) {
 		if (this.object) {
 			operation.setStarted();
-			var reader = this.getReader();
-			var data = {};
-			data[reader.root] = this.object.getProperties();
-			operation.resultSet = reader.read(data);
+			var Model = this.model;
+			operation.resultSet = new Ext.data.ResultSet({
+				records: (function walk(properties) {
+					var children = [];
+					for (var key in properties) {
+						switch (typeof properties[key]) {
+						case 'undefined':
+						case 'boolean':
+						case 'number':
+							children.push(new Model({
+								expandable: false,
+								leaf: true,
+								icon: Ext.BLANK_IMAGE_URL,
+								name: key,
+								value: properties[key]
+							}));
+							break;
+						case 'object':
+							if (properties[key] !== null) {
+								children.push(new Model({
+									expandable: true,
+									expanded: false,
+									icon: Ext.BLANK_IMAGE_URL,
+									name: key,
+									value: '(object)',
+									children: walk(properties[key])
+								}));
+							} else {
+								children.push(new Model({
+									expandable: false,
+									leaf: true,
+									icon: Ext.BLANK_IMAGE_URL,
+									name: key,
+									value: null
+								}));
+							}
+							break;
+						default:
+							children.push(new Model({
+								expandable: false,
+								leaf: true,
+								icon: Ext.BLANK_IMAGE_URL,
+								name: key,
+								value: properties[key].toString()
+							}));
+							break;
+						}
+					}
+					children.forEach(function (record) {
+						record.commit();
+					});
+					return children;
+				}(this.object.getProperties())),
+				success: true,
+				loaded: true
+			});
 		} else {
 			operation.resultSet = new Ext.data.ResultSet({
 				records: [],
@@ -83,7 +133,45 @@ Ext.define('Darblast.properties.Proxy', {
 	destroy: function (operation, callback, scope) {
 		if (this.object) {
 			operation.setStarted();
-			// TODO
+			var fullProperties = this.object.getProperties();
+			var updatedKeys = {};
+			var deletedKeys = {};
+			operation.getRecords().forEach(function (record) {
+				var path = record.getPath('name').split('/'); // FIXME what if some name contains slashes?
+				path.splice(0, 2);
+				if (path.length > 1) {
+					updatedKeys[path[0]] = true;
+					var lastKey = path.pop();
+					var properties = fullProperties;
+					path.forEach(function (key) {
+						properties = properties[key];
+					});
+					delete properties[lastKey];
+				} else {
+					deletedKeys[path[0]] = true;
+				}
+			});
+			var loader = new Loader(function () {
+				operation.setSuccessful();
+				operation.setCompleted();
+				callback.call(scope, operation);
+			});
+			var object = this.object;
+			(function () {
+				for (var key in updatedKeys) {
+					loader.queue(function (callback) {
+						object.putProperty(key, fullProperties[key], callback);
+					});
+				}
+			}());
+			(function () {
+				for (var key in deletedKeys) {
+					loader.queue(function (callback) {
+						object.deleteProperty(key, callback);
+					});
+				}
+			}());
+			loader.allQueued();
 		}
 		operation.setSuccessful();
 		operation.setCompleted();
@@ -289,8 +377,8 @@ function PropertyControls(container, config) {
 		store.setRootNode({
 			expandable: true,
 			expanded: true,
-			icon: Ext.BLANK_IMAGE_URL,
-			name: name
+			name: name,
+			icon: Ext.BLANK_IMAGE_URL
 		});
 	};
 
