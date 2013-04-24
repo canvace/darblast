@@ -31,7 +31,12 @@ function StampTileTool() {
 			Canvace.renderer.render();
 		}
 	};
+	this.mousemove = function (x, y) {
+		Canvace.cursor.moveToXY(x, y);
+		Canvace.renderer.render();
+	};
 	this.mousedrag = function (x, y) {
+		Canvace.cursor.moveToXY(x, y);
 		var id = Canvace.tileControls.getSelectedId();
 		if (typeof id !== 'undefined') {
 			var cell = Canvace.view.getCell(x, y, Canvace.layers.getSelected());

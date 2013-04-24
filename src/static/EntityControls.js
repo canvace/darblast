@@ -59,7 +59,7 @@ function EntityControls() {
 
 	function addEntity(entity) {
 		var id = entity.getId();
-		controls.addElement(id, entity.getLabels(), entity.getFirstFrameId());
+		controls.addElement(id, entity.getLabels(), entity);
 		entity.onDelete(function () {
 			controls.removeElement(id);
 		});

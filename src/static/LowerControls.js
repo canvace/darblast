@@ -25,16 +25,22 @@ var LowerControls = (function () {
 				}, {
 					name: 'labels'
 				}, {
+					name: 'useImage'
+				}, {
 					name: 'imageId'
+				}, {
+					name: 'di'
+				}, {
+					name: 'dj'
 				}]
 			},
 			tpl: [
 				'<tpl for=".">',
 				'	<div class="thumb-wrap" id="{id}">',
-				'		<tpl if="typeof imageId !== \'undefined\'">',
+				'		<tpl if="useImage">',
 				'			<div class="thumb"><img src="images/{imageId}" alt=""></div>',
 				'		<tpl else>',
-				'			<div class="thumb" id="thumb-{id}"><img src="{[Canvace.view.generateBox(1, 1, 1).toDataURL()]}" alt=""/></div>',
+				'			<div class="thumb" id="thumb-{id}"><img src="{[Canvace.view.generateBox(values.di, values.dj, 1).toDataURL()]}" alt=""/></div>',
 				'		</tpl>',
 				'	</div>',
 				'</tpl>',
@@ -175,12 +181,32 @@ var LowerControls = (function () {
 
 		var models = {};
 
-		this.addElement = function (id, labels, imageId) {
+		this.addImage = function (id, labels, imageId) {
 			models[id] = store.add({
 				id: id,
 				labels: labels,
+				useImage: true,
 				imageId: imageId
 			})[0];
+		};
+		this.addElement = function (id, labels, element) {
+			if (element.hasFrames()) {
+				models[id] = store.add({
+					id: id,
+					labels: labels,
+					useImage: true,
+					imageId: element.getFirstFrameId()
+				})[0];
+			} else {
+				var layout = element.getLayout();
+				models[id] = store.add({
+					id: id,
+					labels: labels,
+					useImage: false,
+					di: layout.span.i,
+					dj: layout.span.j
+				})[0];
+			}
 		};
 
 		this.removeElement = function (id) {

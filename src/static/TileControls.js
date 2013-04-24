@@ -156,7 +156,7 @@ function TileControls() {
 
 	function addTile(tile) {
 		var id = tile.getId();
-		controls.addElement(id, tile.getLabels(), tile.getFirstFrameId());
+		controls.addElement(id, tile.getLabels(), tile);
 		tile.onDelete(function () {
 			controls.removeElement(id);
 		});

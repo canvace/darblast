@@ -24,6 +24,20 @@ function Entities(ready) {
 				}
 			});
 		};
+
+		// XXX this is for the LowerControls class
+		this.getLayout = function () {
+			return {
+				span: {
+					i: 1,
+					j: 1
+				},
+				ref: {
+					i: 0,
+					j: 0
+				}
+			};
+		};
 	}
 
 	Elements.call(this, 'entities', Entity, ready);
