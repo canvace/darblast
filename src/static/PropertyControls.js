@@ -16,7 +16,7 @@ Ext.define('Darblast.properties.Proxy', {
 			var fullProperties = this.object.getProperties();
 			var updatedKeys = {};
 			operation.getRecords().forEach(function (record) {
-				var path = record.get('path');
+				var path = record.get('path').slice(0);
 				updatedKeys[path[0]] = true;
 				var lastKey = path.pop();
 				var properties = fullProperties;
@@ -141,7 +141,7 @@ Ext.define('Darblast.properties.Proxy', {
 			var updatedKeys = {};
 			var deletedKeys = {};
 			operation.getRecords().forEach(function (record) {
-				var path = record.get('path');
+				var path = record.get('path').slice(0);
 				if (path.length > 1) {
 					updatedKeys[path[0]] = true;
 					var lastKey = path.pop();
