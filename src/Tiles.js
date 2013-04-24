@@ -34,11 +34,13 @@ installHandler([
 					y: 0
 				},
 				frames: {},
+				frameCounter: 0,
 				properties: {}
 			};
 			tile.static = true;
 			this.putJSON('tiles/' + id, tile, function () {
 				delete tile.frames;
+				delete tile.frameCounter;
 				delete tile.properties;
 				this.broadcast('tiles', 'create', {
 					id: id,
@@ -57,6 +59,7 @@ installHandler([
 ], 'get', function (request, response) {
 	this.tiles.get(request.params.tileId, function (tile) {
 		delete tile.frames;
+		delete tile.frameCounter;
 		delete tile.properties;
 		response.json(tile);
 	});

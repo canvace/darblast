@@ -31,7 +31,7 @@ var LowerControls = (function () {
 			tpl: [
 				'<tpl for=".">',
 				'	<div class="thumb-wrap" id="{id}">',
-				'		<tpl if="imageId !== false">',
+				'		<tpl if="typeof imageId !== \'undefined\'">',
 				'			<div class="thumb"><img src="images/{imageId}" alt=""></div>',
 				'		<tpl else>',
 				'			<div class="thumb" id="thumb-{id}"><img src="{[Canvace.view.generateBox(1, 1, 1).toDataURL()]}" alt=""/></div>',

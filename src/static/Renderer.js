@@ -69,14 +69,14 @@ function Renderer() {
 					} else {
 						context.globalAlpha = 1;
 					}
-					context.drawImage(Loader.getImage(element.id, render), element.x, element.y);
+					context.drawImage(Canvace.images.getImage(element.id, render), element.x, element.y);
 				}
 			});
 		} else {
 			context.globalAlpha = 1;
 			Canvace.buckets.forEach(origin.x, origin.y, function (element) {
 				if (Canvace.layers.isOn(element.k)) {
-					context.drawImage(Loader.getImage(element.id, render), element.x, element.y);
+					context.drawImage(Canvace.images.getImage(element.id, render), element.x, element.y);
 				}
 			});
 		}

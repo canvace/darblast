@@ -23,10 +23,12 @@ installHandler([
 					y: 0
 				},
 				frames: {},
+				frameCounter: 0,
 				properties: {}
 			};
 			this.putJSON('entities/' + id, entity, function () {
 				delete entity.frames;
+				delete entity.frameCounter;
 				delete entity.properties;
 				this.broadcast('entities', 'create', {
 					id: id,
@@ -45,6 +47,7 @@ installHandler([
 ], 'get', function (request, response) {
 	this.entities.get(request.params.entityId, function (entity) {
 		delete entity.frames;
+		delete entity.frameCounter;
 		delete entity.properties;
 		response.json(entity);
 	});
