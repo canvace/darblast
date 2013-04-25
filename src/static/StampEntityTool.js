@@ -1,4 +1,27 @@
 function StampEntityTool() {
+	this.activate = function () {
+		var entityId = Canvace.entityControls.getSelectedId();
+		if (typeof entityId !== 'undefined') {
+			var entity = Canvace.entities.get(entityId);
+			if (entity.hasFrames()) {
+				var offset = entity.getOffset();
+				Canvace.cursor
+					.snap(false)
+					.reset()
+					.addElement(entity.getFirstFrameId(), offset.x, offset.y)
+					.show();
+				Canvace.renderer.render();
+			}
+		}
+	};
+	this.deactivate = function () {
+		Canvace.cursor.hide();
+		Canvace.renderer.render();
+	};
+	this.mousemove = function (x, y) {
+		Canvace.cursor.moveToXY(x, y);
+		Canvace.renderer.render();
+	};
 	this.mouseup = function (x, y) {
 		var id = Canvace.entityControls.getSelectedId();
 		if (id !== false) {
