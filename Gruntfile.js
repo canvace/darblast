@@ -83,8 +83,6 @@ module.exports = function (grunt) {
 				options: {
 					stripBanners: true,
 					banner: '#!/usr/bin/env node\n'
-						+ ';(function(){"use strict";',
-					footer: '}())'
 				},
 				src: 'bin/canvace.min.js',
 				dest: 'bin/canvace.js'
