@@ -58,7 +58,7 @@ function TileControls() {
 		});
 
 		Ext.create('Ext.data.Store', {
-			id: 'framesStore',
+			id: 'frameStore',
 			model: 'Frame',
 			data: []
 		});
@@ -102,48 +102,44 @@ function TileControls() {
 						layout: 'vbox',
 						items: [{
 							xtype: 'dataview',
-							width: 200,
-							height: 200,
+							cls: 'view',
+							autoScroll: true,
+							multiSelect: false,
+							trackOver: true,
+							overItemCls: 'x-item-over',
+							maxWidth: 250,
+							minHeight: 150,
 							resizable: true,
 							border: true,
 							style: {
 								borderColor: 'black',
 								borderStyle: 'solid'
 							},
-							store: Ext.data.StoreManager.lookup('framesStore'),
+							store: Ext.data.StoreManager.lookup('frameStore'),
 							tpl: new Ext.XTemplate(
 								'<tpl for=".">',
-									'<div style="margin-bottom: 10px;" class="frame-wrap">',
-										'<img src="{src}" alt="{index}" />',
+									'<div class="thumb-wrap">',
+										'<div class="thumb">',
+											'<img src="{src}" alt="{index}" />',
+											'<br />',
+											'<span>{index}</span>',
+										'</div>',
 									'</div>',
-								'</tpl>'
+								'</tpl>',
+								'<div class="x-clear"></div>'
 							),
-							itemSelector: 'div.frame-wrap',
+							itemSelector: 'div.thumb-wrap',
 							emptyText: 'No frames available'
 						}, {
 							xtype: 'toolbar',
 							items: [{
-								tooltip: 'Append frame',
+								text: 'Append frame',
 								iconCls: 'x-add'
 							}, {
-								id: 'delete-frame',
-								tooltip: 'Delete',
+								id: 'remove-frame',
+								text: 'Remove selected',
 								iconCls: 'x-delete',
 								disabled: true
-							},
-							'-',
-							{
-								tooltip: 'First',
-								iconCls: 'x-data-first'
-							}, {
-								tooltip: 'Previous',
-								iconCls: 'x-data-previous'
-							}, {
-								tooltip: 'Next',
-								iconCls: 'x-data-next'
-							}, {
-								tooltip: 'Last',
-								iconCls: 'x-data-last'
 							}]
 						}]
 					}, {
@@ -174,14 +170,22 @@ function TileControls() {
 					}],
 					listeners: {
 						show: function () {
-							Ext.get('frame-index').setHTML(
-								'Frame <b>0</b> out of <b>' +
-								tile.getFramesCount() +
-								'</b>');
+							Ext.get('frame-index').setHTML([
+								'Frame <b>', (tile.hasFrames() ? 1 : 0), '</b> ',
+								'out of <b>', tile.getFramesCount(), '</b>'
+							].join(''));
 
-							if (tile.hasFrames()) {
-								Ext.get('delete-frame').enable();
-							}
+							var store = Ext.data.StoreManager.lookup('frameStore');
+							var index = 0;
+
+							store.removeAll();
+
+							tile.forEachFrame(function (frame) {
+								store.add({
+									src: '/images/' + frame.getImageId(),
+									index: (index++)
+								});
+							});
 						}
 					}
 				}, {
