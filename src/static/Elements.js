@@ -141,6 +141,9 @@ function Elements(type, Element, ready) {
 		this.hasFrames = function () {
 			return !!element.frames.length;
 		};
+		this.getFramesCount = function () {
+			return element.frames.length;
+		};
 		this.getDimensions = function () {
 			if (element.frames.length) {
 				var image = Canvace.images.getImage(element.frames[0].imageId);
