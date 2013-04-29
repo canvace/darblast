@@ -174,7 +174,7 @@ function Elements(type, Element, ready) {
 			if (arguments.length > 1) {
 				data.duration = parseInt(duration, 10);
 			}
-			Canvace.Ajax.post(type + '/' + id + '/frames', data);
+			Canvace.Ajax.post(type + '/' + id + '/frames/', data);
 		};
 		this.onAddFrame = function (handler) {
 			return createFramesHandlers.registerHandler(id, handler);
