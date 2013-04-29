@@ -1,0 +1,23 @@
+.x-add {
+	background-image: url(../images/icons/add.png);
+}
+
+.x-delete {
+	background-image: url(../images/icons/delete.png);
+}
+
+.x-data-first {
+	background-image: url(../images/icons/resultset_first.png);
+}
+
+.x-data-last {
+	background-image: url(../images/icons/resultset_last.png);
+}
+
+.x-data-next {
+	background-image: url(../images/icons/resultset_next.png);
+}
+
+.x-data-previous {
+	background-image: url(../images/icons/resultset_previous.png);
+}
