@@ -45,18 +45,18 @@ function TileControls() {
 		}).show();
 	});
 
-	controls.onActivateElement(function (id) {
-		Ext.define('Frame', {
-			extend: 'Ext.data.Model',
-			fields: [{
-				name: 'imageUrl',
-				type: 'string'
-			}, {
-				name: 'frameId',
-				type: 'int'
-			}]
-		});
+	Ext.define('Frame', {
+		extend: 'Ext.data.Model',
+		fields: [{
+			name: 'imageUrl',
+			type: 'string'
+		}, {
+			name: 'frameId',
+			type: 'int'
+		}]
+	});
 
+	controls.onActivateElement(function (id) {
 		var frameStore = Ext.create('Ext.data.Store', {
 			model: 'Frame',
 			data: []
