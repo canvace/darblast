@@ -49,21 +49,80 @@ function TileControls() {
 		Ext.define('Frame', {
 			extend: 'Ext.data.Model',
 			fields: [{
-				name: 'src',
+				name: 'imageUrl',
 				type: 'string'
 			}, {
-				name: 'index',
+				name: 'frameId',
 				type: 'int'
 			}]
 		});
 
-		Ext.create('Ext.data.Store', {
-			id: 'frameStore',
+		var frameStore = Ext.create('Ext.data.Store', {
 			model: 'Frame',
 			data: []
 		});
 
+		var selected;
 		var tile = Canvace.tiles.get(id);
+		var view = Ext.create('Ext.view.View', {
+			cls: 'view',
+			autoScroll: true,
+			multiSelect: false,
+			trackOver: true,
+			overItemCls: 'x-item-over',
+			maxWidth: 250,
+			minHeight: 150,
+			resizable: true,
+			border: true,
+			style: {
+				borderColor: 'black',
+				borderStyle: 'solid'
+			},
+			store: frameStore,
+			tpl: new Ext.XTemplate(
+				'<tpl for=".">',
+					'<div class="thumb-wrap">',
+						'<div class="thumb">',
+							'<img src="{imageUrl}" alt="{frameId}" />',
+							'<br />',
+							'<span>{frameId}</span>',
+						'</div>',
+					'</div>',
+				'</tpl>',
+				'<div class="x-clear"></div>'
+			),
+			itemSelector: 'div.thumb-wrap',
+			emptyText: 'No frames available',
+			listeners: {
+				select: function () {
+					Ext.getCmp('remove-frame').enable();
+				},
+
+				deselect: function () {
+					Ext.getCmp('remove-frame').disable();
+				},
+
+				selectionchange: function (records) {
+					selected = records;
+				}
+			}
+		});
+		var toolbar = Ext.create('Ext.toolbar.Toolbar', {
+			items: [{
+				text: 'Append frame',
+				iconCls: 'x-add'
+			}, {
+				id: 'remove-frame',
+				text: 'Remove selected',
+				iconCls: 'x-delete',
+				disabled: true,
+				listeners: {
+					click: function () {
+						frameStore.remove(selected);
+					}
+				}
+			}]
+		});
 		var dialog = new Ext.window.Window({
 			title: 'Tile configuration',
 			modal: true,
@@ -100,48 +159,7 @@ function TileControls() {
 					items: [{
 						xtype: 'container',
 						layout: 'vbox',
-						items: [{
-							xtype: 'dataview',
-							cls: 'view',
-							autoScroll: true,
-							multiSelect: false,
-							trackOver: true,
-							overItemCls: 'x-item-over',
-							maxWidth: 250,
-							minHeight: 150,
-							resizable: true,
-							border: true,
-							style: {
-								borderColor: 'black',
-								borderStyle: 'solid'
-							},
-							store: Ext.data.StoreManager.lookup('frameStore'),
-							tpl: new Ext.XTemplate(
-								'<tpl for=".">',
-									'<div class="thumb-wrap">',
-										'<div class="thumb">',
-											'<img src="{src}" alt="{index}" />',
-											'<br />',
-											'<span>{index}</span>',
-										'</div>',
-									'</div>',
-								'</tpl>',
-								'<div class="x-clear"></div>'
-							),
-							itemSelector: 'div.thumb-wrap',
-							emptyText: 'No frames available'
-						}, {
-							xtype: 'toolbar',
-							items: [{
-								text: 'Append frame',
-								iconCls: 'x-add'
-							}, {
-								id: 'remove-frame',
-								text: 'Remove selected',
-								iconCls: 'x-delete',
-								disabled: true
-							}]
-						}]
+						items: [view, toolbar]
 					}, {
 						xtype: 'container',
 						layout: 'vbox',
@@ -175,15 +193,12 @@ function TileControls() {
 								'out of <b>', tile.getFramesCount(), '</b>'
 							].join(''));
 
-							var store = Ext.data.StoreManager.lookup('frameStore');
-							var index = 0;
-
-							store.removeAll();
+							frameStore.removeAll();
 
 							tile.forEachFrame(function (frame) {
-								store.add({
-									src: '/images/' + frame.getImageId(),
-									index: (index++)
+								frameStore.add({
+									imageUrl: '/images/' + frame.getImageId(),
+									frameId: frame.getFrameId()
 								});
 							});
 						}
