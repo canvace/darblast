@@ -164,13 +164,6 @@ function TileControls() {
 						xtype: 'container',
 						layout: 'vbox',
 						items: [{
-							xtype: 'box',
-							id: 'frame-index',
-							autoEl: {
-								tag: 'div',
-								html: 'Frame <b>#</b> out of <b>#</b>'
-							}
-						}, {
 							xtype: 'numberfield',
 							fieldLabel: 'Duration',
 							minValue: 0,
@@ -188,11 +181,6 @@ function TileControls() {
 					}],
 					listeners: {
 						show: function () {
-							Ext.get('frame-index').setHTML([
-								'Frame <b>', (tile.hasFrames() ? 1 : 0), '</b> ',
-								'out of <b>', tile.getFramesCount(), '</b>'
-							].join(''));
-
 							frameStore.removeAll();
 
 							tile.forEachFrame(function (frame) {
