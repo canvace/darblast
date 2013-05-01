@@ -42,6 +42,7 @@ function History() {
 			entries = {};
 			pointer = -1;
 			top = -1;
+			bookmark = -1;
 		};
 
 		this.bookmark = function () {
@@ -58,10 +59,10 @@ function History() {
 
 	function rootRecord(entry) {
 		rootStack.record(entry);
-		canUndoHandlers.fire(function (handler) {
+		canUndoHandlers.fire(0, function (handler) {
 			handler(true);
 		});
-		canRedoHandlers.fire(function (handler) {
+		canRedoHandlers.fire(0, function (handler) {
 			handler(false);
 		});
 	}
@@ -83,10 +84,10 @@ function History() {
 				}
 			});
 			thisObject.record = rootRecord;
-			canUndoHandlers.fire(function (handler) {
+			canUndoHandlers.fire(0, function (handler) {
 				handler(true);
 			});
-			canRedoHandlers.fire(function (handler) {
+			canRedoHandlers.fire(0, function (handler) {
 				handler(false);
 			});
 		}
@@ -96,38 +97,38 @@ function History() {
 	this.canRedo = rootStack.canRedo;
 
 	this.onCanUndo = function (handler) {
-		return canUndoHandlers.register(0, handler);
+		return canUndoHandlers.registerHandler(0, handler);
 	};
 	this.onCanRedo = function (handler) {
-		return canRedoHandlers.register(0, handler);
+		return canRedoHandlers.registerHandler(0, handler);
 	};
 
 	this.undo = function () {
 		if (rootStack.undo()) {
-			canUndoHandlers.fire(function (handler) {
+			canUndoHandlers.fire(0, function (handler) {
 				handler(rootStack.canUndo());
 			});
-			canRedoHandlers.fire(function (handler) {
+			canRedoHandlers.fire(0, function (handler) {
 				handler(true);
 			});
 		}
 	};
 	this.redo = function () {
 		if (rootStack.redo()) {
-			canUndoHandlers.fire(function (handler) {
+			canUndoHandlers.fire(0, function (handler) {
 				handler(true);
 			});
-			canRedoHandlers.fire(function (handler) {
+			canRedoHandlers.fire(0, function (handler) {
 				handler(rootStack.canRedo());
 			});
 		}
 	};
 	this.erase = function () {
 		rootStack.erase();
-		canUndoHandlers.fire(function (handler) {
+		canUndoHandlers.fire(0, function (handler) {
 			handler(false);
 		});
-		canRedoHandlers.fire(function (handler) {
+		canRedoHandlers.fire(0, function (handler) {
 			handler(false);
 		});
 	};
