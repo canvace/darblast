@@ -42,7 +42,6 @@ function History() {
 			entries = {};
 			pointer = -1;
 			top = -1;
-			bookmark = -1;
 		};
 
 		this.bookmark = function () {
