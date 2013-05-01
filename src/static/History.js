@@ -70,11 +70,12 @@ function History() {
 
 	this.nest = function (callback, scope) {
 		var subStack = new Stack();
+		var parentRecord = thisObject.record;
 		thisObject.record = subStack.record;
 		try {
 			callback.call(scope);
 		} finally {
-			rootRecord({
+			parentRecord({
 				action: function () {
 					while (subStack.redo()) {}
 				},
@@ -82,7 +83,7 @@ function History() {
 					while (subStack.undo()) {}
 				}
 			});
-			thisObject.record = rootRecord;
+			thisObject.record = parentRecord;
 			canUndoHandlers.fire(0, function (handler) {
 				handler(true);
 			});
