@@ -1,14 +1,20 @@
 function Selection() {
 	function Area() {
 		var fragments = {};
-		function doAddFragment(i, j) {
-			if (!fragments[i]) {
-				fragments[i] = {};
-			}
-			fragments[i][j] = true;
-		}
+
 		this.addFragment = function (i, j) {
+			function doAddFragment(i, j) {
+				if (!fragments[i]) {
+					fragments[i] = {};
+				}
+				if (fragments[i][j]) {
+					return false;
+				} else {
+					return fragments[i][j] = true;
+				}
+			}
 			var k = Canvace.layers.getSelected();
+			var diff = {};
 			var id = Canvace.array.get(i, j, k);
 			if (id !== false) {
 				var layout;
@@ -23,35 +29,72 @@ function Selection() {
 				var j0 = j - layout.ref.j;
 				for (i = i0; i < i0 + layout.span.i; i++) {
 					for (j = j0; j < j0 + layout.span.j; j++) {
-						doAddFragment(i, j);
+						if (doAddFragment(i, j)) {
+							if (!(i in diff)) {
+								diff[i] = {};
+							}
+							diff[i][j] = true;
+						}
 					}
 				}
+				return diff;
 			} else {
-				doAddFragment(i, j);
+				if (doAddFragment(i, j)) {
+					diff[i] = {};
+					diff[i][j] = true;
+				}
+				return diff;
 			}
 		};
+
 		this.addFragments = function (otherFragments) {
+			var diff = {};
 			for (var i in otherFragments) {
 				if (!fragments[i]) {
 					fragments[i] = {};
 				}
 				for (var j in otherFragments[i]) {
-					fragments[i][j] = true;
+					if (!fragments[i][j]) {
+						fragments[i][j] = true;
+						if (!(i in diff)) {
+							diff[i] = {};
+						}
+						diff[i][j] = true;
+					}
 				}
 			}
+			return diff;
 		};
-		this.removeFragment = function (i, j) {
-			if (i in fragments) {
-				delete fragments[i][j];
+
+		this.removeFragments = function (otherFragments) {
+			var diff = {};
+			for (var i in otherFragments) {
+				for (var j in otherFragments[i]) {
+					if (fragments[i][j]) {
+						delete fragments[i][j];
+						if (!(i in diff)) {
+							diff[i] = {};
+						}
+						diff[i][j] = true;
+					}
+				}
 			}
+			return diff;
 		};
+
+		this.clear = function () {
+			var diff = fragments;
+			fragments = {};
+			return diff;
+		};
+
 		this.transfer = function (otherArea) {
 			otherArea.addFragments(fragments);
+			var diff = fragments;
 			fragments = {};
+			return diff;
 		};
-		this.clear = function () {
-			fragments = {};
-		};
+
 		this.forEach = function (action) {
 			var k = Canvace.layers.getSelected();
 			for (var i in fragments) {
@@ -64,7 +107,36 @@ function Selection() {
 		};
 	}
 
-	var selection = new Area();
+	function RecordedArea() {
+		var area = new Area();
+
+		function record(diff) {
+			Canvace.history.record({
+				action: function () {
+					area.addFragments(diff);
+				},
+				reverse: function () {
+					area.removeFragments(diff);
+				}
+			});
+		}
+
+		this.addFragment = function (i, j) {
+			record(area.addFragment(i, j));
+		};
+
+		this.addFragments = function (fragments) {
+			record(area.addFragments(fragments));
+		};
+
+		this.clear = function () {
+			record(area.clear());
+		};
+
+		this.forEach = area.forEach;
+	}
+
+	var selection = new RecordedArea();
 	var currentArea = new Area();
 	var show = false;
 
