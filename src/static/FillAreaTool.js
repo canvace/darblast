@@ -4,8 +4,10 @@ function FillAreaTool() {
 		if (id) {
 			var k = Canvace.layers.getSelected();
 			var cell = Canvace.view.getCell(x, y, k);
-			Canvace.array.floodLayer(k, cell.i, cell.j, function (i, j) {
-				Canvace.array.set(i, j, k, id);
+			Canvace.history.nest(function () {
+				Canvace.array.floodLayer(k, cell.i, cell.j, function (i, j) {
+					Canvace.array.set(i, j, k, id);
+				});
 			});
 			Canvace.renderer.render();
 		}

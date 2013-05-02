@@ -36,12 +36,13 @@ function Selection() {
 					fragments[i] = {};
 				}
 				for (var j in otherFragments[i]) {
-					if (fragments[i][j]) {
-						otherFragments[i][j].remove();
-					} else {
-						fragments[i][j] = otherFragments[i][j];
-					}
+					fragments[i][j] = true;
 				}
+			}
+		};
+		this.removeFragment = function (i, j) {
+			if (i in fragments) {
+				delete fragments[i][j];
 			}
 		};
 		this.transfer = function (otherArea) {
