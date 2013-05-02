@@ -69,13 +69,15 @@ function Selection() {
 		this.removeFragments = function (otherFragments) {
 			var diff = {};
 			for (var i in otherFragments) {
-				for (var j in otherFragments[i]) {
-					if (fragments[i][j]) {
-						delete fragments[i][j];
-						if (!(i in diff)) {
-							diff[i] = {};
+				if (fragments[i]) {
+					for (var j in otherFragments[i]) {
+						if (fragments[i][j]) {
+							delete fragments[i][j];
+							if (!(i in diff)) {
+								diff[i] = {};
+							}
+							diff[i][j] = true;
 						}
-						diff[i][j] = true;
 					}
 				}
 			}
@@ -111,14 +113,18 @@ function Selection() {
 		var area = new Area();
 
 		function record(diff) {
-			Canvace.history.record({
-				action: function () {
-					area.addFragments(diff);
-				},
-				reverse: function () {
-					area.removeFragments(diff);
-				}
-			});
+			/*jshint unused: false */
+			for (var i in diff) {
+				Canvace.history.record({
+					action: function () {
+						area.addFragments(diff);
+					},
+					reverse: function () {
+						area.removeFragments(diff);
+					}
+				});
+				return;
+			}
 		}
 
 		this.addFragment = function (i, j) {
