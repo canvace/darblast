@@ -112,31 +112,42 @@ function Selection() {
 	function RecordedArea() {
 		var area = new Area();
 
-		function record(diff) {
+		function record(adding, diff) {
 			/*jshint unused: false */
 			for (var i in diff) {
-				Canvace.history.record({
-					action: function () {
-						area.addFragments(diff);
-					},
-					reverse: function () {
-						area.removeFragments(diff);
-					}
-				});
+				if (adding) {
+					Canvace.history.record({
+						action: function () {
+							area.addFragments(diff);
+						},
+						reverse: function () {
+							area.removeFragments(diff);
+						}
+					});
+				} else {
+					Canvace.history.record({
+						action: function () {
+							area.removeFragments(diff);
+						},
+						reverse: function () {
+							area.addFragments(diff);
+						}
+					});
+				}
 				return;
 			}
 		}
 
 		this.addFragment = function (i, j) {
-			record(area.addFragment(i, j));
+			record(true, area.addFragment(i, j));
 		};
 
 		this.addFragments = function (fragments) {
-			record(area.addFragments(fragments));
+			record(true, area.addFragments(fragments));
 		};
 
 		this.clear = function () {
-			record(area.clear());
+			record(false, area.clear());
 		};
 
 		this.forEach = area.forEach;
