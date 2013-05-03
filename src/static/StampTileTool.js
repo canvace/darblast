@@ -1,28 +1,40 @@
 function StampTileTool() {
+	var unregisterSelectionHandler;
+
 	this.activate = function () {
-		var tileId = Canvace.tileControls.getSelectedId();
-		if (typeof tileId !== 'undefined') {
-			var tile = Canvace.tiles.get(tileId);
-			if (tile.hasFrames()) {
-				var offset = tile.getOffset();
-				Canvace.cursor
-					.snap(true)
-					.reset()
-					.addElement(
+		Canvace.cursor.snap(true);
+
+		function setCursor(tileId) {
+			if (typeof tileId !== 'undefined') {
+				var tile = Canvace.tiles.get(tileId);
+				if (tile.hasFrames()) {
+					var offset = tile.getOffset();
+					Canvace.cursor.reset().addElement(
 						Canvace.images.getImage(tile.getFirstFrameId()),
 						offset.x,
 						offset.y
-						)
-					.show();
-				Canvace.renderer.render();
+						);
+				} else {
+					Canvace.cursor.reset();
+				}
 			}
 		}
+		setCursor(Canvace.tileControls.getSelectedId());
+
+		unregisterSelectionHandler = Canvace.tileControls.onSelectionChange(function (selectedIds) {
+			setCursor(selectedIds[0]);
+		});
+		Canvace.cursor.show();
+		Canvace.renderer.render();
 	};
 	this.deactivate = function () {
+		unregisterSelectionHandler();
 		Canvace.cursor.hide();
 		Canvace.renderer.render();
 	};
+
 	var lastCell = {};
+
 	this.mousedown = function (x, y) {
 		var id = Canvace.tileControls.getSelectedId();
 		if (typeof id !== 'undefined') {

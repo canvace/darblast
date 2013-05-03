@@ -106,27 +106,31 @@ function Tools() {
 	}])];
 
 	var canvas = Ext.get('canvas');
+	var offset = {
+		x: canvas.getX(),
+		y: canvas.getY()
+	};
 	var down = false;
 	canvas.on('mousemove', function (event) {
 		if (down) {
 			if (activeTool.mousedrag) {
-				activeTool.mousedrag(event.getX(), event.getY());
+				activeTool.mousedrag(event.getX() - offset.x, event.getY() - offset.y);
 			}
 		} else {
 			if (activeTool.mousemove) {
-				activeTool.mousemove(event.getX(), event.getY());
+				activeTool.mousemove(event.getX() - offset.x, event.getY() - offset.y);
 			}
 		}
 	});
 	canvas.on('mousedown', function (event) {
 		down = true;
 		if (activeTool.mousedown) {
-			activeTool.mousedown(event.getX(), event.getY());
+			activeTool.mousedown(event.getX() - offset.x, event.getY() - offset.y);
 		}
 	});
 	canvas.on('mouseup', function (event) {
 		if (activeTool.mouseup) {
-			activeTool.mouseup(event.getX(), event.getY());
+			activeTool.mouseup(event.getX() - offset.x, event.getY() - offset.y);
 		}
 		down = false;
 	});
