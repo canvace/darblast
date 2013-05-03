@@ -105,32 +105,43 @@ function Tools() {
 		handler: bindToolHandler(new PasteEntityTool())
 	}])];
 
-	var canvas = Ext.get('canvas');
-	var offset = {
-		x: canvas.getX(),
-		y: canvas.getY()
+
+	var canvas = {
+		on: (function (canvas) {
+			return function (eventName, callback) {
+				canvas.addEventListener(eventName, function (event) {
+					var rect = canvas.getBoundingClientRect();
+					callback.call(
+						canvas,
+						event.clientX - rect.left,
+						event.clientY - rect.top,
+						event);
+				}, false);
+			};
+		}(Ext.getDom('canvas')))
 	};
+
 	var down = false;
-	canvas.on('mousemove', function (event) {
+	canvas.on('mousemove', function (x, y) {
 		if (down) {
 			if (activeTool.mousedrag) {
-				activeTool.mousedrag(event.getX() - offset.x, event.getY() - offset.y);
+				activeTool.mousedrag(x, y);
 			}
 		} else {
 			if (activeTool.mousemove) {
-				activeTool.mousemove(event.getX() - offset.x, event.getY() - offset.y);
+				activeTool.mousemove(x, y);
 			}
 		}
 	});
-	canvas.on('mousedown', function (event) {
+	canvas.on('mousedown', function (x, y) {
 		down = true;
 		if (activeTool.mousedown) {
-			activeTool.mousedown(event.getX() - offset.x, event.getY() - offset.y);
+			activeTool.mousedown(x, y);
 		}
 	});
-	canvas.on('mouseup', function (event) {
+	canvas.on('mouseup', function (x, y) {
 		if (activeTool.mouseup) {
-			activeTool.mouseup(event.getX() - offset.x, event.getY() - offset.y);
+			activeTool.mouseup(x, y);
 		}
 		down = false;
 	});
