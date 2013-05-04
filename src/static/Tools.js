@@ -105,24 +105,22 @@ function Tools() {
 		handler: bindToolHandler(new PasteEntityTool())
 	}])];
 
-
-	var canvas = {
-		on: (function (canvas) {
-			return function (eventName, callback) {
-				canvas.addEventListener(eventName, function (event) {
-					var rect = canvas.getBoundingClientRect();
-					callback.call(
-						canvas,
-						event.clientX - rect.left,
-						event.clientY - rect.top,
-						event);
-				}, false);
-			};
-		}(Ext.getDom('canvas')))
-	};
+	var registerCanvasHandler = (function (canvas) {
+		return function (eventName, callback) {
+			canvas.addEventListener(eventName, function (event) {
+				var rect = canvas.getBoundingClientRect();
+				callback.call(
+					canvas,
+					event.clientX - rect.left,
+					event.clientY - rect.top,
+					event
+					);
+			}, false);
+		};
+	}(Ext.getDom('canvas')));
 
 	var down = false;
-	canvas.on('mousemove', function (x, y) {
+	registerCanvasHandler('mousemove', function (x, y) {
 		if (down) {
 			if (activeTool.mousedrag) {
 				activeTool.mousedrag(x, y);
@@ -133,13 +131,13 @@ function Tools() {
 			}
 		}
 	});
-	canvas.on('mousedown', function (x, y) {
+	registerCanvasHandler('mousedown', function (x, y) {
 		down = true;
 		if (activeTool.mousedown) {
 			activeTool.mousedown(x, y);
 		}
 	});
-	canvas.on('mouseup', function (x, y) {
+	registerCanvasHandler('mouseup', function (x, y) {
 		if (activeTool.mouseup) {
 			activeTool.mouseup(x, y);
 		}
