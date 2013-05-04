@@ -120,6 +120,11 @@ Ext.Loader.setConfig({
 				Canvace.renderer = new Renderer();
 				Canvace.tools = new Tools();
 				Canvace.tools.addToolButtons();
+				window.addEventListener('beforeunload', function (event) {
+					if (Canvace.history.isDirty()) {
+						return (event || window.event).returnValue = 'There are unsaved changes. Do you want to discard them and exit?';
+					}
+				});
 				Canvace.renderer.render();
 			});
 		});

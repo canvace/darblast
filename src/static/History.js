@@ -133,6 +133,8 @@ function History() {
 		});
 	};
 
-	this.isDirty = rootStack.isBookmark;
+	this.isDirty = function () {
+		return !rootStack.isBookmark();
+	};
 	this.clearDirty = rootStack.bookmark;
 }
