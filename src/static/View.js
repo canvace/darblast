@@ -186,8 +186,12 @@ function View(matrix, x0, y0) {
 			y: y0
 		};
 	};
-	this.drag = function (dx, dy) {
+	this.dragBy = function (dx, dy) {
 		x0 += dx;
 		y0 += dy;
+	};
+	this.dragTo = function (x, y) {
+		x0 = x;
+		y0 = y;
 	};
 }

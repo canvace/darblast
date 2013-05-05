@@ -35,17 +35,7 @@ Ext.Loader.setConfig({
 						defaults: {
 							scale: 'large',
 							allowDepress: false
-						},
-						items: [{
-							icon: '/resources/images/tools/save.png',
-							tooltip: 'Save'
-						}, {
-							icon: '/resources/images/tools/export.png',
-							tooltip: 'Export...'
-						}, {
-							icon: '/resources/images/tools/bug.png',
-							tooltip: 'Report a bug...'
-						}]
+						}
 					}
 				}, {
 					region: 'east',
@@ -118,8 +108,7 @@ Ext.Loader.setConfig({
 				Canvace.entityClipboard = new EntityClipboard();
 				Canvace.cursor = new Cursor();
 				Canvace.renderer = new Renderer();
-				Canvace.tools = new Tools();
-				Canvace.tools.addToolButtons();
+				Canvace.toolbar = new Toolbar();
 				window.addEventListener('beforeunload', function (event) {
 					if (Canvace.history.isDirty()) {
 						return (event || window.event).returnValue = 'There are unsaved changes. Do you want to discard them and exit?';

@@ -1,4 +1,4 @@
-function Tools() {
+function Toolbar() {
 	var activeTool;
 
 	function bindCommandHandler(command) {
@@ -17,6 +17,24 @@ function Tools() {
 	}
 
 	var toolButtons = [{
+		icon: '/resources/images/tools/save.png',
+		tooltip: 'Save',
+		handler: function () {
+			// TODO
+		}
+	}, {
+		icon: '/resources/images/tools/export.png',
+		tooltip: 'Export...',
+		handler: function () {
+			// TODO
+		}
+	}, {
+		icon: '/resources/images/tools/bug.png',
+		tooltip: 'Report a bug...',
+		handler: function () {
+			// TODO open GitHub issues URL in a new browser window
+		}
+	},  {
 		xtype: 'tbseparator'
 	}, {
 		id: 'undo-button',
@@ -144,7 +162,5 @@ function Tools() {
 		down = false;
 	});
 
-	this.addToolButtons = function () {
-		Ext.getCmp('toolbar').add(toolButtons);
-	};
+	Ext.getCmp('toolbar').add(toolButtons);
 }
