@@ -98,10 +98,12 @@ function TileControls() {
 			listeners: {
 				select: function () {
 					Ext.getCmp('remove-frame').enable();
+					Ext.getCmp('frame-duration').enable();
 				},
 
 				deselect: function () {
 					Ext.getCmp('remove-frame').disable();
+					Ext.getCmp('frame-duration').disable();
 				}
 			}
 		});
@@ -171,9 +173,18 @@ function TileControls() {
 						layout: 'vbox',
 						items: [{
 							xtype: 'numberfield',
+							id: 'frame-duration',
 							fieldLabel: 'Duration',
+							disabled: true,
 							minValue: 0,
-							value: 100
+							value: 100,
+							listeners: {
+								change: function (field) {
+									view.getSelectionModel().getSelection().forEach(function (record) {
+										record.get('frame').setDuration(field.getValue() || 0);
+									});
+								}
+							}
 						}, {
 							xtype: 'checkbox',
 							boxLabel: 'Loop animation',
