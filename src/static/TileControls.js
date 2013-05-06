@@ -45,29 +45,31 @@ function TileControls() {
 		}).show();
 	});
 
-	Ext.define('Frame', {
+	Ext.define('FrameModel', {
 		extend: 'Ext.data.Model',
 		fields: [{
-			name: 'imageUrl',
-			type: 'string'
+			name: 'frame',
+			type: 'auto'
 		}, {
 			name: 'frameId',
 			type: 'int'
+		}, {
+			name: 'imageUrl',
+			type: 'string'
 		}]
 	});
 
 	controls.onActivateElement(function (id) {
 		var frameStore = Ext.create('Ext.data.Store', {
-			model: 'Frame',
+			model: 'FrameModel',
 			data: []
 		});
 
-		var selected;
 		var tile = Canvace.tiles.get(id);
 		var view = Ext.create('Ext.view.View', {
 			cls: 'view',
 			autoScroll: true,
-			multiSelect: false,
+			multiSelect: true,
 			trackOver: true,
 			overItemCls: 'x-item-over',
 			maxWidth: 250,
@@ -100,17 +102,18 @@ function TileControls() {
 
 				deselect: function () {
 					Ext.getCmp('remove-frame').disable();
-				},
-
-				selectionchange: function (records) {
-					selected = records;
 				}
 			}
 		});
 		var toolbar = Ext.create('Ext.toolbar.Toolbar', {
 			items: [{
 				text: 'Append frame',
-				iconCls: 'x-add'
+				iconCls: 'x-add',
+				listeners: {
+					click: function () {
+						// ...
+					}
+				}
 			}, {
 				id: 'remove-frame',
 				text: 'Remove selected',
@@ -118,7 +121,10 @@ function TileControls() {
 				disabled: true,
 				listeners: {
 					click: function () {
-						frameStore.remove(selected);
+						view.getSelectionModel().getSelection().forEach(function (record) {
+							record.get('frame')._delete();
+							record.destroy();
+						});
 					}
 				}
 			}]
@@ -185,8 +191,9 @@ function TileControls() {
 
 							tile.forEachFrame(function (frame) {
 								frameStore.add({
-									imageUrl: '/images/' + frame.getImageId(),
-									frameId: frame.getFrameId()
+									frame: frame,
+									frameId: frame.getFrameId(),
+									imageUrl: '/images/' + frame.getImageId()
 								});
 							});
 						}
