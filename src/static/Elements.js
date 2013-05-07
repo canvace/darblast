@@ -243,16 +243,22 @@ function Elements(type, Element, ready) {
 		delete elements[parameters.id];
 	});
 
-	Canvace.poller.poll(type + '/frames', 'create', function () {
-		// TODO
+	Canvace.poller.poll(type + '/frames', 'create', function (parameters) {
+		createFramesHandlers.fire(parameters.id, function (handler) {
+			handler(parameters.frameId);
+		});
 	});
 
-	Canvace.poller.poll(type + '/frames', 'update', function () {
-		// TODO
+	Canvace.poller.poll(type + '/frames', 'update', function (parameters) {
+		updateFramesHandlers.fire(parameters.id, function (handler) {
+			handler(parameters.frameId);
+		});
 	});
 
-	Canvace.poller.poll(type + '/frames', 'delete', function () {
-		// TODO
+	Canvace.poller.poll(type + '/frames', 'delete', function (parameters) {
+		deleteFramesHandlers.fire(parameters.id, function (handler) {
+			handler(parameters.frameId);
+		});
 	});
 
 	Canvace.poller.poll(type + '/properties', 'put', function (parameters) {
