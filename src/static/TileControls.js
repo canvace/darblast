@@ -166,7 +166,10 @@ function TileControls() {
 					layout: 'hbox',
 					items: [{
 						xtype: 'container',
-						layout: 'vbox',
+						layout: {
+							type: 'table',
+							columns: 1
+						},
 						items: [view, toolbar]
 					}, {
 						xtype: 'container',
