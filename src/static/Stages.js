@@ -160,4 +160,10 @@ function Stages(ready) {
 			callback(new Stage(id));
 		}
 	};
+
+	this.getCurrent = function () {
+		if (typeof currentStageId !== 'undefined') {
+			return new Stage(currentStageId);
+		}
+	};
 }

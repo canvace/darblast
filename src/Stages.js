@@ -108,7 +108,7 @@ installHandler('/stages/:stageId', 'put', function (request, response) {
 					this.readdir('entities', function (entityIds) {
 						try {
 							var instances = sanitizeInstances(entityIds);
-							this.stages.modify(request.params.stageId, function (stage) {
+							this.stages.modifySync(request.params.stageId, function (stage) {
 								if ('x0' in request.body) {
 									stage.x0 = parseFloat(request.body.x0);
 								}

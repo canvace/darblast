@@ -155,7 +155,6 @@ Ext.Loader.setConfig({
 
 		constructor: function (config) {
 			this.callParent(arguments);
-
 			if (!('matrixColumn' in config)) {
 				throw '"matrixColumn" is mandatory';
 			}
