@@ -113,7 +113,7 @@ var users = (function () {
 				config.port = parseInt(process.argv[4], 10);
 				fs.writeFileSync(path.join(configDirectory, 'config.json'), JSON.stringify(config));
 			} else {
-				config.launch = (process.argv[3] === 'true');
+				config.browser = (process.argv[4] === 'true');
 				fs.writeFileSync(path.join(configDirectory, 'config.json'), JSON.stringify(config));
 			}
 			break;

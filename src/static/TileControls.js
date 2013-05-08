@@ -301,4 +301,5 @@ function TileControls() {
 	this.hasSelection = controls.hasSelection;
 	this.getSelectedId = controls.getSelectedId;
 	this.getSelectedIds = controls.getSelectedIds;
+	this.onSelectionChange = controls.onSelectionChange;
 }

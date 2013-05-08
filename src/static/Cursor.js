@@ -19,8 +19,8 @@ function Cursor() {
 
 	this.moveToIJ = function (i1, j1) {
 		if (snap) {
-			i = Math.round(i1);
-			j = Math.round(j1);
+			i = Math.floor(i1);
+			j = Math.floor(j1);
 		} else {
 			i = i1;
 			j = j1;
@@ -29,8 +29,8 @@ function Cursor() {
 	this.moveToXY = function (x, y) {
 		var cell = Canvace.view.unproject(x, y, Canvace.layers.getSelected());
 		if (snap) {
-			i = Math.round(cell[0]);
-			j = Math.round(cell[1]);
+			i = Math.floor(cell[0]);
+			j = Math.floor(cell[1]);
 		} else {
 			i = cell[0];
 			j = cell[1];
@@ -39,8 +39,8 @@ function Cursor() {
 
 	this.snap = function (on) {
 		if (snap = !!on) {
-			i = Math.round(i);
-			j = Math.round(j);
+			i = Math.floor(i);
+			j = Math.floor(j);
 		}
 		return thisObject;
 	};

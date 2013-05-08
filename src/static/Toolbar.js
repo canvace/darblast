@@ -1,4 +1,4 @@
-function Tools() {
+function Toolbar() {
 	var activeTool;
 
 	function bindCommandHandler(command) {
@@ -17,6 +17,24 @@ function Tools() {
 	}
 
 	var toolButtons = [{
+		icon: '/resources/images/tools/save.png',
+		tooltip: 'Save',
+		handler: function () {
+			// TODO
+		}
+	}, {
+		icon: '/resources/images/tools/export.png',
+		tooltip: 'Export...',
+		handler: function () {
+			// TODO
+		}
+	}, {
+		icon: '/resources/images/tools/bug.png',
+		tooltip: 'Report a bug...',
+		handler: function () {
+			// TODO open GitHub issues URL in a new browser window
+		}
+	},  {
 		xtype: 'tbseparator'
 	}, {
 		id: 'undo-button',
@@ -105,33 +123,44 @@ function Tools() {
 		handler: bindToolHandler(new PasteEntityTool())
 	}])];
 
-	var canvas = Ext.get('canvas');
+	var registerCanvasHandler = (function (canvas) {
+		return function (eventName, callback) {
+			canvas.addEventListener(eventName, function (event) {
+				var rect = canvas.getBoundingClientRect();
+				callback.call(
+					canvas,
+					event.clientX - rect.left,
+					event.clientY - rect.top,
+					event
+					);
+			}, false);
+		};
+	}(Ext.getDom('canvas')));
+
 	var down = false;
-	canvas.on('mousemove', function (event) {
+	registerCanvasHandler('mousemove', function (x, y) {
 		if (down) {
 			if (activeTool.mousedrag) {
-				activeTool.mousedrag(event.getX(), event.getY());
+				activeTool.mousedrag(x, y);
 			}
 		} else {
 			if (activeTool.mousemove) {
-				activeTool.mousemove(event.getX(), event.getY());
+				activeTool.mousemove(x, y);
 			}
 		}
 	});
-	canvas.on('mousedown', function (event) {
+	registerCanvasHandler('mousedown', function (x, y) {
 		down = true;
 		if (activeTool.mousedown) {
-			activeTool.mousedown(event.getX(), event.getY());
+			activeTool.mousedown(x, y);
 		}
 	});
-	canvas.on('mouseup', function (event) {
+	registerCanvasHandler('mouseup', function (x, y) {
 		if (activeTool.mouseup) {
-			activeTool.mouseup(event.getX(), event.getY());
+			activeTool.mouseup(x, y);
 		}
 		down = false;
 	});
 
-	this.addToolButtons = function () {
-		Ext.getCmp('toolbar').add(toolButtons);
-	};
+	Ext.getCmp('toolbar').add(toolButtons);
 }

@@ -59,7 +59,7 @@ module.exports = function (grunt) {
 					'src/static/CutTilesCommand.js',
 					'src/static/PasteEntityTool.js',
 					'src/static/PasteTilesTool.js',
-					'src/static/Tools.js',
+					'src/static/Toolbar.js',
 					'src/static/Application.js'
 				],
 				dest: 'src/static/app.js'
@@ -87,6 +87,17 @@ module.exports = function (grunt) {
 				src: 'bin/canvace.min.js',
 				dest: 'bin/canvace.js'
 			},
+		},
+
+		lineending: {
+			dist: {
+				options: {
+					eol: 'lf'
+				},
+				files: {
+					'bin/canvace.js': ['bin/canvace.js']
+				}
+			}
 		},
 
 		jshint: {
@@ -224,6 +235,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-lineending');
 
 	// Register tasks
 	grunt.registerTask('default', [
@@ -231,6 +243,7 @@ module.exports = function (grunt) {
 		'jshint',
 		'uglify',
 		'concat:dist',
+		'lineending:dist',
 		'copy:client', 'copy:server',
 		'clean:temp'
 	]);

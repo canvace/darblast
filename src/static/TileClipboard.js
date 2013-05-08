@@ -16,15 +16,17 @@ function TileClipboard() {
 	this.cut = function () {
 		tiles = {};
 		var k = Canvace.layers.getSelected();
-		Canvace.selection.forEach(function (i, j) {
-			var entry = Canvace.array.get(i, j, k);
-			if (typeof entry === 'number') {
-				if (!tiles[i]) {
-					tiles[i] = {};
+		Canvace.history.nest(function () {
+			Canvace.selection.forEach(function (i, j) {
+				var entry = Canvace.array.get(i, j, k);
+				if (typeof entry === 'number') {
+					if (!tiles[i]) {
+						tiles[i] = {};
+					}
+					tiles[i][j] = entry;
+					Canvace.array.erase(i, j, k);
 				}
-				tiles[i][j] = entry;
-				Canvace.array.erase(i, j, k);
-			}
+			});
 		});
 	};
 
@@ -41,8 +43,10 @@ function TileClipboard() {
 
 	this.forEach = forEach;
 	this.paste = function (di, dj) {
-		forEach(function (i, j, k, id) {
-			Canvace.array.set(i + di, j + dj, k, id);
+		Canvace.history.nest(function () {
+			forEach(function (i, j, k, id) {
+				Canvace.array.set(i + di, j + dj, k, id);
+			});
 		});
 	};
 }

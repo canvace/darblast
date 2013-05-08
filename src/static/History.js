@@ -1,29 +1,101 @@
 function History() {
-	var stack = {};
-	var pointer = -1;
-	var top = -1;
-	var savedRevision = -1;
-	var dirtyAnyway = false;
+	var thisObject = this;
 
+	function Stack() {
+		var entries = {};
+		var pointer = -1;
+		var top = -1;
+		var bookmark = -1;
+
+		this.record = function (entry) {
+			for (var i = top; i > pointer; i--) {
+				delete entries[i];
+			}
+			entries[top = ++pointer] = entry;
+		};
+
+		this.canUndo = function () {
+			return pointer >= 0;
+		};
+		this.canRedo = function () {
+			return pointer < top;
+		};
+
+		this.undo = function () {
+			if (pointer >= 0) {
+				entries[pointer--].reverse();
+				return true;
+			} else {
+				return false;
+			}
+		};
+		this.redo = function () {
+			if (pointer < top) {
+				entries[++pointer].action();
+				return true;
+			} else {
+				return false;
+			}
+		};
+
+		this.erase = function () {
+			entries = {};
+			pointer = -1;
+			top = -1;
+		};
+
+		this.bookmark = function () {
+			bookmark = pointer;
+		};
+		this.isBookmark = function () {
+			return bookmark == pointer;
+		};
+	}
+
+	var rootStack = new Stack();
 	var canUndoHandlers = new EventHandlers();
 	var canRedoHandlers = new EventHandlers();
 
-	this.record = function (entry) {
-		stack[top = ++pointer] = entry;
+	function rootRecord(entry) {
+		rootStack.record(entry);
 		canUndoHandlers.fire(0, function (handler) {
 			handler(true);
 		});
 		canRedoHandlers.fire(0, function (handler) {
 			handler(false);
 		});
+	}
+
+	this.record = rootRecord;
+
+	this.nest = function (callback, scope) {
+		var subStack = new Stack();
+		var parentRecord = thisObject.record;
+		thisObject.record = subStack.record;
+		try {
+			callback.call(scope);
+		} finally {
+			parentRecord({
+				action: function () {
+					while (subStack.redo()) {}
+				},
+				reverse: function () {
+					while (subStack.undo()) {}
+				}
+			});
+			thisObject.record = parentRecord;
+			canUndoHandlers.fire(0, function (handler) {
+				handler(true);
+			});
+			canRedoHandlers.fire(0, function (handler) {
+				handler(false);
+			});
+		}
 	};
 
-	this.canUndo = function () {
-		return pointer >= 0;
-	};
-	this.canRedo = function () {
-		return pointer < top;
-	};
+	this.canUndo = rootStack.canUndo;
+	this.canRedo = rootStack.canRedo;
+
 	this.onCanUndo = function (handler) {
 		return canUndoHandlers.registerHandler(0, handler);
 	};
@@ -32,42 +104,27 @@ function History() {
 	};
 
 	this.undo = function () {
-		if (pointer >= 0) {
-			stack[pointer--].reverse();
-			if (!pointer) {
-				canUndoHandlers.fire(0, function (handler) {
-					handler(false);
-				});
-			}
+		if (rootStack.undo()) {
+			canUndoHandlers.fire(0, function (handler) {
+				handler(rootStack.canUndo());
+			});
 			canRedoHandlers.fire(0, function (handler) {
 				handler(true);
 			});
-			return true;
-		} else {
-			return false;
 		}
 	};
 	this.redo = function () {
-		if (pointer < top) {
-			stack[++pointer].action();
+		if (rootStack.redo()) {
 			canUndoHandlers.fire(0, function (handler) {
 				handler(true);
 			});
-			if (pointer >= top) {
-				canRedoHandlers.fire(0, function (handler) {
-					handler(false);
-				});
-			}
-			return true;
-		} else {
-			return false;
+			canRedoHandlers.fire(0, function (handler) {
+				handler(rootStack.canRedo());
+			});
 		}
 	};
-
 	this.erase = function () {
-		stack = {};
-		pointer = top = savedRevision = -1;
-		dirtyAnyway = true;
+		rootStack.erase();
 		canUndoHandlers.fire(0, function (handler) {
 			handler(false);
 		});
@@ -77,10 +134,7 @@ function History() {
 	};
 
 	this.isDirty = function () {
-		return (savedRevision != pointer) || dirtyAnyway;
+		return !rootStack.isBookmark();
 	};
-	this.clearDirty = function () {
-		savedRevision = pointer;
-		dirtyAnyway = false;
-	};
+	this.clearDirty = rootStack.bookmark;
 }

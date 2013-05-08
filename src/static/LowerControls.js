@@ -15,6 +15,7 @@ var LowerControls = (function () {
 		this.onLoadSheet = bindOn('sheet/load');
 		this.onActivateElement = bindOn('element/activate');
 		this.onDeleteElement = bindOn('element/delete');
+		this.onSelectionChange = bindOn('selection/change');
 
 		var view = new Ext.view.View({
 			cls: 'view',
@@ -83,6 +84,15 @@ var LowerControls = (function () {
 			}
 		}());
 
+		selection.on('selectionchange', function (view, selected) {
+			var ids = selected.map(function (record) {
+				return record.get('id');
+			});
+			handlers.fire('selection/change', function (handler) {
+				handler(ids);
+			});
+		});
+
 		var lowerPanel = Ext.getCmp('lower-panel');
 		lowerPanel.insert(index, {
 			title: name,
@@ -139,17 +149,17 @@ var LowerControls = (function () {
 					icon: '/resources/images/icons/delete.png',
 					tooltip: 'Delete selected ' + elements + '...',
 					handler: function () {
-						var models = selection.getSelection();
-						if (models.length) {
+						var records = selection.getSelection();
+						if (records.length) {
 							Ext.MessageBox.show({
 								title: 'Confirm deletion',
-								msg: 'Do you actually want to delete the ' + models.length + ' selected ' + elements + '?',
+								msg: 'Do you actually want to delete the ' + records.length + ' selected ' + elements + '?',
 								buttons: Ext.MessageBox.OKCANCEL,
 								icon: Ext.MessageBox.WARNING,
 								fn: function (button) {
 									if (button === 'ok') {
 										handlers.fire('element/delete', function (handler) {
-											handler(models.map(function (model) {
+											handler(records.map(function (model) {
 												return model.get('id');
 											}));
 										});
@@ -179,10 +189,10 @@ var LowerControls = (function () {
 			lowerPanel.setActiveTab(index);
 		}
 
-		var models = {};
+		var records = {};
 
 		this.addImage = function (id, labels, imageId) {
-			models[id] = store.add({
+			records[id] = store.add({
 				id: id,
 				labels: labels,
 				useImage: true,
@@ -191,7 +201,7 @@ var LowerControls = (function () {
 		};
 		this.addElement = function (id, labels, element) {
 			if (element.hasFrames()) {
-				models[id] = store.add({
+				records[id] = store.add({
 					id: id,
 					labels: labels,
 					useImage: true,
@@ -199,7 +209,7 @@ var LowerControls = (function () {
 				})[0];
 			} else {
 				var layout = element.getLayout();
-				models[id] = store.add({
+				records[id] = store.add({
 					id: id,
 					labels: labels,
 					useImage: false,
@@ -210,9 +220,9 @@ var LowerControls = (function () {
 		};
 
 		this.removeElement = function (id) {
-			if (id in models) {
-				store.remove(models[id]);
-				delete models[id];
+			if (id in records) {
+				store.remove(records[id]);
+				delete records[id];
 			}
 		};
 
