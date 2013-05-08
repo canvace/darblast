@@ -47,7 +47,7 @@ function Toolbar() {
 				y0: origin.y,
 				map: map,
 				instances: instances
-			});
+			}, Canvace.history.clearDirty);
 		}
 	}, {
 		icon: '/resources/images/tools/export.png',
