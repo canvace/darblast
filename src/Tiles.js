@@ -138,7 +138,7 @@ installHandler([
 				tile.frames[id].duration = parseInt(request.body.duration, 10);
 			}
 			var data = {
-				id: request.params.tileId,
+				id: parseInt(request.params.tileId, 10),
 				frameId: id,
 				imageId: request.body.imageId
 			};
