@@ -121,7 +121,8 @@ installHandler([
 			}
 			var data = {
 				id: request.params.entityId,
-				frameId: id
+				frameId: id,
+				imageId: request.body.imageId
 			};
 			if ('duration' in request.body) {
 				data.duration = request.body.duration;
