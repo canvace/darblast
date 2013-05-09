@@ -120,7 +120,7 @@ installHandler([
 				entity.frames[id].duration = parseInt(request.body.duration, 10);
 			}
 			var data = {
-				id: request.params.entityId,
+				id: parseInt(request.params.entityId, 10),
 				frameId: id,
 				imageId: request.body.imageId
 			};
