@@ -9,6 +9,33 @@ function StageControls() {
 		height: 300
 	});
 
+	var editingPlugin = new Ext.grid.plugin.CellEditing({
+		clicksToEdit: 2,
+		listeners: {
+			beforeedit: function (editor, event) {
+				if (!!event.rowIdx) {
+					var record = event.record;
+					var stage = Canvace.stages.get(record.get('id'));
+					record.set('text', stage.getId());
+					record.commit();
+				} else {
+					return false;
+				}
+			},
+			edit: function (editor, event) {
+				Canvace.stages.get(event.record.get('id')).rename(event.record.get('text'));
+			},
+			canceledit: function (editor, event) {
+				var record = event.record;
+				var stage = Canvace.stages.get(record.get('id'));
+				if (stage.isCurrent()) {
+					record.set('text', stage.getId() + ' (current stage)');
+				}
+				record.commit();
+			}
+		}
+	});
+
 	var tree = new Ext.tree.Panel({
 		region: 'center',
 		autoScroll: true,
@@ -37,7 +64,10 @@ function StageControls() {
 				icon: '/resources/images/icons/pencil.png',
 				tooltip: 'Rename stage',
 				handler: function () {
-					// TODO rename stage
+					var selectedNodes = tree.getSelectionModel().getSelection();
+					if (selectedNodes.length && !selectedNodes[0].isRoot()) {
+						editingPlugin.startEdit(selectedNodes[0], 0);
+					}
 				}
 			}, {
 				icon: '/resources/images/icons/delete.png',
@@ -99,14 +129,7 @@ function StageControls() {
 				}
 			}
 		},
-		plugins: [new Ext.grid.plugin.CellEditing({
-			clicksToEdit: 2,
-			listeners: {
-				beforeedit: function (editor, event) {
-					return !!event.rowIdx;
-				}
-			}
-		})]
+		plugins: [editingPlugin]
 	});
 
 	var projectNode = tree.getRootNode();

@@ -148,6 +148,10 @@ installHandler('/stages/:stageId', 'delete', function (request, response) {
 	});
 });
 
+installHandler('/stages/:stageId/id', 'put', function () {
+	// TODO
+});
+
 installHandler('/stages/:stageId/export', 'get', function (request) {
 	this.stages.get(request.params.stageId, function () {
 		// TODO

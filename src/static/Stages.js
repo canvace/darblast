@@ -34,6 +34,9 @@ function Stages(ready) {
 		this.getId = function () {
 			return id;
 		};
+		this.rename = function (newId, callback) {
+			Canvace.Ajax.put('/stages/' + id + '/id', newId, callback);
+		};
 		this.isCurrent = function () {
 			return id === currentStageId;
 		};
@@ -92,8 +95,8 @@ function Stages(ready) {
 			return deletePropertyHandlers.registerHandler(id, handler);
 		};
 
-		this._delete = function () {
-			Canvace.Ajax._delete('stages/' + id);
+		this._delete = function (callback) {
+			Canvace.Ajax._delete('stages/' + id, callback);
 		};
 	}
 
