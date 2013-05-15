@@ -29,7 +29,7 @@ function StageControls() {
 				tooltip: 'Load stage',
 				handler: function () {
 					var selectedNodes = tree.getSelectionModel().getSelection();
-					if (selectedNodes.length) {
+					if (selectedNodes.length && !selectedNodes[0].isRoot()) {
 						window.location = '/?stage=' + encodeURIComponent(selectedNodes[0].get('id'));
 					}
 				}
@@ -44,7 +44,7 @@ function StageControls() {
 				tooltip: 'Delete stage...',
 				handler: function () {
 					var selectedNodes = tree.getSelectionModel().getSelection();
-					if (selectedNodes.length) {
+					if (selectedNodes.length && !selectedNodes[0].isRoot()) {
 						Ext.MessageBox.show({
 							title: 'Confirm stage deletion',
 							msg: 'Do you actually want to permanently delete the stages ' + (function (names) {
@@ -78,6 +78,7 @@ function StageControls() {
 			resizable: false,
 			hideable: false,
 			draggable: false,
+			sortable: true,
 			editor: 'textfield'
 		}],
 		rowLines: false,
@@ -90,7 +91,7 @@ function StageControls() {
 		},
 		listeners: {
 			selectionchange: function (selection, records) {
-				if (records.length) {
+				if (records.length && !records[0].isRoot()) {
 					var stage = Canvace.stages.get(records[0].get('id'));
 					propertyGrid.bind(stage, stage.getId());
 				} else {
@@ -99,7 +100,12 @@ function StageControls() {
 			}
 		},
 		plugins: [new Ext.grid.plugin.CellEditing({
-			clicksToEdit: 2
+			clicksToEdit: 2,
+			listeners: {
+				beforeedit: function (editor, event) {
+					return !!event.rowIdx;
+				}
+			}
 		})]
 	});
 
@@ -112,6 +118,7 @@ function StageControls() {
 			node = projectNode.appendChild({
 				id: id,
 				text: id + ' (current stage)',
+				cls: 'bold',
 				leaf: true
 			});
 		} else {
@@ -123,18 +130,30 @@ function StageControls() {
 			});
 		}
 		stage.onLoad(function () {
-			node.set('href', '');
-			node.set('text', id + ' (current stage)');
+			node.set({
+				href: '',
+				text: id + ' (current stage)',
+				cls: 'bold'
+			});
+			node.commit();
 		});
 		stage.onUnload(function () {
-			node.set('text', id);
-			node.set('href', '/?stage=' + encodeURIComponent(id));
+			node.set({
+				text: id,
+				href: '/?stage=' + encodeURIComponent(id)
+			});
+			node.commit();
 		});
 		stage.onRename(function (newId) {
 			if (!stage.isCurrent()) {
 				node.set('href', '/?stage=' + encodeURIComponent(newId));
 			}
-			node.set('text', newId);
+			if (stage.isCurrent()) {
+				node.set('text', newId + ' (current stage)');
+			} else {
+				node.set('text', newId);
+			}
+			node.commit();
 		});
 		stage.onDelete(function () {
 			projectNode.removeChild(node);

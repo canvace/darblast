@@ -306,6 +306,7 @@ function PropertyControls(container, config) {
 		rowLines: true,
 		columnLines: true,
 		lines: false,
+		forceFit: true,
 		columns: [{
 			xtype: 'treecolumn',
 			dataIndex: 'name',
