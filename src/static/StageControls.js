@@ -71,6 +71,18 @@ function StageControls() {
 				}
 			}]
 		},
+		forceFit: true,
+		columns: [{
+			xtype: 'treecolumn',
+			dataIndex: 'text',
+			resizable: false,
+			hideable: false,
+			draggable: false,
+			editor: 'textfield'
+		}],
+		rowLines: false,
+		columnLines: false,
+		lines: true,
 		root: {
 			text: 'Current project',
 			expandable: true,
@@ -87,7 +99,7 @@ function StageControls() {
 			}
 		},
 		plugins: [new Ext.grid.plugin.CellEditing({
-			clicksToEdit: 1
+			clicksToEdit: 2
 		})]
 	});
 
