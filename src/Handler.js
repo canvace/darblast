@@ -134,6 +134,27 @@ var Handler = (function () {
 					});
 				});
 			};
+			this.rename = function (id, newId, callback) {
+				if (!callback) {
+					callback = function () {
+						removePendingLocks();
+						response.json(true);
+					};
+				}
+				writeLock(directory, function (release) {
+					thisObject.exists(directory + '/' + newId, function (exists) {
+						if (exists) {
+							release();
+							callback.call(thisObject, false);
+						} else {
+							thisObject.rename(directory + '/' + id, directory + '/' + newId, function () {
+								release();
+								callback.call(thisObject, true);
+							});
+						}
+					});
+				});
+			};
 		}
 
 		this.stages = new SpecificLocks('stages');
@@ -147,6 +168,20 @@ var Handler = (function () {
 					callback.call(thisObject, exists);
 				} catch (e) {
 					error(e);
+				}
+			});
+		};
+
+		this.rename = function (path, newPath, callback) {
+			fs.rename(request.session.projectPath + path, request.session.projectPath + newPath, function (e) {
+				if (e) {
+					error(e);
+				} else {
+					try {
+						callback.call(thisObject);
+					} catch (e) {
+						error(e);
+					}
 				}
 			});
 		};

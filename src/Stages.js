@@ -148,8 +148,18 @@ installHandler('/stages/:stageId', 'delete', function (request, response) {
 	});
 });
 
-installHandler('/stages/:stageId/id', 'put', function () {
-	// TODO
+installHandler('/stages/:stageId/id', 'put', function (request, response) {
+	this.stages.rename(request.params.stageId, request.body.newId, function (success) {
+		if (success) {
+			this.broadcast('stages', 'rename', {
+				oldId: request.params.stageId,
+				newId: request.body.newId
+			});
+			response.json(true);
+		} else {
+			response.json(400, 'A stage with the specified name already exists.');
+		}
+	});
 });
 
 installHandler('/stages/:stageId/export', 'get', function (request) {

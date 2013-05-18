@@ -35,7 +35,9 @@ function Stages(ready) {
 			return id;
 		};
 		this.rename = function (newId, callback) {
-			Canvace.Ajax.put('/stages/' + id + '/id', newId, callback);
+			Canvace.Ajax.put('/stages/' + id + '/id', {
+				newId: newId
+			}, callback);
 		};
 		this.isCurrent = function () {
 			return id === currentStageId;
