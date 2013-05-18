@@ -293,6 +293,19 @@ Ext.Loader.setConfig({
 						fieldLabel: 'Project path',
 						width: 400,
 						allowBlank: false
+					}, {
+						xtype: 'treepanel',
+						height: 200,
+						store: {
+							proxy: {
+								type: 'rest',
+								url: '/directories/',
+								reader: {
+									type: 'json',
+									root: 'data'
+								}
+							}
+						}
 					}],
 					buttons: [{
 						text: 'Load',

@@ -199,15 +199,33 @@ app.use('/directories/', function (request, response, next) {
 				if (error) {
 					response.send(500, error.toString());
 				} else {
-					var directories = [];
+					var data = [];
 					var count = files.length;
 					files.forEach(function (entry) {
 						fs.stat(path.join(fullPath, entry), function (error, stats) {
 							if (!error && stats.isDirectory()) {
-								directories.push(entry);
-							}
-							if (!--count) {
-								response.json(directories);
+								fs.readdir(path.join(fullPath, entry), function (error, subEntries) {
+									if (!error) {
+										data.push({
+											id: entry,
+											text: entry,
+											leaf: false,
+											expandable: !!subEntries.length,
+											expanded: false
+										});
+									}
+									if (!--count) {
+										response.json({
+											success: true,
+											data: data
+										});
+									}
+								});
+							} else if (!--count) {
+								response.json({
+									success: true,
+									data: data
+								});
 							}
 						});
 					});
