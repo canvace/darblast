@@ -1,5 +1,13 @@
 var path = require('path');
 var fs = require('fs');
+var url = require('url');
+var util = require('util');
+var npm = require('npm');
+var MultiSet = require('multiset');
+var ReadWriteLock = require('rwlock');
+var express = require('express');
+var consolidate = require('consolidate');
+var http = require('http');
 
 var configDirectory = (function (homeDirectory) {
 	var dir;
@@ -37,9 +45,6 @@ var config = (function () {
 		return {};
 	}
 }());
-
-var util = require('util');
-var npm = require('npm');
 
 var users = (function () {
 	var content;
@@ -169,12 +174,6 @@ if (!config.dontCheckForUpdates) {
 	});
 }
 
-var MultiSet = require('multiset');
-var ReadWriteLock = require('rwlock');
-
-var express = require('express');
-var consolidate = require('consolidate');
-
 var app = express();
 app.enable('strict routing');
 app.use(express.cookieParser());
@@ -191,6 +190,39 @@ if (config.debug) {
 
 app.use(express.static(__dirname + '/static'));
 app.use('/directories/', express.static('/'));
+
+app.use('/directories/', function (request, response, next) {
+	var fullPath = path.normalize(path.join('/', decodeURIComponent(url.parse(request.url).pathname)));
+	console.log(fullPath);
+	fs.stat(fullPath, function (error, stats) {
+		console.log('lal1');
+		if (!error && stats.isDirectory()) {
+			console.log('lal2');
+			fs.readdir(fullPath, function (error, files) {
+				if (error) {
+					response.send(500, error.toString());
+				} else {
+					var directories = [];
+					var count = files.length;
+					files.forEach(function (entry) {
+						fs.stat(path.join(fullPath, entry), function (error, stats) {
+							if (!error && stats.isDirectory()) {
+								directories.push(entry);
+							}
+							if (!--count) {
+								response.json(directories);
+							}
+						});
+					});
+				}
+			});
+		} else {
+			console.log('lal3');
+			next();
+		}
+	});
+});
+
 app.use(express.query());
 app.use(express.bodyParser());
 app.set('views', __dirname + '/views');
@@ -202,7 +234,7 @@ if (users !== null) {
 	}));
 }
 
-var server = require('http').createServer(app);
+var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 
 if (!config.debug) {
