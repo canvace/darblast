@@ -193,11 +193,8 @@ app.use('/directories/', express.static('/'));
 
 app.use('/directories/', function (request, response, next) {
 	var fullPath = path.normalize(path.join('/', decodeURIComponent(url.parse(request.url).pathname)));
-	console.log(fullPath);
 	fs.stat(fullPath, function (error, stats) {
-		console.log('lal1');
 		if (!error && stats.isDirectory()) {
-			console.log('lal2');
 			fs.readdir(fullPath, function (error, files) {
 				if (error) {
 					response.send(500, error.toString());
@@ -217,7 +214,6 @@ app.use('/directories/', function (request, response, next) {
 				}
 			});
 		} else {
-			console.log('lal3');
 			next();
 		}
 	});
