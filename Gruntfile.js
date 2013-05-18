@@ -71,6 +71,7 @@ module.exports = function (grunt) {
 					'src/Main.js',
 					'src/FileLock.js',
 					'src/Handler.js',
+					'src/Directories.js',
 					'src/Images.js',
 					'src/Tiles.js',
 					'src/Entities.js',
