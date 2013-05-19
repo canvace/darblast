@@ -205,50 +205,16 @@ app.use('/directories/root/', function (request, response, next) {
 					entries.forEach(function (entry) {
 						fs.stat(path.join(fullPath, entry), function (error, stats) {
 							if (!error && stats.isDirectory()) {
-								fs.readdir(path.join(fullPath, entry), function (error, subEntries) {
-									function pushEntry(expandable) {
-										data.push({
-											id: path.join('root/', fullPath, entry),
-											fullPath: path.join(fullPath, entry),
-											text: entry,
-											leaf: false,
-											expandable: expandable,
-											expanded: false
-										});
-										if (!--count) {
-											response.json({
-												success: true,
-												data: data
-											});
-										}
-									}
-									if (!error) {
-										subEntries = subEntries.filter(function (name) {
-											return !/^\./.test(name);
-										});
-										if (subEntries.length) {
-											var subCount = subEntries.length;
-											var expandable = false;
-											subEntries.forEach(function (subEntry) {
-												fs.stat(path.join(fullPath, entry, subEntry), function (error, stats) {
-													subCount--;
-													if (!expandable) {
-														if (error) {
-															pushEntry(expandable = true);
-														} else if (stats.isDirectory()) {
-															pushEntry(expandable = true);
-														} else if (!subCount) {
-															pushEntry(false);
-														}
-													}
-												});
-											});
-										} else {
-											pushEntry(false);
-										}
-									}
+								data.push({
+									id: path.join('root/', fullPath, entry),
+									fullPath: path.join(fullPath, entry),
+									text: entry,
+									leaf: false,
+									expandable: true,
+									expanded: false
 								});
-							} else if (!--count) {
+							}
+							if (!--count) {
 								response.json({
 									success: true,
 									data: data
