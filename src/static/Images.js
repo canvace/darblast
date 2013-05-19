@@ -131,4 +131,14 @@ function Images(ready) {
 			callback(new ImageObject(id));
 		}
 	};
+	this.forEachInCategory = function (category, callback) {
+		for (var id in labels) {
+			for (var i in labels[id]) {
+				if (labels[id][i] == category) {
+					callback(new ImageObject(id));
+					break;
+				}
+			}
+		}
+	};
 }
