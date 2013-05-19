@@ -23,9 +23,9 @@ installSessionlessHandler('/', 'post', function (request, response) {
 			tasks.push(function (callback) {
 				this.putJSON(basePath + '/' + projectName + '/info', {
 					matrix: [
-						[-48, 48, 0],
-						[24, 24, -48],
-						[1, 1, 1]
+						[request.body.matrix11, request.body.matrix12, request.body.matrix13],
+						[request.body.matrix21, request.body.matrix22, request.body.matrix23],
+						[request.body.matrix31, request.body.matrix32, request.body.matrix33]
 					],
 					imageCounter: 0,
 					tileCounter: 0,

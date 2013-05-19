@@ -207,30 +207,39 @@ Ext.Loader.setConfig({
 							},
 							items: [{
 								id: 'matrix-field-11',
+								name: 'matrix11',
 								value: -48
 							}, {
 								id: 'matrix-field-12',
+								name: 'matrix12',
 								value: 48
 							}, {
 								id: 'matrix-field-13',
+								name: 'matrix13',
 								value: 0
 							}, {
 								id: 'matrix-field-21',
+								name: 'matrix21',
 								value: 24
 							}, {
 								id: 'matrix-field-22',
+								name: 'matrix22',
 								value: 24
 							}, {
 								id: 'matrix-field-23',
+								name: 'matrix23',
 								value: -48
 							}, {
 								id: 'matrix-field-31',
+								name: 'matrix31',
 								value: 1
 							}, {
 								id: 'matrix-field-32',
+								name: 'matrix32',
 								value: 1
 							}, {
 								id: 'matrix-field-33',
+								name: 'matrix33',
 								value: 1
 							}]
 						}, {
