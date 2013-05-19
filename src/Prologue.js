@@ -189,9 +189,9 @@ if (config.debug) {
 }
 
 app.use(express.static(__dirname + '/static'));
-app.use('/directories/', express.static('/'));
+app.use('/directories/root/', express.static('/'));
 
-app.use('/directories/', function (request, response, next) {
+app.use('/directories/root/', function (request, response, next) {
 	var fullPath = path.normalize(path.join('/', decodeURIComponent(url.parse(request.url).pathname)));
 	fs.stat(fullPath, function (error, stats) {
 		if (!error && stats.isDirectory()) {
@@ -203,30 +203,31 @@ app.use('/directories/', function (request, response, next) {
 					var count = files.length;
 					files.forEach(function (entry) {
 						fs.stat(path.join(fullPath, entry), function (error, stats) {
-							if (!error && stats.isDirectory()) {
-								fs.readdir(path.join(fullPath, entry), function (error, subEntries) {
-									if (!error) {
-										data.push({
-											id: entry,
-											text: entry,
-											leaf: false,
-											expandable: !!subEntries.length,
-											expanded: false
-										});
-									}
-									if (!--count) {
-										response.json({
-											success: true,
-											data: data
-										});
-									}
-								});
-							} else if (!--count) {
+							(function (sendResponse) {
+								if (!error && stats.isDirectory()) {
+									fs.readdir(path.join(fullPath, entry), function (error, subEntries) {
+										if (!error) {
+											data.push({
+												id: path.join('root/', fullPath, entry),
+												text: entry,
+												leaf: false,
+												expandable: !!subEntries.length,
+												expanded: false
+											});
+										}
+										if (!--count) {
+											sendResponse(data);
+										}
+									});
+								} else if (!--count) {
+									sendResponse(data);
+								}
+							}(function (data) {
 								response.json({
 									success: true,
 									data: data
 								});
-							}
+							}));
 						});
 					});
 				}

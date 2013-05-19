@@ -295,8 +295,10 @@ Ext.Loader.setConfig({
 						allowBlank: false
 					}, {
 						xtype: 'treepanel',
+						id: 'directory-tree-view',
 						height: 200,
 						store: {
+							autoLoad: true,
 							proxy: {
 								type: 'rest',
 								url: '/directories/',
@@ -345,6 +347,7 @@ Ext.Loader.setConfig({
 			}]
 		});
 		startDialog.show();
+		Ext.getCmp('directory-tree-view').getStore().load();
 		new Projection();
 	};
 }());
