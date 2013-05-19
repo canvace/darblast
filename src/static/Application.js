@@ -280,6 +280,7 @@ Ext.Loader.setConfig({
 					},
 					items: [{
 						xtype: 'textfield',
+						id: 'existing-project-path-field',
 						name: 'path',
 						fieldLabel: 'Project path',
 						width: 400,
@@ -288,6 +289,7 @@ Ext.Loader.setConfig({
 						xtype: 'treepanel',
 						id: 'directory-tree-view',
 						height: 200,
+						rootVisible: false,
 						store: {
 							autoLoad: true,
 							proxy: {
@@ -296,6 +298,15 @@ Ext.Loader.setConfig({
 								reader: {
 									type: 'json',
 									root: 'data'
+								}
+							}
+						},
+						listeners: {
+							selectionchange: function (selectionModel, records) {
+								if (records.length) {
+									Ext.getCmp('existing-project-path-field').setValue(records[0].get('id'));
+								} else {
+									Ext.getCmp('existing-project-path-field').setValue('');
 								}
 							}
 						}
@@ -338,7 +349,7 @@ Ext.Loader.setConfig({
 			}]
 		});
 		startDialog.show();
-		Ext.getCmp('directory-tree-view').getStore().load();
+		Ext.getCmp('directory-tree-view').getStore().load(); // XXX autoLoad doesn't seem to work
 		new Projection();
 	};
 }());

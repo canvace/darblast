@@ -189,16 +189,18 @@ if (config.debug) {
 }
 
 app.use(express.static(__dirname + '/static'));
-app.use('/directories/root/', express.static('/'));
 
 app.use('/directories/root/', function (request, response, next) {
-	var fullPath = path.normalize(path.join('/', decodeURIComponent(url.parse(request.url).pathname)));
+	var fullPath = path.normalize(decodeURIComponent(url.parse(request.url).pathname));
 	fs.stat(fullPath, function (error, stats) {
 		if (!error && stats.isDirectory()) {
 			fs.readdir(fullPath, function (error, files) {
 				if (error) {
 					response.send(500, error.toString());
 				} else {
+					files = files.filter(function (name) {
+						return !/^\./.test(name);
+					});
 					var data = [];
 					var count = files.length;
 					files.forEach(function (entry) {
@@ -209,6 +211,7 @@ app.use('/directories/root/', function (request, response, next) {
 										if (!error) {
 											data.push({
 												id: path.join('root/', fullPath, entry),
+												fullPath: path.join(fullPath, entry),
 												text: entry,
 												leaf: false,
 												expandable: !!subEntries.length,
