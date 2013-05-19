@@ -292,6 +292,7 @@ Ext.Loader.setConfig({
 						rootVisible: false,
 						store: {
 							autoLoad: true,
+							sortRoot: 'text',
 							proxy: {
 								type: 'rest',
 								url: '/directories/',
