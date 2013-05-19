@@ -304,7 +304,7 @@ Ext.Loader.setConfig({
 						listeners: {
 							selectionchange: function (selectionModel, records) {
 								if (records.length) {
-									Ext.getCmp('existing-project-path-field').setValue(records[0].get('id'));
+									Ext.getCmp('existing-project-path-field').setValue(records[0].get('fullPath'));
 								} else {
 									Ext.getCmp('existing-project-path-field').setValue('');
 								}

@@ -1,6 +1,5 @@
 var path = require('path');
 var fs = require('fs');
-var url = require('url');
 var util = require('util');
 var npm = require('npm');
 var MultiSet = require('multiset');
@@ -191,46 +190,70 @@ if (config.debug) {
 app.use(express.static(__dirname + '/static'));
 
 app.use('/directories/root/', function (request, response, next) {
-	var fullPath = path.normalize(decodeURIComponent(url.parse(request.url).pathname));
+	var fullPath = path.normalize(decodeURIComponent(request.path));
 	fs.stat(fullPath, function (error, stats) {
 		if (!error && stats.isDirectory()) {
-			fs.readdir(fullPath, function (error, files) {
+			fs.readdir(fullPath, function (error, entries) {
 				if (error) {
 					response.send(500, error.toString());
 				} else {
-					files = files.filter(function (name) {
+					entries = entries.filter(function (name) {
 						return !/^\./.test(name);
 					});
 					var data = [];
-					var count = files.length;
-					files.forEach(function (entry) {
+					var count = entries.length;
+					entries.forEach(function (entry) {
 						fs.stat(path.join(fullPath, entry), function (error, stats) {
-							(function (sendResponse) {
-								if (!error && stats.isDirectory()) {
-									fs.readdir(path.join(fullPath, entry), function (error, subEntries) {
-										if (!error) {
-											data.push({
-												id: path.join('root/', fullPath, entry),
-												fullPath: path.join(fullPath, entry),
-												text: entry,
-												leaf: false,
-												expandable: !!subEntries.length,
-												expanded: false
+							if (!error && stats.isDirectory()) {
+								fs.readdir(path.join(fullPath, entry), function (error, subEntries) {
+									function pushEntry(expandable) {
+										data.push({
+											id: path.join('root/', fullPath, entry),
+											fullPath: path.join(fullPath, entry),
+											text: entry,
+											leaf: false,
+											expandable: expandable,
+											expanded: false
+										});
+										if (!--count) {
+											response.json({
+												success: true,
+												data: data
 											});
 										}
-										if (!--count) {
-											sendResponse(data);
+									}
+									if (!error) {
+										subEntries = subEntries.filter(function (name) {
+											return !/^\./.test(name);
+										});
+										if (subEntries.length) {
+											var subCount = subEntries.length;
+											var expandable = false;
+											subEntries.forEach(function (subEntry) {
+												fs.stat(path.join(fullPath, entry, subEntry), function (error, stats) {
+													subCount--;
+													if (!expandable) {
+														if (error) {
+															pushEntry(expandable = true);
+														} else if (stats.isDirectory()) {
+															pushEntry(expandable = true);
+														} else if (!subCount) {
+															pushEntry(false);
+														}
+													}
+												});
+											});
+										} else {
+											pushEntry(false);
 										}
-									});
-								} else if (!--count) {
-									sendResponse(data);
-								}
-							}(function (data) {
+									}
+								});
+							} else if (!--count) {
 								response.json({
 									success: true,
 									data: data
 								});
-							}));
+							}
 						});
 					});
 				}
