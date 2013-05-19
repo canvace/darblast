@@ -14,16 +14,18 @@ function DragTool() {
 	};
 	this.mouseup = function () {
 		(function (o0, o1) {
-			Canvace.history.record({
-				action: function () {
-					Canvace.view.dragTo(o1.x, o1.y);
-					Canvace.renderer.render();
-				},
-				reverse: function () {
-					Canvace.view.dragTo(o0.x, o0.y);
-					Canvace.renderer.render();
-				}
-			});
+			if ((o0.x != o1.x) || (o0.y != o1.y)) {
+				Canvace.history.record({
+					action: function () {
+						Canvace.view.dragTo(o1.x, o1.y);
+						Canvace.renderer.render();
+					},
+					reverse: function () {
+						Canvace.view.dragTo(o0.x, o0.y);
+						Canvace.renderer.render();
+					}
+				});
+			}
 		}(origin, Canvace.view.getOrigin()));
 	};
 }
