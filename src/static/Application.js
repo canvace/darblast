@@ -301,6 +301,13 @@ Ext.Loader.setConfig({
 						rootVisible: false,
 						store: {
 							autoLoad: true,
+							fields: [{
+								name: 'text',
+								type: 'string'
+							}, {
+								name: 'fullPath',
+								type: 'string'
+							}],
 							sortRoot: 'text',
 							proxy: {
 								type: 'rest',
