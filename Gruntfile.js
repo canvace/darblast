@@ -161,6 +161,9 @@ module.exports = function (grunt) {
 		},
 
 		uglify: {
+			options: {
+				wrap: 'exports'
+			},
 			client: {
 				files: {
 					'bin/static/app.js': 'src/static/app.js'
