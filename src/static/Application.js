@@ -1,3 +1,5 @@
+/*global exports: false */
+
 Ext.Loader.setConfig({
 	enabled: true,
 	paths: {
@@ -9,7 +11,7 @@ Ext.Loader.setConfig({
 	var width = screen.availWidth;
 	var height = screen.availHeight;
 
-	Canvace.initGUI = function () {
+	exports.initGUI = function () {
 		Ext.create('Ext.container.Viewport', {
 			layout: 'fit',
 			items: {
@@ -81,7 +83,7 @@ Ext.Loader.setConfig({
 		});
 	};
 
-	Canvace.loadStage = function (projectId, id) {
+	exports.loadStage = function (projectId, id) {
 		Canvace.poller = new Poller(projectId);
 		var loader = new Loader(function () {
 			var stage;
@@ -161,7 +163,7 @@ Ext.Loader.setConfig({
 		}
 	});
 
-	Canvace.showStartScreen = function () {
+	exports.showStartScreen = function () {
 		var startDialog = new Ext.window.Window({
 			title: 'Canvace Development Environment',
 			modal: true,
@@ -274,7 +276,7 @@ Ext.Loader.setConfig({
 					}],
 					success: function (response) {
 						startDialog.close();
-						Canvace.loadStage(response.projectId, response.stageId);
+						exports.loadStage(response.projectId, response.stageId);
 					}
 				})
 			}, {
@@ -302,7 +304,7 @@ Ext.Loader.setConfig({
 					}],
 					success: function (response) {
 						startDialog.close();
-						Canvace.loadStage(response.projectId, response.stageId);
+						exports.loadStage(response.projectId, response.stageId);
 					}
 				})
 			}, {
@@ -326,7 +328,7 @@ Ext.Loader.setConfig({
 					}],
 					success: function (response) {
 						startDialog.close();
-						Canvace.loadStage(response.projectId, response.stageId);
+						exports.loadStage(response.projectId, response.stageId);
 					}
 				})
 			}]
