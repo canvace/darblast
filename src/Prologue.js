@@ -1,5 +1,12 @@
 var path = require('path');
 var fs = require('fs');
+var util = require('util');
+var npm = require('npm');
+var MultiSet = require('multiset');
+var ReadWriteLock = require('rwlock');
+var express = require('express');
+var consolidate = require('consolidate');
+var http = require('http');
 
 var configDirectory = (function (homeDirectory) {
 	var dir;
@@ -37,9 +44,6 @@ var config = (function () {
 		return {};
 	}
 }());
-
-var util = require('util');
-var npm = require('npm');
 
 var users = (function () {
 	var content;
@@ -169,12 +173,6 @@ if (!config.dontCheckForUpdates) {
 	});
 }
 
-var MultiSet = require('multiset');
-var ReadWriteLock = require('rwlock');
-
-var express = require('express');
-var consolidate = require('consolidate');
-
 var app = express();
 app.enable('strict routing');
 app.use(express.cookieParser());
@@ -190,6 +188,49 @@ if (config.debug) {
 }
 
 app.use(express.static(__dirname + '/static'));
+
+app.use('/directories/root/', function (request, response, next) {
+	var fullPath = path.normalize(decodeURIComponent(request.path));
+	fs.stat(fullPath, function (error, stats) {
+		if (!error && stats.isDirectory()) {
+			fs.readdir(fullPath, function (error, entries) {
+				if (error) {
+					response.send(500, error.toString());
+				} else {
+					entries = entries.filter(function (name) {
+						return !/^\./.test(name);
+					});
+					var data = [];
+					var count = entries.length;
+					entries.forEach(function (entry) {
+						fs.stat(path.join(fullPath, entry), function (error, stats) {
+							if (!error && stats.isDirectory()) {
+								data.push({
+									id: path.join('root/', fullPath, entry),
+									baseName: entry,
+									fullPath: path.join(fullPath, entry),
+									text: entry,
+									leaf: false,
+									expandable: true,
+									expanded: false
+								});
+							}
+							if (!--count) {
+								response.json({
+									success: true,
+									data: data
+								});
+							}
+						});
+					});
+				}
+			});
+		} else {
+			next();
+		}
+	});
+});
+
 app.use(express.query());
 app.use(express.bodyParser());
 app.set('views', __dirname + '/views');
@@ -201,7 +242,7 @@ if (users !== null) {
 	}));
 }
 
-var server = require('http').createServer(app);
+var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 
 if (!config.debug) {

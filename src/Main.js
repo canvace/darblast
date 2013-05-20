@@ -63,7 +63,9 @@ installSessionlessHandler('/', 'put', function (request, response) {
 				}
 				this.createSession(path);
 				this.readdir(request.session.projectPath + 'stages', function (stages) {
-					response.json({
+					response.cookie('last-path', path.replace(/^\w\:[\\\/]/i, '/').replace(/[\\\/]$/, '').replace(/\\/g, '/'), {
+						expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365)
+					}).json({
 						projectId: this.getProjectId(),
 						stageId: stages[0]
 					});
