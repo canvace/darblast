@@ -1,6 +1,8 @@
 (function () {
 	function sanitizeLabels(labels) {
-		labels = labels.split(',');
+		if (typeof labels === 'string') {
+			labels = labels.split(',');
+		}
 		var label;
 		var set = {};
 		for (var i in labels) {
