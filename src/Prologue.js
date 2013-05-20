@@ -207,6 +207,7 @@ app.use('/directories/root/', function (request, response, next) {
 							if (!error && stats.isDirectory()) {
 								data.push({
 									id: path.join('root/', fullPath, entry),
+									baseName: entry,
 									fullPath: path.join(fullPath, entry),
 									text: entry,
 									leaf: false,

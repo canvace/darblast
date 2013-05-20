@@ -305,6 +305,9 @@ Ext.Loader.setConfig({
 								name: 'text',
 								type: 'string'
 							}, {
+								name: 'baseName',
+								type: 'string'
+							}, {
 								name: 'fullPath',
 								type: 'string'
 							}],
@@ -366,7 +369,15 @@ Ext.Loader.setConfig({
 			}]
 		});
 		startDialog.show();
-		Ext.getCmp('directory-tree-view').getStore().load(); // XXX autoLoad doesn't seem to work
+		(function (tree) {
+			tree.getStore().load(); // XXX autoLoad doesn't seem to work
+			tree.getRootNode().set('baseName', 'root');
+			var lastPath = Ext.util.Cookies.get('last-path');
+			if (lastPath !== null) {
+				Ext.getCmp('existing-project-path-field').setValue(lastPath);
+				tree.selectPath('/root' + lastPath, 'baseName');
+			}
+		}(Ext.getCmp('directory-tree-view')));
 		new Projection();
 	};
 }());
