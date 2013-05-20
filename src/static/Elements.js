@@ -303,14 +303,14 @@ function Elements(type, Element, ready) {
 			callback(new Element(ElementBase, id, elements[id]));
 		}
 	};
-	this.forEachInCategory = function (category, callback) {
+	this.forEachWithLabel = function (label, callback) {
 		for (var id in elements) {
 			(function () {
 				var frames = elements[id].frames;
 				for (var i in frames) {
 					var labels = Canvace.images.get(frames[i].imageId).getLabels();
 					for (var j in labels) {
-						if (labels[j] == category) {
+						if (labels[j] == label) {
 							callback(new Element(ElementBase, id, elements[id]));
 							return;
 						}

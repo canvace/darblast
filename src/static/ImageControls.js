@@ -20,11 +20,12 @@ function ImageControls() {
 					fieldLabel: 'Image file(s)',
 					allowBlank: false
 				}, {
-					xtype: 'textfield',
+					xtype: 'combobox',
 					name: 'labels',
 					fieldLabel: 'Categories',
-					regex: /^\w*(\s*,\s*\w*)*$/,
-					invalidText: 'Invalid category list: categories must include only alphanumeric characters and be separated by commas.'
+					multiSelect: true,
+					width: 300,
+					store: Canvace.images.getAllLabels()
 				}],
 				buttons: [{
 					text: 'Load',
@@ -68,13 +69,13 @@ function ImageControls() {
 					width: 100,
 					height: 100
 				}, {
-					xtype: 'textfield',
+					xtype: 'combobox',
 					name: 'labels',
 					fieldLabel: 'Categories',
 					width: 300,
-					regex: /^\w*(\s*,\s*\w*)*$/,
-					invalidText: 'Invalid category list: categories must include only alphanumeric characters and be separated by commas.',
-					value: image.getLabels().join(', ')
+					multiSelect: true,
+					store: Canvace.images.getAllLabels(),
+					value: image.getLabels()
 				}],
 				buttons: [{
 					text: 'OK',

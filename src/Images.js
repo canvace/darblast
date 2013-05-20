@@ -3,6 +3,19 @@
 		if (typeof labels === 'string') {
 			labels = labels.split(',');
 		}
+		(function () {
+			var additional = [];
+			labels.filter(function (label) {
+				var subLabels = label.split(',');
+				if (subLabels.length > 1) {
+					additional.push.apply(additional, subLabels);
+					return false;
+				} else {
+					return true;
+				}
+			});
+			labels.push.apply(labels, additional);
+		}());
 		var label;
 		var set = {};
 		for (var i in labels) {

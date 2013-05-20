@@ -139,14 +139,28 @@ function Images(ready) {
 			callback(new ImageObject(id));
 		}
 	};
-	this.forEachInCategory = function (category, callback) {
+	this.forEachWithLabel = function (label, callback) {
 		for (var id in labels) {
 			for (var i in labels[id]) {
-				if (labels[id][i] == category) {
+				if (labels[id][i] == label) {
 					callback(new ImageObject(id));
 					break;
 				}
 			}
 		}
+	};
+
+	this.getAllLabels = function () {
+		var set = {};
+		for (var id in labels) {
+			labels[id].forEach(function (label) {
+				set[label] = true;
+			});
+		}
+		var array = [];
+		for (var label in set) {
+			array.push(label);
+		}
+		return array;
 	};
 }
