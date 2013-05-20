@@ -68,6 +68,14 @@ function Images(ready) {
 				labels: labels
 			});
 		};
+		this.hasLabel = function (label) {
+			for (var i in labels[id]) {
+				if (labels[id][i] == label) {
+					return true;
+				}
+			}
+			return false;
+		};
 
 		this._delete = function () {
 			Canvace.Ajax._delete('images/' + id);

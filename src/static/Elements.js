@@ -181,9 +181,20 @@ function Elements(type, Element, ready) {
 		this.getLabels = function () {
 			var labels = [];
 			element.frames.forEach(function (frame) {
-				labels.push(Canvace.images.get(frame.imageId).getLabels());
+				labels.push.apply(labels, Canvace.images.get(frame.imageId).getLabels());
 			});
 			return labels;
+		};
+		this.hasLabel = function (label) {
+			for (var i in element.frames) {
+				var labels = Canvace.images.get(element.frames[i].imageId).getLabels();
+				for (var j in labels) {
+					if (labels[j] == label) {
+						return true;
+					}
+				}
+			}
+			return false;
 		};
 
 		this.getProperties = function () {
