@@ -93,118 +93,127 @@ var LowerControls = (function () {
 			});
 		});
 
+		function getHierarchyRootConfig() {
+			return (function walk(node) {
+				var expandable = node.hasChildren();
+				var children = [];
+				node.forEachChild(function (childNode) {
+					children.push(walk(childNode));
+				});
+				return {
+					text: node.getName(),
+					labels: node.getAllLabels(),
+					expandable: expandable,
+					expanded: expandable,
+					children: children
+				};
+			}(new Canvace.images.getHierarchy().Root('Categories')));
+		}
+
+		var hierarchyTree = Ext.create('Ext.tree.Panel', {
+			region: 'west',
+			split: true,
+			autoScroll: true,
+			width: 250,
+			tbar: [{
+				icon: '/resources/images/icons/add.png',
+				tooltip: 'Load ' + elements + '...',
+				handler: function () {
+					handlers.fire('element/add');
+				}
+			}, {
+				icon: '/resources/images/icons/picture_add.png',
+				tooltip: 'Load ' + element + ' sheet...',
+				handler: function () {
+					if (window.canSplitImages) {
+						handlers.fire('sheet/load');
+					} else {
+						Ext.MessageBox.show({
+							title: 'Additional software needed',
+							msg: 'To import image sheets into Canvace you need to install Cairo and restart the environment.<br/>Do you want to open the Cairo website now? (Another browser window will open)',
+							buttons: Ext.MessageBox.YESNO,
+							icon: Ext.MessageBox.INFORMATION,
+							fn: function (button) {
+								if (button === 'yes') {
+									window.open('http://cairographics.org/');
+								}
+							}
+						});
+					}
+				}
+			}, {
+				icon: '/resources/images/icons/pencil.png',
+				tooltip: 'Edit selected ' + element + '...',
+				handler: function () {
+					if (selection.hasSelection()) {
+						handlers.fire('element/activate', function (handler) {
+							handler(selection.getLastSelected().get('id'));
+						});
+					}
+				}
+			}, {
+				icon: '/resources/images/icons/folder_edit.png',
+				tooltip: 'Rename selected category...',
+				handler: function () {
+					// TODO
+				}
+			}, {
+				icon: '/resources/images/icons/delete.png',
+				tooltip: 'Delete selected ' + elements + '...',
+				handler: function () {
+					var records = selection.getSelection();
+					if (records.length) {
+						Ext.MessageBox.show({
+							title: 'Confirm deletion',
+							msg: 'Do you actually want to delete the ' + records.length + ' selected ' + elements + '?',
+							buttons: Ext.MessageBox.OKCANCEL,
+							icon: Ext.MessageBox.WARNING,
+							fn: function (button) {
+								if (button === 'ok') {
+									handlers.fire('element/delete', function (handler) {
+										handler(records.map(function (model) {
+											return model.get('id');
+										}));
+									});
+								}
+							}
+						});
+					}
+				}
+			}, {
+				icon: '/resources/images/icons/folder_delete.png',
+				tooltip: 'Delete selected category...',
+				handler: function () {
+					// TODO
+				}
+			}],
+			fields: ['text', 'labels'],
+			root: getHierarchyRootConfig(),
+			listeners: {
+				selectionchange: function (selectionModel, records) {
+					if (records.length) {
+						var labels = records[0].get('labels');
+						store.filterBy(function (record) {
+							return record.get('element').hasLabels(labels);
+						});
+					} else {
+						store.filterBy(function () {
+							return true;
+						});
+					}
+				}
+			}
+		});
+
+		Canvace.images.onHierarchyChange(function () {
+			hierarchyTree.setRootNode(getHierarchyRootConfig());
+		});
+
 		var lowerPanel = Ext.getCmp('lower-panel');
 		lowerPanel.insert(index, {
 			title: name,
 			layout: 'border',
-			items: [{
-				xtype: 'treepanel',
-				region: 'west',
-				split: true,
-				autoScroll: true,
-				width: 250,
-				tbar: [{
-					icon: '/resources/images/icons/add.png',
-					tooltip: 'Load ' + elements + '...',
-					handler: function () {
-						handlers.fire('element/add');
-					}
-				}, {
-					icon: '/resources/images/icons/picture_add.png',
-					tooltip: 'Load ' + element + ' sheet...',
-					handler: function () {
-						if (window.canSplitImages) {
-							handlers.fire('sheet/load');
-						} else {
-							Ext.MessageBox.show({
-								title: 'Additional software needed',
-								msg: 'To import image sheets into Canvace you need to install Cairo and restart the environment.<br/>Do you want to open the Cairo website now? (Another browser window will open)',
-								buttons: Ext.MessageBox.YESNO,
-								icon: Ext.MessageBox.INFORMATION,
-								fn: function (button) {
-									if (button === 'yes') {
-										window.open('http://cairographics.org/');
-									}
-								}
-							});
-						}
-					}
-				}, {
-					icon: '/resources/images/icons/pencil.png',
-					tooltip: 'Edit selected ' + element + '...',
-					handler: function () {
-						if (selection.hasSelection()) {
-							handlers.fire('element/activate', function (handler) {
-								handler(selection.getLastSelected().get('id'));
-							});
-						}
-					}
-				}, {
-					icon: '/resources/images/icons/folder_edit.png',
-					tooltip: 'Rename selected category...',
-					handler: function () {
-						// TODO
-					}
-				}, {
-					icon: '/resources/images/icons/delete.png',
-					tooltip: 'Delete selected ' + elements + '...',
-					handler: function () {
-						var records = selection.getSelection();
-						if (records.length) {
-							Ext.MessageBox.show({
-								title: 'Confirm deletion',
-								msg: 'Do you actually want to delete the ' + records.length + ' selected ' + elements + '?',
-								buttons: Ext.MessageBox.OKCANCEL,
-								icon: Ext.MessageBox.WARNING,
-								fn: function (button) {
-									if (button === 'ok') {
-										handlers.fire('element/delete', function (handler) {
-											handler(records.map(function (model) {
-												return model.get('id');
-											}));
-										});
-									}
-								}
-							});
-						}
-					}
-				}, {
-					icon: '/resources/images/icons/folder_delete.png',
-					tooltip: 'Delete selected category...',
-					handler: function () {
-						// TODO
-					}
-				}],
-				fields: ['text', 'labels'],
-				root: (function walk(node) {
-					var expandable = node.hasChildren();
-					var children = [];
-					node.forEachChild(function (childNode) {
-						children.push(walk(childNode));
-					});
-					return {
-						text: node.getName(),
-						labels: node.getAllLabels(),
-						expandable: expandable,
-						expanded: expandable,
-						children: children
-					};
-				}(new Canvace.images.getHierarchy().Root('Categories'))),
-				listeners: {
-					selectionchange: function (selectionModel, records) {
-						if (records.length) {
-							var labels = records[0].get('labels');
-							store.filterBy(function (record) {
-								return record.get('element').hasLabels(labels);
-							});
-						} else {
-							store.filterBy(function () {
-								return true;
-							});
-						}
-					}
-				}
-			}, {
+			items: [hierarchyTree, {
 				region: 'center',
 				layout: 'fit',
 				items: view

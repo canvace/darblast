@@ -170,4 +170,8 @@ function Images(ready) {
 		}
 		return array;
 	};
+
+	this.onHierarchyChange = function (handler) {
+		return hierarchyHandlers.registerHandler(0, handler);
+	};
 }
