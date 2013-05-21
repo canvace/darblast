@@ -186,17 +186,22 @@ function Elements(type, Element, ready) {
 			return labels;
 		};
 		this.hasLabels = function (labelsToTest) {
-			for (var i in element.frames) {
-				if (!(function (labels) {
-					for (var i in labelsToTest) {
-						for (var j in labels) {
-							if (labelsToTest[i] == labels[j]) {
-								return true;
+			for (var i in labelsToTest) {
+				if (!(function () {
+					for (var j in element.frames) {
+						if ((function (labels) {
+							for (var k in labels) {
+								if (labels[k] == labelsToTest[i]) {
+									return true;
+								}
 							}
+							return false;
+						}(Canvace.images.get(element.frames[j].imageId).getLabels()))) {
+							return true;
 						}
 					}
 					return false;
-				}(Canvace.images.get(element.frames[i].imageId).getLabels()))) {
+				}())) {
 					return false;
 				}
 			}
