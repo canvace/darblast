@@ -146,16 +146,6 @@ function Images(ready) {
 			callback(new ImageObject(id));
 		}
 	};
-	this.forEachWithLabel = function (label, callback) {
-		for (var id in labels) {
-			for (var i in labels[id]) {
-				if (labels[id][i] == label) {
-					callback(new ImageObject(id));
-					break;
-				}
-			}
-		}
-	};
 
 	this.getAllLabels = function () {
 		var set = {};

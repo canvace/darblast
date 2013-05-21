@@ -184,7 +184,33 @@ var LowerControls = (function () {
 				icon: '/resources/images/icons/folder_delete.png',
 				tooltip: 'Delete selected category...',
 				handler: function () {
-					// TODO
+					var records = hierarchyTree.getSelectionModel().getSelection();
+					if (records.length) {
+						var record = records[0];
+						var labels = record.get('labels');
+						var images = [];
+						Canvace.images.forEach(function (image) {
+							if (image.hasLabels(labels)) {
+								images.push(image);
+							}
+						});
+						if (images.length) {
+							Ext.MessageBox.show({
+								title: 'Confirm image removal',
+								msg: 'Are you sure you want to remove the ' + images.length + ' images in the \"' + record.get('text') + '\" category?',
+								icon: Ext.MessageBox.WARNING,
+								buttons: Ext.MessageBox.OKCANCEL,
+								modal: true,
+								fn: function (button) {
+									if (button === 'ok') {
+										images.forEach(function (image) {
+											image._delete();
+										});
+									}
+								}
+							});
+						}
+					}
 				}
 			}],
 			fields: ['text', 'labels'],
