@@ -82,6 +82,13 @@ function Hierarchy(labelMap) {
 			this.getAllLabels = function () {
 				return allLabels.slice(0);
 			};
+			this.hasChildren = function () {
+				for (var name in node) {
+					(function () {}(name)); // XXX silence linter
+					return true;
+				}
+				return false;
+			};
 			this.forEachChild = function (callback) {
 				for (var name in node) {
 					callback(new Node(name, node[name], allLabels));

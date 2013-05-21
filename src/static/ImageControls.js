@@ -103,7 +103,7 @@ function ImageControls() {
 
 	function addImage(image) {
 		var id = image.getId();
-		controls.addImage(id, image.getLabels(), id);
+		controls.addImage(id, image);
 		image.onDelete(function () {
 			controls.removeElement(id);
 		});

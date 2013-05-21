@@ -24,7 +24,7 @@ var LowerControls = (function () {
 				fields: [{
 					name: 'id'
 				}, {
-					name: 'labels'
+					name: 'element'
 				}, {
 					name: 'useImage'
 				}, {
@@ -175,9 +175,32 @@ var LowerControls = (function () {
 						// TODO
 					}
 				}],
-				root: {
-					text: 'Categories',
-					expanded: true
+				root: (function walk(node) {
+					var expandable = node.hasChildren();
+					var children = [];
+					node.forEachChild(function (childNode) {
+						children.push(walk(childNode));
+					});
+					return {
+						text: node.getName(),
+						expandable: expandable,
+						expanded: expandable,
+						children: children
+					};
+				}(new Canvace.images.getHierarchy().Root('Categories'))),
+				listeners: {
+					selectionchange: function (selectionModel, records) {
+						if (records.length && !records[0].isRoot()) {
+							var label = records[0].get('text');
+							store.filterBy(function (record) {
+								return record.get('element').hasLabel(label);
+							});
+						} else {
+							store.filterBy(function () {
+								return true;
+							});
+						}
+					}
 				}
 			}, {
 				region: 'center',
@@ -191,19 +214,19 @@ var LowerControls = (function () {
 
 		var records = {};
 
-		this.addImage = function (id, labels, imageId) {
+		this.addImage = function (id, image) {
 			records[id] = store.add({
 				id: id,
-				labels: labels,
+				element: image,
 				useImage: true,
-				imageId: imageId
+				imageId: image.getId()
 			})[0];
 		};
-		this.addElement = function (id, labels, element) {
+		this.addElement = function (id, element) {
 			if (element.hasFrames()) {
 				records[id] = store.add({
 					id: id,
-					labels: labels,
+					element: element,
 					useImage: true,
 					imageId: element.getFirstFrameId()
 				})[0];
@@ -211,7 +234,7 @@ var LowerControls = (function () {
 				var layout = element.getLayout();
 				records[id] = store.add({
 					id: id,
-					labels: labels,
+					element: element,
 					useImage: false,
 					di: layout.span.i,
 					dj: layout.span.j
