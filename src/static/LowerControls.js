@@ -102,13 +102,43 @@ var LowerControls = (function () {
 				});
 				return {
 					text: node.getName(),
-					labels: node.getAllLabels(),
+					labels: node.getLabels(),
+					allLabels: node.getAllLabels(),
 					expandable: expandable,
 					expanded: expandable,
 					children: children
 				};
 			}(new Canvace.images.getHierarchy().Root('Categories')));
 		}
+
+		var editingPlugin = new Ext.grid.plugin.CellEditing({
+			clicksToEdit: 2,
+			listeners: {
+				edit: function (editor, event) {
+					var labels = event.record.get('labels');
+					Canvace.images.forEach(function (image) {
+						if (image.hasLabels(labels)) {
+							var imageLabels = image.getLabels();
+							var set = {};
+							imageLabels.forEach(function (label) {
+								set[label] = true;
+							});
+							labels.forEach(function (label) {
+								delete set[label];
+							});
+							event.value.split(',').forEach(function (label) {
+								set[label] = true;
+							});
+							var newLabels = [];
+							for (var label in set) {
+								newLabels.push(label);
+							}
+							image.setLabels(newLabels);
+						}
+					});
+				}
+			}
+		});
 
 		var hierarchyTree = Ext.create('Ext.tree.Panel', {
 			region: 'west',
@@ -155,7 +185,10 @@ var LowerControls = (function () {
 				icon: '/resources/images/icons/folder_edit.png',
 				tooltip: 'Rename selected category...',
 				handler: function () {
-					// TODO
+					var records = hierarchyTree.getSelectionModel().getSelection();
+					if (records.length) {
+						editingPlugin.startEdit(records[0], 0);
+					}
 				}
 			}, {
 				icon: '/resources/images/icons/delete.png',
@@ -187,7 +220,7 @@ var LowerControls = (function () {
 					var records = hierarchyTree.getSelectionModel().getSelection();
 					if (records.length) {
 						var record = records[0];
-						var labels = record.get('labels');
+						var labels = record.get('allLabels');
 						var images = [];
 						Canvace.images.forEach(function (image) {
 							if (image.hasLabels(labels)) {
@@ -213,12 +246,24 @@ var LowerControls = (function () {
 					}
 				}
 			}],
-			fields: ['text', 'labels'],
+			fields: ['text', 'labels', 'allLabels'],
+			columns: [{
+				xtype: 'treecolumn',
+				text: 'Categories',
+				dataIndex: 'text',
+				resizable: false,
+				hideable: false,
+				draggable: false,
+				sortable: true,
+				editor: 'textfield'
+			}],
+			forceFit: true,
 			root: getHierarchyRootConfig(),
+			rootVisible: false,
 			listeners: {
 				selectionchange: function (selectionModel, records) {
 					if (records.length) {
-						var labels = records[0].get('labels');
+						var labels = records[0].get('allLabels');
 						store.filterBy(function (record) {
 							return record.get('element').hasLabels(labels);
 						});
@@ -228,7 +273,8 @@ var LowerControls = (function () {
 						});
 					}
 				}
-			}
+			},
+			plugins: [editingPlugin]
 		});
 
 		Canvace.images.onHierarchyChange(function () {
