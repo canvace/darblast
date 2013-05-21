@@ -175,6 +175,7 @@ var LowerControls = (function () {
 						// TODO
 					}
 				}],
+				fields: ['text', 'labels'],
 				root: (function walk(node) {
 					var expandable = node.hasChildren();
 					var children = [];
@@ -183,6 +184,7 @@ var LowerControls = (function () {
 					});
 					return {
 						text: node.getName(),
+						labels: node.getAllLabels(),
 						expandable: expandable,
 						expanded: expandable,
 						children: children
@@ -190,10 +192,10 @@ var LowerControls = (function () {
 				}(new Canvace.images.getHierarchy().Root('Categories'))),
 				listeners: {
 					selectionchange: function (selectionModel, records) {
-						if (records.length && !records[0].isRoot()) {
-							var label = records[0].get('text');
+						if (records.length) {
+							var labels = records[0].get('labels');
 							store.filterBy(function (record) {
-								return record.get('element').hasLabel(label);
+								return record.get('element').hasLabels(labels);
 							});
 						} else {
 							store.filterBy(function () {

@@ -68,13 +68,20 @@ function Images(ready) {
 				labels: labels
 			});
 		};
-		this.hasLabel = function (label) {
-			for (var i in labels[id]) {
-				if (labels[id][i] == label) {
-					return true;
+		this.hasLabels = function (labelsToTest) {
+			for (var i in labelsToTest) {
+				if (!(function (label) {
+					for (var i in labels[id]) {
+						if (labels[id][i] == label) {
+							return true;
+						}
+					}
+					return false;
+				}(labelsToTest[i]))) {
+					return false;
 				}
 			}
-			return false;
+			return true;
 		};
 
 		this._delete = function () {
