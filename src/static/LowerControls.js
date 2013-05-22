@@ -143,7 +143,7 @@ var LowerControls = (function () {
 			}
 		});
 
-		var hierarchyTree = Ext.create('Ext.tree.Panel', {
+		var hierarchyTree = new Ext.tree.Panel({
 			region: 'west',
 			split: true,
 			autoScroll: true,

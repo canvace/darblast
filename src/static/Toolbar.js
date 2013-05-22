@@ -53,13 +53,40 @@ function Toolbar() {
 		icon: '/resources/images/tools/export.png',
 		tooltip: 'Export...',
 		handler: function () {
-			// TODO
+			var dialog = new Ext.window.Window({
+				title: 'Export Wizard',
+				resizable: false,
+				modal: true,
+				layout: 'fit',
+				bbar: [{
+					text: 'Close',
+					handler: function () {
+						dialog.close();
+					}
+				}],
+				items: {
+					xtype: 'tabpanel',
+					items: [{
+						title: 'Project',
+						layout: 'fit',
+						items: {
+							xtype: 'form',
+							items: [
+								// TODO
+							]
+						}
+					}, {
+						title: 'Stages'
+						// TODO
+					}]
+				}
+			}).show();
 		}
 	}, {
 		icon: '/resources/images/tools/bug.png',
 		tooltip: 'Report a bug...',
 		handler: function () {
-			// TODO open GitHub issues URL in a new browser window
+			window.open('//github.com/canvace/darblast/issues');
 		}
 	},  {
 		xtype: 'tbseparator'
