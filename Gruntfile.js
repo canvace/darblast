@@ -30,6 +30,7 @@ module.exports = function (grunt) {
 					'src/static/StageControls.js',
 					'src/static/View.js',
 					'src/static/Buckets.js',
+					'src/static/Diff.js',
 					'src/static/History.js',
 					'src/static/TileArray.js',
 					'src/static/Instances.js',
