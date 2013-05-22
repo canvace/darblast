@@ -36,7 +36,7 @@ function Diff(k, array) {
 				}
 				if (diff[i][j][to] !== false) {
 					if (typeof diff[i][j][to] === 'number') {
-						Canvace.buckets.addTile(i, j, k, diff[i][j][to]);
+						Canvace.buckets.addTile(i, j, k, Canvace.tiles.get(diff[i][j][to]));
 					}
 					array[k][i][j] = diff[i][j][to];
 				} else {
