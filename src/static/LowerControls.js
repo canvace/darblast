@@ -108,12 +108,15 @@ var LowerControls = (function () {
 					expanded: expandable,
 					children: children
 				};
-			}(new Canvace.images.getHierarchy().Root('Categories')));
+			}(new Canvace.images.getHierarchy().Root('All')));
 		}
 
 		var editingPlugin = new Ext.grid.plugin.CellEditing({
 			clicksToEdit: 2,
 			listeners: {
+				beforeedit: function (editor, event) {
+					return !event.record.isRoot();
+				},
 				edit: function (editor, event) {
 					var labels = event.record.get('labels');
 					Canvace.images.forEach(function (image) {
@@ -259,7 +262,6 @@ var LowerControls = (function () {
 			}],
 			forceFit: true,
 			root: getHierarchyRootConfig(),
-			rootVisible: false,
 			listeners: {
 				selectionchange: function (selectionModel, records) {
 					if (records.length) {
