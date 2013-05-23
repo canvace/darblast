@@ -108,7 +108,7 @@ var LowerControls = (function () {
 					expanded: expandable,
 					children: children
 				};
-			}(new Canvace.images.getHierarchy().Root('All')));
+			}(new (Canvace.images.getHierarchy()).Root('All')));
 		}
 
 		var editingPlugin = new Ext.grid.plugin.CellEditing({
