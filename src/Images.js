@@ -87,6 +87,7 @@
 			try {
 				labels = sanitizeLabels(request.body.labels);
 			} catch (e) {
+				response.set('Content-Type', 'text/html');
 				response.json(400, e.toString());
 				return;
 			}
@@ -135,6 +136,7 @@
 					count++;
 					storeImage.call(this, request.files.images[i], imageId++, function () {
 						if (!--count) {
+							response.set('Content-Type', 'text/html');
 							response.json(ids);
 						}
 					});
@@ -143,6 +145,7 @@
 		} else {
 			this.newIds('image', function (imageId) {
 				storeImage.call(this, request.files.images, imageId, function () {
+					response.set('Content-Type', 'text/html');
 					response.json([imageId]);
 				});
 			});
