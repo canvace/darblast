@@ -2,7 +2,7 @@ function Images(ready) {
 	var images = {};
 	var labels = {};
 
-	var hierarchy;
+	var hierarchy = new Hierarchy({});
 
 	var createHandlers = new EventHandlers();
 	var updateHandlers = new EventHandlers();
@@ -34,10 +34,10 @@ function Images(ready) {
 				}
 			});
 		}
+		hierarchy = new Hierarchy(labels);
 		if (!count) {
 			ready && ready();
 		}
-		hierarchy = new Hierarchy(labels);
 	});
 
 	function ImageObject(id) {
