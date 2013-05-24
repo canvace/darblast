@@ -190,7 +190,11 @@ if (config.debug) {
 app.use(express.static(__dirname + '/static'));
 
 app.use('/directories/root/', function (request, response, next) {
-	var fullPath = path.normalize(decodeURIComponent(request.path));
+	function normalize(p) {
+		return path.normalize(p).split(path.sep).join('/');
+	}
+
+	var fullPath = normalize(decodeURIComponent(request.path));
 	fs.stat(fullPath, function (error, stats) {
 		if (!error && stats.isDirectory()) {
 			fs.readdir(fullPath, function (error, entries) {
@@ -206,9 +210,9 @@ app.use('/directories/root/', function (request, response, next) {
 						fs.stat(path.join(fullPath, entry), function (error, stats) {
 							if (!error && stats.isDirectory()) {
 								data.push({
-									id: path.join('root/', fullPath, entry),
+									id: normalize(path.join('root/', fullPath, entry)),
 									baseName: entry,
-									fullPath: path.join(fullPath, entry),
+									fullPath: path.normalize(path.join(fullPath, entry)),
 									text: entry,
 									leaf: false,
 									expandable: true,
