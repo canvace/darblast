@@ -190,8 +190,8 @@ if (config.debug) {
 app.use(express.static(__dirname + '/static'));
 
 app.use('/directories/root/', function (request, response, next) {
-	function normalize(p) {
-		return path.normalize(p).split(path.sep).join('/');
+	function normalize(pathToNormalize) {
+		return path.normalize(pathToNormalize).replace(path.sep, '/');
 	}
 
 	var fullPath = normalize(decodeURIComponent(request.path));
@@ -210,7 +210,7 @@ app.use('/directories/root/', function (request, response, next) {
 						fs.stat(path.join(fullPath, entry), function (error, stats) {
 							if (!error && stats.isDirectory()) {
 								data.push({
-									id: normalize(path.join('root/', fullPath, entry)),
+									id: normalize(path.join('root', fullPath, entry)),
 									baseName: entry,
 									fullPath: path.normalize(path.join(fullPath, entry)),
 									text: entry,
