@@ -28,8 +28,9 @@ function LayerControls() {
 			hideable: false,
 			sortable: false,
 			listeners: {
-				checkchange: function () {
-					// TODO
+				checkchange: function (column, rowIndex, checked) {
+					Canvace.layers.toggle(store.getAt(rowIndex).get('index'), checked);
+					Canvace.renderer.render();
 				}
 			}
 		}, {
@@ -78,6 +79,16 @@ function LayerControls() {
 					});
 				});
 				Canvace.renderer.render();
+			}
+		}, {
+			icon: '/resources/images/icons/layers.png',
+			tooltip: 'Toggle layer transparency',
+			enableToggle: true,
+			pressed: true,
+			listeners: {
+				toggle: function (button, pressed) {
+					Canvace.renderer.toggleTransparency(pressed);
+				}
 			}
 		}],
 		listeners: {
