@@ -15,8 +15,10 @@ function LayerControls() {
 				name: 'enabled',
 				type: 'boolean'
 			}],
-			defaultSortDirection: 'DESC',
-			sortRoot: 'text'
+			sorters: [{
+				property: 'index',
+				direction: 'DESC'
+			}]
 		},
 		columns: [{
 			xtype: 'checkcolumn',
@@ -60,7 +62,6 @@ function LayerControls() {
 						text: 'Layer ' + index,
 						enabled: true
 					});
-					store.sort();
 				});
 				Canvace.renderer.render();
 			}
@@ -73,7 +74,6 @@ function LayerControls() {
 						text: 'Layer ' + index,
 						enabled: true
 					});
-					store.sort();
 				});
 				Canvace.renderer.render();
 			}
@@ -96,7 +96,6 @@ function LayerControls() {
 			enabled: Canvace.layers.isOn(index)
 		});
 	});
-	store.sort();
 
 	Ext.getCmp('layer-controls').add(grid);
 }
