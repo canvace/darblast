@@ -39,6 +39,26 @@ function Layers() {
 			action(k);
 		}
 	};
+	this.erase = function (k) {
+		Canvace.array.eraseLayer(k);
+		delete off[k];
+		var remove = false;
+		if (minK != maxK) {
+			if (k == minK) {
+				minK++;
+				remove = true;
+			} else if (k == maxK) {
+				maxK--;
+				remove = true;
+			}
+			selected = Math.min(selected, minK);
+			selected = Math.max(selected, maxK);
+			selectHandlers.fastForEach(function (handler) {
+				handler(selected);
+			});
+		}
+		return remove;
+	};
 
 	this.select = function (k) {
 		selected = k;

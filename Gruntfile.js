@@ -35,6 +35,7 @@ module.exports = function (grunt) {
 					'src/static/TileArray.js',
 					'src/static/Instances.js',
 					'src/static/Layers.js',
+					'src/static/LayerControls.js',
 					'src/static/Selection.js',
 					'src/static/TileClipboard.js',
 					'src/static/EntityClipboard.js',

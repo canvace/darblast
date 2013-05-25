@@ -56,8 +56,9 @@ Ext.Loader.setConfig({
 							title: 'Project',
 							layout: 'border'
 						}, {
+							id: 'layer-controls',
 							title: 'Layers',
-							layout: 'vbox'
+							layout: 'fit'
 						}]
 					}
 				}, {
@@ -105,6 +106,7 @@ Ext.Loader.setConfig({
 				Canvace.array = new TileArray(data.map);
 				Canvace.instances = new Instances(data.instances);
 				Canvace.layers = new Layers();
+				Canvace.layerControls = new LayerControls();
 				Canvace.selection = new Selection();
 				Canvace.tileClipboard = new TileClipboard();
 				Canvace.entityClipboard = new EntityClipboard();

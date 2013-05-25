@@ -74,7 +74,6 @@ function TileArray(map) {
 	}
 
 	Canvace.tiles.onDelete(function (id) {
-		var diff = new Diff();
 		var modified = false;
 		for (var k in map) {
 			k = parseInt(k, 10);
@@ -83,7 +82,7 @@ function TileArray(map) {
 				for (var j in map[k][i]) {
 					j = parseInt(j, 10);
 					if (map[k][i][j] === id) {
-						erase(i, j, k, diff);
+						erase(i, j, k);
 						modified = true;
 					}
 				}
