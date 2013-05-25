@@ -1,3 +1,5 @@
+/*global exports: false */
+
 function View(matrix, x0, y0) {
 	var mat = matrix;
 	var inv = (function () {
@@ -82,7 +84,12 @@ function View(matrix, x0, y0) {
 		};
 	}());
 
-	this.generateBox = (function () {
+	/*
+	 * XXX this particular method is exported because it is referred inside an
+	 * ExtJS template (LowerControls.js), so we need to call an unmangled name
+	 * in minified release builds
+	 */
+	exports.generateBox = this.generateBox = (function () {
 		var points = [
 			[1, 0, 0],
 			[0, 1, 0],
