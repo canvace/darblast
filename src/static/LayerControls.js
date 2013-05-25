@@ -90,6 +90,16 @@ function LayerControls() {
 					Canvace.renderer.toggleTransparency(pressed);
 				}
 			}
+		}, {
+			icon: '/resources/images/icons/grid_toggle.png',
+			tooltip: 'Toggle grid',
+			enableToggle: true,
+			pressed: true,
+			listeners: {
+				toggle: function (button, pressed) {
+					Canvace.renderer.toggleGrid(pressed);
+				}
+			}
 		}],
 		listeners: {
 			selectionchange: function (selectionModel, selected) {
