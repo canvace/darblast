@@ -54,7 +54,8 @@ function LayerControls() {
 		}],
 		forceFit: true,
 		tbar: [{
-			text: 'Add above',
+			icon: '/resources/images/icons/page_white_get.png',
+			tooltip: 'Add layer atop',
 			handler: function () {
 				Canvace.layers.addAbove(function (index) {
 					store.add({
@@ -66,7 +67,8 @@ function LayerControls() {
 				Canvace.renderer.render();
 			}
 		}, {
-			text: 'Add below',
+			icon: '/resources/images/icons/page_white_put.png',
+			tooltip: 'Add layer beneath',
 			handler: function () {
 				Canvace.layers.addBelow(function (index) {
 					store.add({

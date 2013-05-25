@@ -71,7 +71,7 @@ Ext.Loader.setConfig({
 					split: true,
 					title: 'Images and Elements',
 					header: false,
-					height: 200
+					height: 250
 				}]
 			}
 		});
