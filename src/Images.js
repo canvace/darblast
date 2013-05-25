@@ -82,12 +82,17 @@
 		'/images/',
 		'/stages/:stageId/images/'
 	], 'post', function (request, response) {
+		/*
+		 * XXX File upload responses end up in a hidden iframe. This MIME type
+		 * is necessary or IE will ask the user to download the response.
+		 */
+		response.type('html');
+
 		var labels;
 		if ('labels' in request.body) {
 			try {
 				labels = sanitizeLabels(request.body.labels);
 			} catch (e) {
-				response.set('Content-Type', 'text/html');
 				response.json(400, e.toString());
 				return;
 			}
@@ -136,7 +141,6 @@
 					count++;
 					storeImage.call(this, request.files.images[i], imageId++, function () {
 						if (!--count) {
-							response.set('Content-Type', 'text/html');
 							response.json(ids);
 						}
 					});
@@ -145,7 +149,6 @@
 		} else {
 			this.newIds('image', function (imageId) {
 				storeImage.call(this, request.files.images, imageId, function () {
-					response.set('Content-Type', 'text/html');
 					response.json([imageId]);
 				});
 			});
