@@ -11,6 +11,7 @@ module.exports = function (grunt) {
 					'src/static/Normalize.js',
 					'src/static/MultiSet.js',
 					'src/static/EventHandlers.js',
+					'src/static/DirectoryTree.js',
 					'src/static/Projection.js',
 					'src/static/Hierarchy.js',
 					'src/static/Canvace.js',

@@ -299,39 +299,12 @@ Ext.Loader.setConfig({
 						width: 400,
 						allowBlank: false
 					}, {
-						xtype: 'treepanel',
+						xtype: 'directorytree',
 						id: 'directory-tree-view',
 						height: 200,
-						rootVisible: false,
-						store: {
-							autoLoad: true,
-							fields: [{
-								name: 'text',
-								type: 'string'
-							}, {
-								name: 'baseName',
-								type: 'string'
-							}, {
-								name: 'fullPath',
-								type: 'string'
-							}],
-							sortRoot: 'text',
-							proxy: {
-								type: 'rest',
-								url: '/directories/',
-								reader: {
-									type: 'json',
-									root: 'data'
-								}
-							}
-						},
 						listeners: {
-							selectionchange: function (selectionModel, records) {
-								if (records.length) {
-									Ext.getCmp('existing-project-path-field').setValue(records[0].get('fullPath'));
-								} else {
-									Ext.getCmp('existing-project-path-field').setValue('');
-								}
+							directoryselect: function (fullPath) {
+								Ext.getCmp('existing-project-path-field').setValue(fullPath || '');
 							}
 						}
 					}],
@@ -374,12 +347,10 @@ Ext.Loader.setConfig({
 		});
 		startDialog.show();
 		(function (tree) {
-			tree.getStore().load(); // XXX autoLoad doesn't seem to work
-			tree.getRootNode().set('baseName', 'root');
 			var lastPath = Ext.util.Cookies.get('last-path');
 			if (lastPath !== null) {
 				Ext.getCmp('existing-project-path-field').setValue(lastPath);
-				tree.selectPath('/root' + lastPath, 'baseName');
+				tree.selectPath(lastPath);
 			}
 		}(Ext.getCmp('directory-tree-view')));
 		new Projection();
