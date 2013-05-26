@@ -1,7 +1,6 @@
 module.exports = function (grunt) {
 	grunt.initConfig({
 		clean: {
-			temp: ['bin/canvace.min.js'],
 			all: ['bin']
 		},
 
@@ -81,15 +80,7 @@ module.exports = function (grunt) {
 					'src/Epilogue.js'
 				],
 				dest: 'src/canvace.js'
-			},
-			dist: {
-				options: {
-					stripBanners: true,
-					banner: '#!/usr/bin/env node\n'
-				},
-				src: 'bin/canvace.min.js',
-				dest: 'bin/canvace.js'
-			},
+			}
 		},
 
 		lineending: {
@@ -165,16 +156,21 @@ module.exports = function (grunt) {
 
 		uglify: {
 			options: {
-				wrap: 'exports'
+				wrap: 'exports',
+				report: 'min',
+				preserveComments: false
 			},
 			client: {
 				files: {
-					'bin/static/app.js': 'src/static/app.js'
+					'bin/static/app.js': ['src/static/app.js']
 				}
 			},
 			server: {
+				options: {
+					banner: '#!/usr/bin/env node\n'
+				},
 				files: {
-					'bin/canvace.min.js': 'src/canvace.js'
+					'bin/canvace.js': ['src/canvace.js']
 				}
 			}
 		},
@@ -248,10 +244,8 @@ module.exports = function (grunt) {
 		'concat:client', 'concat:server',
 		'jshint',
 		'uglify',
-		'concat:dist',
 		'lineending:dist',
-		'copy:client', 'copy:server',
-		'clean:temp'
+		'copy:client', 'copy:server'
 	]);
 	grunt.registerTask('debug', [
 		'concat:client', 'concat:server',
