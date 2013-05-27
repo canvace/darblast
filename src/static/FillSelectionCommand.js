@@ -1,6 +1,6 @@
 function FillSelectionCommand() {
 	this.activate = function () {
-		var id = Canvace.tiles.getSelectedId();
+		var id = Canvace.tileControls.getSelectedId();
 		if (id !== false) {
 			Canvace.history.nest(function () {
 				Canvace.selection.forEach(function (i, j, k) {
