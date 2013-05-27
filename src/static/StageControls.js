@@ -111,9 +111,16 @@ function StageControls() {
 			sortable: true,
 			editor: 'textfield'
 		}],
+		store: {
+			sorters: [{
+				property: 'text',
+				direction: 'ASC'
+			}]
+		},
 		rowLines: false,
 		columnLines: false,
 		lines: true,
+		hideHeaders: true,
 		root: {
 			text: 'Current project',
 			expandable: true,
