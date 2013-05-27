@@ -127,10 +127,12 @@ function TileArray(map) {
 	function record(k, callback) {
 		var diff = new Diff(k, array);
 		callback(diff);
-		Canvace.history.record({
-			action: diff.apply,
-			reverse: diff.reverse
-		});
+		if (!diff.isNull()) {
+			Canvace.history.record({
+				action: diff.apply,
+				reverse: diff.reverse
+			});
+		}
 	}
 
 	this.set = function (i, j, k, id) {

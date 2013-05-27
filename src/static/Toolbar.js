@@ -56,10 +56,12 @@ function Toolbar() {
 			var dialog = new Ext.window.Window({
 				title: 'Export Wizard',
 				resizable: true,
-				width: 300,
-				height: 400,
+				width: 400,
 				modal: true,
-				layout: 'fit',
+				layout: {
+					type: 'vbox',
+					align: 'stretch'
+				},
 				bbar: [{
 					text: 'OK',
 					handler: function () {
@@ -71,55 +73,48 @@ function Toolbar() {
 						dialog.close();
 					}
 				}],
-				items: {
-					xtype: 'form',
-					layout: {
-						type: 'vbox',
-						align: 'stretch'
+				items: [{
+					xtype: 'radiogroup',
+					defaults: {
+						name: 'format'
 					},
 					items: [{
-						xtype: 'radiogroup',
-						defaults: {
-							name: 'destination'
-						},
-						items: [{
-							inputValue: 'backend',
-							boxLabel: 'Store in the backend',
-							checked: true
-						}, {
-							inputValue: 'frontend',
-							boxLabel: 'Download to the frontend'
-						}],
-						listeners: {
-							change: function (field, value) {
-								if (value == 'backend') {
-									// TODO show directory tree
-								} else { // frontend
-									// TODO hide directory tree
-								}
-							}
+						inputValue: 'single',
+						boxLabel: 'Single JSON file'
+					}, {
+						inputValue: 'separate',
+						boxLabel: 'Separate images',
+						checked: true
+					}]
+				}, {
+					layout: 'accordion',
+					items: [{
+						title: 'Store to backend',
+						items: {
+							xtype: 'form',
+							layout: {
+								type: 'vbox',
+								align: 'stretch'
+							},
+							items: [{
+								xtype: 'textfield',
+								fieldLabel: 'Destination path'
+							}, {
+								xtype: 'directorytree',
+								height: 200
+							}]
 						}
 					}, {
-						xtype: 'radiogroup',
-						defaults: {
-							name: 'format'
-						},
-						items: [{
-							inputValue: 'single',
-							boxLabel: 'Single JSON file'
-						}, {
-							inputValue: 'separate',
-							boxLabel: 'Separate images',
-							checked: true
-						}]
-					}, {
-						xtype: 'textfield',
-						fieldLabel: 'Destination path'
-					}, {
-						xtype: 'directorytree',
-						height: 200
+						title: 'Download to frontend',
+						items: {
+							xtype: 'button',
+							text: 'Download',
+							handler: function () {
+								// TODO submit form
+							}
+						}
 					}]
-				}
+				}]
 			}).show();
 		}
 	}, {

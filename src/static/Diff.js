@@ -46,6 +46,17 @@ function Diff(k, array) {
 		}
 	}
 
+	this.isNull = function () {
+		for (var i in diff) {
+			for (var j in diff[i]) {
+				if (diff[i][j].from !== diff[i][j].to) {
+					return false;
+				}
+			}
+		}
+		return true;
+	};
+
 	this.apply = function () {
 		run('from', 'to');
 	};
