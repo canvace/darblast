@@ -30,7 +30,10 @@ function ToolGroup(icon, tooltip, tools) {
 		icon: icon,
 		tooltip: tooltip,
 		menuAlign: 'tl-tr?',
-		menu: items,
+		menu: {
+			hideMode: 'display',
+			items: items
+		},
 		toggleHandler: function (button, state) {
 			if (state) {
 				if (('activate' in tools[selectedToolIndex]) && (tools[selectedToolIndex].activate() === false)) {
