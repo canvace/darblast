@@ -55,29 +55,69 @@ function Toolbar() {
 		handler: function () {
 			var dialog = new Ext.window.Window({
 				title: 'Export Wizard',
-				resizable: false,
+				resizable: true,
+				width: 300,
+				height: 400,
 				modal: true,
 				layout: 'fit',
 				bbar: [{
-					text: 'Close',
+					text: 'OK',
+					handler: function () {
+						// TODO
+					}
+				}, {
+					text: 'Cancel',
 					handler: function () {
 						dialog.close();
 					}
 				}],
 				items: {
-					xtype: 'tabpanel',
+					xtype: 'form',
+					layout: {
+						type: 'vbox',
+						align: 'stretch'
+					},
 					items: [{
-						title: 'Project',
-						layout: 'fit',
-						items: {
-							xtype: 'form',
-							items: [
-								// TODO
-							]
+						xtype: 'radiogroup',
+						defaults: {
+							name: 'destination'
+						},
+						items: [{
+							inputValue: 'backend',
+							boxLabel: 'Store in the backend',
+							checked: true
+						}, {
+							inputValue: 'frontend',
+							boxLabel: 'Download to the frontend'
+						}],
+						listeners: {
+							change: function (field, value) {
+								if (value == 'backend') {
+									// TODO show directory tree
+								} else { // frontend
+									// TODO hide directory tree
+								}
+							}
 						}
 					}, {
-						title: 'Stages'
-						// TODO
+						xtype: 'radiogroup',
+						defaults: {
+							name: 'format'
+						},
+						items: [{
+							inputValue: 'single',
+							boxLabel: 'Single JSON file'
+						}, {
+							inputValue: 'separate',
+							boxLabel: 'Separate images',
+							checked: true
+						}]
+					}, {
+						xtype: 'textfield',
+						fieldLabel: 'Destination path'
+					}, {
+						xtype: 'directorytree',
+						height: 200
 					}]
 				}
 			}).show();
