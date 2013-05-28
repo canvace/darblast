@@ -5,6 +5,7 @@ Ext.define('Darblast.ux.DirectoryTree', {
 		config = config || {};
 		this.callParent([config]);
 		this.getStore().load();
+		this.addEvents('directoryselect');
 		this.addListener('selectionchange', function (selectionModel, records) {
 			var fullPath = null;
 			if (records.length) {
