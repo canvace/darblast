@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "npm": "~1.2.18",
+    "async": "~0.2.9",
     "openurl": "~1.1.0",
     "rwlock": "~2.1.2",
     "multiset": "~1.0.0",

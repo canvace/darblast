@@ -7,9 +7,9 @@ installHandler('/stages/', 'get', function (request, response) {
 	});
 });
 
-installHandler('/stages/export', 'get', function (request, response) {
-	this.images.globalReadLock(function (release) {
-		request.query.ids.forEach(function (id) {
+installHandler('/stages/export', 'get', function (request) {
+	this.images.globalReadLock(function () {
+		request.query.ids.forEach(function () {
 			// TODO
 		});
 	});

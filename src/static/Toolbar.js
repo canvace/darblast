@@ -104,7 +104,7 @@ function Toolbar() {
 							height: 200,
 							listeners: {
 								directoryselect: function () {
-									 TODO
+									// TODO
 								}
 							}
 						}]
