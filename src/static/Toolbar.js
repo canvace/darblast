@@ -55,7 +55,7 @@ function Toolbar() {
 		handler: function () {
 			var dialog = new Ext.window.Window({
 				title: 'Export Wizard',
-				resizable: true,
+				resizable: false,
 				width: 400,
 				modal: true,
 				layout: {
@@ -63,12 +63,7 @@ function Toolbar() {
 					align: 'stretch'
 				},
 				bbar: [{
-					text: 'OK',
-					handler: function () {
-						// TODO
-					}
-				}, {
-					text: 'Cancel',
+					text: 'Close',
 					handler: function () {
 						dialog.close();
 					}
@@ -90,29 +85,37 @@ function Toolbar() {
 					layout: 'accordion',
 					items: [{
 						title: 'Store to backend',
-						items: {
-							xtype: 'form',
-							layout: {
-								type: 'vbox',
-								align: 'stretch'
-							},
-							items: [{
-								xtype: 'textfield',
-								fieldLabel: 'Destination path'
-							}, {
-								xtype: 'directorytree',
-								height: 200
-							}]
-						}
+						layout: {
+							type: 'vbox',
+							align: 'stretch'
+						},
+						bbar: [{
+							xtype: 'button',
+							text: 'Store',
+							handler: function () {
+								// TODO
+							}
+						}],
+						items: [{
+							xtype: 'textfield',
+							fieldLabel: 'Destination path'
+						}, {
+							xtype: 'directorytree',
+							height: 200,
+							listeners: {
+								directoryselect: function () {
+									 TODO
+								}
+							}
+						}]
 					}, {
 						title: 'Download to frontend',
-						items: {
-							xtype: 'button',
+						bbar: [{
 							text: 'Download',
 							handler: function () {
 								// TODO submit form
 							}
-						}
+						}]
 					}]
 				}]
 			}).show();
