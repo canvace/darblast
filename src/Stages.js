@@ -7,6 +7,14 @@ installHandler('/stages/', 'get', function (request, response) {
 	});
 });
 
+installHandler('/stages/export', 'get', function (request, response) {
+	this.images.globalReadLock(function (release) {
+		request.query.ids.forEach(function (id) {
+			// TODO
+		});
+	});
+});
+
 installHandler('/stages/', 'post', function (request, response) {
 	if (/^[\w \.]+$/.test(request.body.name)) {
 		this.stages.globalWriteLock(function (release) {
@@ -159,12 +167,6 @@ installHandler('/stages/:stageId/id', 'put', function (request, response) {
 		} else {
 			response.json(400, 'A stage with the specified name already exists.');
 		}
-	});
-});
-
-installHandler('/stages/:stageId/export', 'get', function (request) {
-	this.stages.get(request.params.stageId, function () {
-		// TODO
 	});
 });
 
