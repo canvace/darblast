@@ -303,6 +303,14 @@ Ext.Loader.setConfig({
 						id: 'directory-tree-view',
 						height: 200,
 						listeners: {
+							load: function (store, node) {
+								if (node.isRoot()) {
+									var lastPath = Ext.util.Cookies.get('last-path');
+									if (lastPath !== null) {
+										this.selectPath(lastPath);
+									}
+								}
+							},
 							directoryselect: function (fullPath) {
 								Ext.getCmp('existing-project-path-field').setValue(fullPath || '');
 							}
@@ -346,13 +354,6 @@ Ext.Loader.setConfig({
 			}]
 		});
 		startDialog.show();
-		(function (tree) {
-			var lastPath = Ext.util.Cookies.get('last-path');
-			if (lastPath !== null) {
-				Ext.getCmp('existing-project-path-field').setValue(lastPath);
-				tree.selectPath(lastPath);
-			}
-		}(Ext.getCmp('directory-tree-view')));
 		new Projection();
 	};
 }());
