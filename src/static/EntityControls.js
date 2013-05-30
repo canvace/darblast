@@ -13,6 +13,8 @@ function EntityControls() {
 			title: 'Entity configuration',
 			modal: true,
 			resizable: true,
+			width: 400,
+			height: 300,
 			layout: 'fit',
 			items: [{
 				xtype: 'tabpanel',

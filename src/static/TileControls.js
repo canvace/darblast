@@ -81,18 +81,18 @@ function TileControls() {
 				borderStyle: 'solid'
 			},
 			store: frameStore,
-			tpl: new Ext.XTemplate(
+			tpl: [
 				'<tpl for=".">',
-					'<div class="thumb-wrap">',
-						'<div class="thumb">',
-							'<img src="{imageUrl}" alt="{frameId}" />',
-							'<br />',
-							'<span>{frameId}</span>',
-						'</div>',
-					'</div>',
+				'	<div class="thumb-wrap">',
+				'		<div class="thumb">',
+				'			<img src="{imageUrl}" alt="{frameId}"/>',
+				'			<br />',
+				'			<span>{frameId}</span>',
+				'		</div>',
+				'	</div>',
 				'</tpl>',
 				'<div class="x-clear"></div>'
-			),
+			],
 			itemSelector: 'div.thumb-wrap',
 			emptyText: 'No frames available',
 			listeners: {
@@ -100,7 +100,6 @@ function TileControls() {
 					Ext.getCmp('remove-frame').enable();
 					Ext.getCmp('frame-duration').enable();
 				},
-
 				deselect: function () {
 					Ext.getCmp('remove-frame').disable();
 					Ext.getCmp('frame-duration').disable();
@@ -113,7 +112,7 @@ function TileControls() {
 				iconCls: 'x-add',
 				listeners: {
 					click: function () {
-						// ...
+						// TODO
 					}
 				}
 			}, {
@@ -135,6 +134,8 @@ function TileControls() {
 			title: 'Tile configuration',
 			modal: true,
 			resizable: true,
+			width: 400,
+			height: 300,
 			layout: 'fit',
 			items: {
 				xtype: 'tabpanel',
