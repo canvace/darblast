@@ -258,6 +258,7 @@ var LowerControls = (function () {
 				hideable: false,
 				draggable: false,
 				sortable: true,
+				menuDisabled: true,
 				editor: 'textfield'
 			}],
 			forceFit: true,

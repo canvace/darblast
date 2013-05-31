@@ -312,7 +312,8 @@ function PropertyControls(container, config) {
 			dataIndex: 'name',
 			text: 'Name',
 			hideable: false,
-			sortable: true
+			sortable: true,
+			menuDisabled: true
 		}, {
 			dataIndex: 'value',
 			text: 'Value',
