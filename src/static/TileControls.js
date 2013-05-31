@@ -144,18 +144,20 @@ function TileControls() {
 					title: 'General',
 					layout: 'vbox',
 					items: [{
-						xtype: 'checkbox',
-						fieldLabel: 'Solid',
+						xtype: 'checkboxwithtooltip',
+						boxLabel: 'Solid',
 						checked: tile.isSolid(),
+						tooltip: 'Indicates whether entities with physics enabled collide with this tile',
 						listeners: {
 							change: function (field, checked) {
 								tile.setSolid(checked);
 							}
 						}
 					}, {
-						xtype: 'checkbox',
-						fieldLabel: 'Static',
+						xtype: 'checkboxwithtooltip',
+						boxLabel: 'Static',
 						checked: tile.isStatic(),
+						tooltip: 'Indicates that this tile never changes in the map during the game',
 						listeners: {
 							change: function (field, checked) {
 								tile.setStatic(checked);

@@ -27,9 +27,10 @@ function EntityControls() {
 					title: 'Physics',
 					layout: 'vbox',
 					items: {
-						xtype: 'checkbox',
-						fieldLabel: 'Enable physics',
+						xtype: 'checkboxwithtooltip',
+						boxLabel: 'Enable physics',
 						checked: entity.hasPhysics(),
+						tooltip: 'Enables default AABB physics',
 						listeners: {
 							change: function (field, checked) {
 								entity.setPhysics(checked);

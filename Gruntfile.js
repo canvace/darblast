@@ -9,6 +9,7 @@ module.exports = function (grunt) {
 				src: [
 					'src/static/MultiSet.js',
 					'src/static/EventHandlers.js',
+					'src/static/CheckboxWithTooltip.js',
 					'src/static/DirectoryTree.js',
 					'src/static/Projection.js',
 					'src/static/Hierarchy.js',

@@ -21,7 +21,6 @@ Ext.define('Darblast.ux.DirectoryTree', {
 	rootVisible: false,
 
 	store: {
-		autoLoad: true,
 		fields: [{
 			name: 'text',
 			type: 'string'
