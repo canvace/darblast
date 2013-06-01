@@ -62,7 +62,7 @@ function Toolbar() {
 					type: 'vbox',
 					align: 'stretch'
 				},
-				bbar: [{
+				buttons: [{
 					text: 'Close',
 					handler: function () {
 						dialog.close();
@@ -89,8 +89,7 @@ function Toolbar() {
 							type: 'vbox',
 							align: 'stretch'
 						},
-						bbar: [{
-							xtype: 'button',
+						buttons: [{
 							text: 'Store',
 							handler: function () {
 								// TODO
@@ -110,7 +109,7 @@ function Toolbar() {
 						}]
 					}, {
 						title: 'Download to frontend',
-						bbar: [{
+						buttons: [{
 							text: 'Download',
 							handler: function () {
 								// TODO submit form

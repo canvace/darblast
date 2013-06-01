@@ -64,7 +64,7 @@ function ImageSelector(multiple, callback, cancel) {
 			collapsible: true,
 			collapsed: false,
 			split: true,
-			width: 200,
+			width: 150,
 			allowDeselect: true,
 			fields: ['text', 'labels'],
 			root: (function walk(node) {
@@ -79,7 +79,7 @@ function ImageSelector(multiple, callback, cancel) {
 					config.children.push(walk(child));
 				});
 				return config;
-			}(new Canvace.images.getHierarchy().Root('All categories'))),
+			}(new (Canvace.images.getHierarchy()).Root('All categories'))),
 			listeners: {
 				selectionchange: function (selectionModel, selected) {
 					if (selected.length && !selected[0].isRoot()) {
@@ -93,7 +93,7 @@ function ImageSelector(multiple, callback, cancel) {
 				}
 			}
 		}, view],
-		bbar: [{
+		buttons: [{
 			text: 'OK',
 			handler: function () {
 				dialog.close();
