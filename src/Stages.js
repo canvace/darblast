@@ -123,6 +123,7 @@ installHandler('/stages/:stageId', 'put', function (request, response) {
 								if ('y0' in request.body) {
 									stage.y0 = parseFloat(request.body.y0);
 								}
+								// FIXME unreference deleted tiles and entities and reference new ones
 								stage.map = map;
 								stage.instances = instances;
 							});
