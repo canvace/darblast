@@ -42,6 +42,7 @@ function History() {
 			entries = {};
 			pointer = -1;
 			top = -1;
+			bookmark = -1;
 		};
 
 		this.bookmark = function () {
@@ -124,6 +125,8 @@ function History() {
 		}
 	};
 	this.erase = function () {
+		// FIXME what if we are currently nesting?
+		// TODO only erase the sub-stack
 		rootStack.erase();
 		canUndoHandlers.fire(0, function (handler) {
 			handler(false);
