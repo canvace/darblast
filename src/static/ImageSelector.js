@@ -6,6 +6,7 @@ function ImageSelector(multiple, callback, cancel) {
 		xtype: 'dataview',
 		region: 'center',
 		cls: 'view',
+		autoScroll: true,
 		store: {
 			fields: [{
 				name: 'id',
