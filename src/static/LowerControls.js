@@ -37,11 +37,11 @@ var LowerControls = (function () {
 			},
 			tpl: [
 				'<tpl for=".">',
-				'	<div class="thumb-wrap" id="{id}">',
+				'	<div class="thumb-wrap">',
 				'		<tpl if="useImage">',
 				'			<div class="thumb"><img src="images/{imageId}" alt=""></div>',
 				'		<tpl else>',
-				'			<div class="thumb" id="thumb-{id}"><img src="{[exports.generateBox(values.di, values.dj, 1).toDataURL()]}" alt=""/></div>',
+				'			<div class="thumb"><img src="{[exports.generateBox(values.di, values.dj, 1).toDataURL()]}" alt=""/></div>',
 				'		</tpl>',
 				'	</div>',
 				'</tpl>',
