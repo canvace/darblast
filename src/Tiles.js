@@ -18,6 +18,7 @@ installHandler([
 		this.tiles.globalWriteLock(function (release) {
 			var tile = {
 				solid: false,
+				static: true,
 				layout: {
 					ref: {
 						i: parseInt(request.body.layout.ref.i, 10),
@@ -32,12 +33,13 @@ installHandler([
 					x: 0,
 					y: 0
 				},
+				refCount: 0,
 				frames: {},
 				frameCounter: 0,
 				properties: {}
 			};
-			tile.static = true;
 			this.putJSON('tiles/' + id, tile, function () {
+				delete tile.refCount;
 				delete tile.frames;
 				delete tile.frameCounter;
 				delete tile.properties;
@@ -57,6 +59,7 @@ installHandler([
 	'/stages/:stageId/tiles/:tileId'
 ], 'get', function (request, response) {
 	this.tiles.get(request.params.tileId, function (tile) {
+		delete tile.refCount;
 		delete tile.frames;
 		delete tile.frameCounter;
 		delete tile.properties;
@@ -90,14 +93,23 @@ installHandler([
 	'/tiles/:tileId',
 	'/stages/:stageId/tiles/:tileId'
 ], 'delete', function (request, response) {
-	// FIXME remove all instances from all stages
-	this.tiles.globalWriteLock(function (release) {
-		this.unlink('tiles/' + request.params.tileId, function () {
-			this.broadcast('tiles', 'delete', {
-				id: request.params.tileId
-			});
-			release();
-			response.json(true);
+	this.tiles.individualReadLock(request.params.tileId, function (releaseTile) {
+		this.getJSON('tiles/' + request.params.tileId, function (tile) {
+			if (tile.refCount > 0) {
+				releaseTile();
+				response.json(400, 'The specified tile is still in use.');
+			} else {
+				this.tiles.globalWriteLock(function (releaseTiles) {
+					this.unlink('tiles/' + request.params.tileId, function () {
+						this.broadcast('tiles', 'delete', {
+							id: request.params.tileId
+						});
+						releaseTiles();
+						releaseTile();
+						response.json(true);
+					});
+				});
+			}
 		});
 	});
 });
