@@ -232,6 +232,120 @@ function Elements(type, Element, ready) {
 		this._delete = function () {
 			Canvace.Ajax._delete(type + '/' + id);
 		};
+
+		this.UI = {
+			Frames: function () {
+				return {
+					title: 'Frames',
+					layout: 'hbox',
+					items: [{
+						xtype: 'container',
+						layout: {
+							type: 'table',
+							columns: 1
+						},
+						items: [{
+							xtype: 'dataview',
+							cls: 'view',
+							autoScroll: true,
+							multiSelect: true,
+							trackOver: true,
+							overItemCls: 'x-item-over',
+							maxWidth: 250,
+							minHeight: 150,
+							resizable: true,
+							border: true,
+							style: {
+								borderColor: 'black',
+								borderStyle: 'solid'
+							},
+							store: {
+								fields: ['frame', {
+									name: 'frameId',
+									type: 'int'
+								}, {
+									name: 'imageId',
+									type: 'string'
+								}],
+								data: element.frames.map(function (frame) {
+									return {
+										frame: frame,
+										frameId: frame.frameId,
+										imageId: frame.imageId
+									};
+								})
+							},
+							tpl: [
+								'<tpl for=".">',
+								'	<div class="thumb-wrap">',
+								'		<div class="thumb">',
+								'			<img src="/images/{imageId}" alt="{frameId}"/>',
+								'		</div>',
+								'	</div>',
+								'</tpl>',
+								'<div class="x-clear"></div>'
+							],
+							itemSelector: 'div.thumb-wrap',
+							emptyText: 'No frames'
+						}, {
+							xtype: 'toolbar',
+							items: [{
+								text: 'Append frame',
+								iconCls: 'x-add',
+								handler: function () {
+									new ImageSelector(false, function (ids) {
+										if (ids.length) {
+											// TODO add frame
+										}
+									});
+								}
+							}, {
+								text: 'Remove selected',
+								iconCls: 'x-delete',
+								disabled: true,
+								handler: function () {
+									// TODO
+								}
+							}]
+						}]
+					}, {
+						xtype: 'container',
+						layout: 'vbox',
+						items: [{
+							xtype: 'numberfield',
+							fieldLabel: 'Duration',
+							disabled: true,
+							minValue: 0,
+							value: 100,
+							listeners: {
+								change: function () {
+									// TODO
+								}
+							}
+						}, {
+							xtype: 'checkbox',
+							boxLabel: 'Loop animation',
+							checked: (function () {
+								for (var i in element.frames) {
+									if (!('duration' in element.frames[i])) {
+										return false;
+									}
+								}
+								return true;
+							}()),
+							listeners: {
+								change: function () {
+									// TODO
+								}
+							}
+						}]
+					}]
+				};
+			},
+			Positioning: {
+				// TODO
+			}
+		};
 	}
 
 	Canvace.poller.poll(type, 'create', function (parameters) {
