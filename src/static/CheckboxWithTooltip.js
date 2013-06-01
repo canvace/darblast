@@ -6,7 +6,8 @@ Ext.define('Darblast.ux.CheckboxWithTooltip', {
 		this.callParent([config]);
 		if (config.tooltip) {
 			var thisObject = this;
-			this.addListener('render', function () {
+			this.addListener('render', function render() {
+				thisObject.removeListener('render', render);
 				new Ext.tip.ToolTip({
 					target: thisObject.getEl(),
 					html: config.tooltip
