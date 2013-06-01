@@ -61,11 +61,15 @@ installHandler('/stages/:stageId', 'get', function (request, response) {
 });
 
 installHandler('/stages/:stageId', 'put', function (request, response) {
-	function sanitizeMap(tileIds) {
-		var tiles = {};
-		tileIds.forEach(function (id) {
-			tiles[id] = true;
+	function makeSet(array) {
+		var set = {};
+		array.forEach(function (id) {
+			set[id] = true;
 		});
+		return set;
+	}
+
+	function sanitizeMap(tileIds) {
 		var map = {};
 		for (var k in request.body.map) {
 			map[k] = {};
@@ -73,7 +77,7 @@ installHandler('/stages/:stageId', 'put', function (request, response) {
 				map[k][i] = {};
 				for (var j in request.body.map[k][i]) {
 					var id = parseInt(request.body.map[k][i][j], 10);
-					if (id in tiles) {
+					if (id in tileIds) {
 						map[k][i][j] = id;
 					} else {
 						throw 'Invalid tile ID: ' + id;
@@ -84,16 +88,12 @@ installHandler('/stages/:stageId', 'put', function (request, response) {
 		return map;
 	}
 
-	function sanitizeInstances(entityIds) {
-		var entities = {};
-		entityIds.forEach(function (id) {
-			entities[id] = true;
-		});
+	function sanitizeInstances(entityIdSet) {
 		var instances = [];
 		for (var i in request.body.instances) {
 			var instance = request.body.instances[i];
 			instance.id = parseInt(instance.id, 10);
-			if (instance.id in entities) {
+			if (instance.id in entityIdSet) {
 				instances.push({
 					id: instance.id,
 					i: parseFloat(instance.i),
@@ -111,11 +111,11 @@ installHandler('/stages/:stageId', 'put', function (request, response) {
 	this.tiles.globalReadLock(function (releaseTiles) {
 		this.readdir('tiles', function (tileIds) {
 			try {
-				var map = sanitizeMap(tileIds);
+				var map = sanitizeMap(makeSet(tileIds));
 				this.entities.globalReadLock(function (releaseEntities) {
 					this.readdir('entities', function (entityIds) {
 						try {
-							var instances = sanitizeInstances(entityIds);
+							var instances = sanitizeInstances(makeSet(entityIds));
 							this.stages.modifySync(request.params.stageId, function (stage) {
 								if ('x0' in request.body) {
 									stage.x0 = parseFloat(request.body.x0);

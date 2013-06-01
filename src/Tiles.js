@@ -28,7 +28,6 @@ installHandler([
 						j: parseInt(request.body.layout.span.j, 10)
 					}
 				},
-				used: false,
 				offset: {
 					x: 0,
 					y: 0
@@ -91,23 +90,14 @@ installHandler([
 	'/tiles/:tileId',
 	'/stages/:stageId/tiles/:tileId'
 ], 'delete', function (request, response) {
-	this.tiles.individualWriteLock(request.params.tileId, function (releaseTile) {
-		this.getJSON('tiles/' + request.params.tileId, function (tile) {
-			if (tile.used) {
-				releaseTile();
-				response.json(403, 'The specified tile is still in use');
-			} else {
-				this.tiles.globalWriteLock(function (releaseTiles) {
-					this.unlink('tiles/' + request.params.tileId, function () {
-						this.broadcast('tiles', 'delete', {
-							id: request.params.tileId
-						});
-						releaseTiles();
-						releaseTile();
-						response.json(true);
-					});
-				});
-			}
+	// FIXME remove all instances from all stages
+	this.tiles.globalWriteLock(function (release) {
+		this.unlink('tiles/' + request.params.tileId, function () {
+			this.broadcast('tiles', 'delete', {
+				id: request.params.tileId
+			});
+			release();
+			response.json(true);
 		});
 	});
 });

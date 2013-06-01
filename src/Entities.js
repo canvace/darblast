@@ -17,7 +17,6 @@ installHandler([
 	this.newIds('entity', function (id) {
 		this.entities.globalWriteLock(function (release) {
 			var entity = {
-				used: false,
 				offset: {
 					x: 0,
 					y: 0
@@ -73,23 +72,14 @@ installHandler([
 	'/entities/:entityId',
 	'/stages/:stageId/entities/:entityId'
 ], 'delete', function (request, response) {
-	this.entities.individualWriteLock(request.params.entityId, function (releaseEntity) {
-		this.getJSON('entities/' + request.params.entityId, function (entity) {
-			if (entity.used) {
-				releaseEntity();
-				response.json(403, 'The specified entity is still in use');
-			} else {
-				this.entities.globalWriteLock(function (releaseEntities) {
-					this.unlink('entities/' + request.params.entityId, function () {
-						this.broadcast('entities', 'delete', {
-							id: request.params.entityId
-						});
-						releaseEntities();
-						releaseEntity();
-						response.json(true);
-					});
-				});
-			}
+	// FIXME remove all instances from all stages
+	this.entities.globalWriteLock(function (release) {
+		this.unlink('entities/' + request.params.entityId, function () {
+			this.broadcast('entities', 'delete', {
+				id: request.params.entityId
+			});
+			release();
+			response.json(true);
 		});
 	});
 });
