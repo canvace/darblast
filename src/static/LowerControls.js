@@ -206,11 +206,13 @@ var LowerControls = (function () {
 							icon: Ext.MessageBox.WARNING,
 							fn: function (button) {
 								if (button === 'ok') {
-									handlers.fire('element/delete', function (handler) {
-										handler(records.map(function (model) {
-											return model.get('id');
-										}));
-									});
+									(function (ids) {
+										handlers.fire('element/delete', function (handler) {
+											handler(ids);
+										});
+									}(records.map(function (record) {
+										return record.get('id');
+									})));
 								}
 							}
 						});
@@ -224,24 +226,29 @@ var LowerControls = (function () {
 					if (records.length) {
 						var record = records[0];
 						var labels = record.get('allLabels');
-						var images = [];
-						Canvace.images.forEach(function (image) {
-							if (image.hasLabels(labels)) {
-								images.push(image);
+						var elements = [];
+						store.each(function (record) {
+							var element = record.get('element');
+							if (element.hasLabels(labels)) {
+								elements.push(element);
 							}
 						});
-						if (images.length) {
+						if (elements.length) {
 							Ext.MessageBox.show({
 								title: 'Confirm image removal',
-								msg: 'Are you sure you want to remove the ' + images.length + ' images in the \"' + record.get('text') + '\" category?',
+								msg: 'Do you actually want to delete the ' + elements.length + ' ' + elements + ' in the \"' + record.get('text') + '\" category?',
 								icon: Ext.MessageBox.WARNING,
 								buttons: Ext.MessageBox.OKCANCEL,
 								modal: true,
 								fn: function (button) {
 									if (button === 'ok') {
-										images.forEach(function (image) {
-											image._delete();
-										});
+										(function (elements) {
+											handlers.fire('element/delete', function (handler) {
+												handler(elements);
+											});
+										}(elements.map(function (element) {
+											return element.getId();
+										})));
 									}
 								}
 							});

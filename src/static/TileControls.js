@@ -86,7 +86,7 @@ function TileControls() {
 				'	<div class="thumb-wrap">',
 				'		<div class="thumb">',
 				'			<img src="{imageUrl}" alt="{frameId}"/>',
-				'			<br />',
+				'			<br/>',
 				'			<span>{frameId}</span>',
 				'		</div>',
 				'	</div>',

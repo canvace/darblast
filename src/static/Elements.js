@@ -314,4 +314,12 @@ function Elements(type, Element, ready) {
 			callback(new Element(ElementBase, id, elements[id]));
 		}
 	};
+	this.forEachWithLabels = function (labels, callback) {
+		for (var id in elements) {
+			var element = new Element(ElementBase, id, elements[id]);
+			if (element.hasLabels(labels)) {
+				callback(element);
+			}
+		}
+	};
 }
