@@ -126,36 +126,42 @@ function FrameControls(element) {
 		}, {
 			xtype: 'container',
 			layout: 'vbox',
-			items: [{
-				xtype: 'numberfield',
-				fieldLabel: 'Duration',
-				disabled: true,
-				minValue: 0,
-				value: 100,
-				listeners: {
-					render: function () {
-						var field = this;
-						view.on('selectionchange', function (selectionModel, selected) {
-							if (selected.length != 1) {
-								field.setValue(100);
-								field.disable();
-							} else {
-								var frame = selected[0].get('frame');
-								if (frame.isLast()) {
+			items: [(function () {
+				var selectedFrame = null;
+				return {
+					xtype: 'numberfield',
+					fieldLabel: 'Duration',
+					disabled: true,
+					minValue: 0,
+					value: 100,
+					listeners: {
+						render: function () {
+							var field = this;
+							view.on('selectionchange', function (selectionModel, selected) {
+								if (selected.length != 1) {
+									selectedFrame = null;
 									field.setValue(100);
 									field.disable();
 								} else {
-									field.enable();
-									field.setValue(frame.getDuration());
+									selectedFrame = selected[0].get('frame');
+									if (selectedFrame.isLast()) {
+										field.setValue(100);
+										field.disable();
+									} else {
+										field.enable();
+										field.setValue(selectedFrame.getDuration());
+									}
 								}
+							});
+						},
+						change: function (field, value) {
+							if (selectedFrame) {
+								selectedFrame.setDuration(value);
 							}
-						});
-					},
-					change: function () {
-						// TODO
+						}
 					}
-				}
-			}, {
+				};
+			}()), {
 				xtype: 'checkbox',
 				boxLabel: 'Loop animation',
 				checked: (function () {
