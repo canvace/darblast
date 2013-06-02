@@ -38,6 +38,10 @@ function Entities(ready) {
 				}
 			};
 		};
+
+		this.updateAfterReposition = function () {
+			// TODO
+		};
 	}
 
 	Elements.call(this, 'entities', Entity, ready);

@@ -84,6 +84,12 @@ function Elements(type, Element, ready) {
 				y: element.offset.y
 			};
 		};
+		this.getOffsetX = function () {
+			return element.offset.x;
+		};
+		this.getOffsetY = function () {
+			return element.offset.y;
+		};
 		this.setOffset = function (x, y) {
 			Canvace.Ajax.put(type + '/' + id, {
 				offset: {

@@ -23,6 +23,10 @@ function Tiles(ready) {
 		this.getLayout = function () {
 			return Ext.Object.merge({}, tile.layout);
 		};
+
+		this.updateAfterReposition = function () {
+			Canvace.array.updateRepositionedTile(id);
+		};
 	}
 
 	Elements.call(this, 'tiles', Tile, ready);

@@ -19,9 +19,7 @@ function EntityControls() {
 			items: [{
 				xtype: 'tabpanel',
 				layout: 'fit',
-				items: [new FrameControls(entity), {
-					title: 'Positioning'
-				}, {
+				items: [new FrameControls(entity), new PositioningControls(entity), {
 					title: 'Physics',
 					layout: 'vbox',
 					items: {

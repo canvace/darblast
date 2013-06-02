@@ -7,6 +7,8 @@ Ext.Loader.setConfig({
 	}
 });
 
+Ext.require('Ext.ux.layout.Center');
+
 (function () {
 	var width = screen.availWidth;
 	var height = screen.availHeight;

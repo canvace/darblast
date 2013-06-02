@@ -81,59 +81,7 @@ function TileControls() {
 							}
 						}
 					}]
-				}, new FrameControls(tile), {
-					title: 'Positioning',
-					layout: 'hbox',
-					items: [{
-						xtype: 'box',
-						rowspan: 2,
-						resizable: true,
-						width: 200,
-						height: 200
-					}, {
-						xtype: 'container',
-						layout: 'vbox',
-						items: [{
-							xtype: 'checkbox',
-							boxLabel: 'Transparency',
-							checked: false,
-							listeners: {
-								change: function () {
-									// TODO
-								}
-							}
-						}, {
-							xtype: 'checkbox',
-							boxLabel: 'Animate',
-							checked: true,
-							listeners: {
-								change: function () {
-									// TODO
-								}
-							}
-						}, {
-							xtype: 'textfield',
-							fieldLabel: 'X offset',
-							labelAlign: 'top',
-							value: tile.getOffset().x,
-							listeners: {
-								blur: function (field) {
-									tile.setOffsetX(parseFloat(field.getValue()));
-								}
-							}
-						}, {
-							xtype: 'textfield',
-							fieldLabel: 'Y offset',
-							labelAlign: 'top',
-							value: tile.getOffset().y,
-							listeners: {
-								blur: function (field) {
-									tile.setOffsetY(parseFloat(field.getValue()));
-								}
-							}
-						}]
-					}]
-				}, {
+				}, new FrameControls(tile), new PositioningControls(tile), {
 					id: 'tile-properties-tab',
 					title: 'Properties',
 					layout: 'fit'
