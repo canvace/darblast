@@ -23,7 +23,18 @@ function StageControls() {
 				}
 			},
 			edit: function (editor, event) {
-				Canvace.stages.get(event.record.get('id')).rename(event.record.get('text'));
+				var record = event.record;
+				var id = record.get('id');
+				var text = record.get('text');
+				if (text != id) {
+					Canvace.stages.get(event.record.get('id')).rename(event.record.get('text'));
+				} else {
+					var stage = Canvace.stages.get(id);
+					if (stage.isCurrent()) {
+						record.set('text', stage.getId() + ' (current stage)');
+					}
+					record.commit();
+				}
 			},
 			canceledit: function (editor, event) {
 				var record = event.record;

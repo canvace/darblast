@@ -53,7 +53,7 @@ function Stages(ready) {
 			return renameHandlers.registerHandler(id, handler);
 		};
 		this.onDelete = function (handler) {
-			return deleteHandlers.registerHandler(id, handler);
+			return deleteHandlers.registerTrigger(id, handler);
 		};
 
 		this.load = function (callback) {

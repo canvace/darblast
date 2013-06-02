@@ -5,9 +5,10 @@ function FrameControls(element) {
 		multiSelect: true,
 		trackOver: true,
 		overItemCls: 'x-item-over',
-		width: 200,
-		height: 150,
+		width: 300,
+		height: 200,
 		resizable: true,
+		resizeHandles: 'e s se',
 		border: true,
 		style: {
 			borderColor: 'black',
@@ -60,15 +61,18 @@ function FrameControls(element) {
 
 	element.onAddFrame(function (id) {
 		var frame = element.getFrame(id);
-		store.add({
+		var record = store.add({
 			frame: frame,
 			frameId: frame.getFrameId(),
 			imageId: frame.getImageId()
+		})[0];
+		frame.onDelete(function () {
+			record.destroy();
 		});
 	});
 	element.forEachFrame(function (frame) {
 		frame.onDelete(function () {
-			var record = store.find('frameId', frame.getFrameId());
+			var record = store.findRecord('frameId', frame.getFrameId());
 			if (record) {
 				record.destroy();
 			}

@@ -71,7 +71,7 @@ function Elements(type, Element, ready) {
 			return updateHandlers.registerHandler(id, handler);
 		};
 		this.onDelete = function (handler) {
-			return deleteHandlers.registerHandler(id, handler);
+			return deleteHandlers.registerTrigger(id, handler);
 		};
 
 		this.getId = function () {
@@ -124,7 +124,7 @@ function Elements(type, Element, ready) {
 				return updateFramesHandlers.registerHandler(id + '/' + frame.frameId, handler);
 			};
 			this.onDelete = function (handler) {
-				return deleteFramesHandlers.registerHandler(id + '/' + frame.frameId, handler);
+				return deleteFramesHandlers.registerTrigger(id + '/' + frame.frameId, handler);
 			};
 			this.isLast = function () {
 				return !('duration' in frame);
@@ -293,16 +293,12 @@ function Elements(type, Element, ready) {
 
 	Canvace.poller.poll(type + '/frames', 'update', function (parameters) {
 		// TODO update frame
-		updateFramesHandlers.fire(parameters.id, function (handler) {
-			handler(parameters.frameId);
-		});
+		updateFramesHandlers.fire(parameters.id + '/' + parameters.frameId);
 	});
 
 	Canvace.poller.poll(type + '/frames', 'delete', function (parameters) {
 		delete (elements[parameters.id].frames)[getFrameIndex(parameters.id, parameters.frameId)];
-		deleteFramesHandlers.fire(parameters.id, function (handler) {
-			handler(parameters.frameId);
-		});
+		deleteFramesHandlers.fire(parameters.id + '/' + parameters.frameId);
 	});
 
 	Canvace.poller.poll(type + '/properties', 'put', function (parameters) {

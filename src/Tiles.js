@@ -119,7 +119,9 @@ installHandler([
 	'/stages/:stageId/tiles/:tileId/frames/'
 ], 'get', function (request, response) {
 	this.tiles.get(request.params.tileId, function (tile) {
-		var ids = Object.keys(tile.frames);
+		var ids = Object.keys(tile.frames).map(function (id) {
+			return parseInt(id, 10);
+		});
 		ids.sort();
 		response.json(ids);
 	});

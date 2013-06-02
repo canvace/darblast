@@ -115,7 +115,9 @@ installHandler([
 	'/stages/:stageId/entities/:entityId/frames/'
 ], 'get', function (request, response) {
 	this.entities.get(request.params.entityId, function (entity) {
-		var ids = Object.keys(entity.frames);
+		var ids = Object.keys(entity.frames).map(function (id) {
+			return parseInt(id, 10);
+		});
 		ids.sort();
 		response.json(ids);
 	});
