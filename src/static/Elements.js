@@ -292,8 +292,16 @@ function Elements(type, Element, ready) {
 	});
 
 	Canvace.poller.poll(type + '/frames', 'update', function (parameters) {
-		// TODO update frame
-		updateFramesHandlers.fire(parameters.id + '/' + parameters.frameId);
+		var frames = elements[parameters.id].frames;
+		var index = getFrameIndex(parameters.id, parameters.frameId);
+		if (index < frames.length) {
+			if ('duration' in parameters) {
+				frames[index].duration = parameters.duration;
+			} else {
+				delete frames[index].duration;
+			}
+			updateFramesHandlers.fire(parameters.id + '/' + parameters.frameId);
+		}
 	});
 
 	Canvace.poller.poll(type + '/frames', 'delete', function (parameters) {
