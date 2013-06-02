@@ -226,17 +226,17 @@ var LowerControls = (function () {
 					if (records.length) {
 						var record = records[0];
 						var labels = record.get('allLabels');
-						var elements = [];
+						var elementsToDelete = [];
 						store.each(function (record) {
 							var element = record.get('element');
 							if (element.hasLabels(labels)) {
-								elements.push(element);
+								elementsToDelete.push(element);
 							}
 						});
-						if (elements.length) {
+						if (elementsToDelete.length) {
 							Ext.MessageBox.show({
 								title: 'Confirm image removal',
-								msg: 'Do you actually want to delete the ' + elements.length + ' ' + elements + ' in the \"' + record.get('text') + '\" category?',
+								msg: 'Do you actually want to delete the ' + elementsToDelete.length + ' ' + elements + ' in the \"' + record.get('text') + '\" category?',
 								icon: Ext.MessageBox.WARNING,
 								buttons: Ext.MessageBox.OKCANCEL,
 								modal: true,
@@ -246,7 +246,7 @@ var LowerControls = (function () {
 											handlers.fire('element/delete', function (handler) {
 												handler(elements);
 											});
-										}(elements.map(function (element) {
+										}(elementsToDelete.map(function (element) {
 											return element.getId();
 										})));
 									}
