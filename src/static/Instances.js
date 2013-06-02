@@ -66,12 +66,20 @@ function Instances(instances) {
 		}
 		id = parseInt(id, 10);
 		var instance = instances[id];
+
+		var positionBookmark = {
+			i: instance.i,
+			j: instance.j,
+			k: instance.k
+		};
+
 		this.getId = function () {
 			return id;
 		};
 		this.getEntity = function () {
 			return Canvace.entities.get(instance.id);
 		};
+
 		this.getPosition = function () {
 			return {
 				i: instance.i,
@@ -79,7 +87,7 @@ function Instances(instances) {
 				k: instance.k
 			};
 		};
-		this.setPosition = function (i1, j1, k1) {
+		this.setPosition = function (i, j, k, silent) {
 			function doSet(i, j, k) {
 				instance.erase();
 				instance.i = i;
@@ -87,19 +95,26 @@ function Instances(instances) {
 				instance.k = k;
 				instance.erase = Canvace.buckets.addEntity(i, j, k, Canvace.entities.get(instance.id));
 			}
-			var i0 = instance.i;
-			var j0 = instance.j;
-			var k0 = instance.k;
-			doSet(i1, j1, k1);
-			Canvace.history.record({
-				action: function () {
-					doSet(i1, j1, k1);
-				},
-				reverse: function () {
-					doSet(i0, j0, k0);
-				}
-			});
+			doSet(i, j, k);
+			if (!silent) {
+				(function (i0, j0, k0, i1, j1, k1) {
+					Canvace.history.record({
+						action: function () {
+							doSet(i1, j1, k1);
+						},
+						reverse: function () {
+							doSet(i0, j0, k0);
+						}
+					});
+				}(positionBookmark.i, positionBookmark.j, positionBookmark.k, i, j, k));
+				positionBookmark = {
+					i: i,
+					j: j,
+					k: k
+				};
+			}
 		};
+
 		this._delete = function () {
 			if (id in instances) {
 				delete instances[id];
