@@ -44,7 +44,7 @@ function LayerControls() {
 			flex: 1,
 			draggable: false,
 			hideable: false,
-			icon: '/resources/images/icons/delete.png',
+			iconCls: 'x-delete',
 			tooltip: 'Erase layer',
 			handler: function (view, rowIndex, colIndex, item, event, record) {
 				if (Canvace.layers.erase(record.get('index'))) {

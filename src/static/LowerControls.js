@@ -149,7 +149,7 @@ var LowerControls = (function () {
 			autoScroll: true,
 			width: 250,
 			tbar: [{
-				icon: '/resources/images/icons/add.png',
+				iconCls: 'x-add',
 				tooltip: 'Load ' + elements + '...',
 				handler: function () {
 					handlers.fire('element/add');
@@ -175,7 +175,7 @@ var LowerControls = (function () {
 					}
 				}
 			}, {
-				icon: '/resources/images/icons/pencil.png',
+				iconCls: 'x-edit',
 				tooltip: 'Edit selected ' + element + '...',
 				handler: function () {
 					if (selection.hasSelection()) {
@@ -185,7 +185,7 @@ var LowerControls = (function () {
 					}
 				}
 			}, {
-				icon: '/resources/images/icons/folder_edit.png',
+				iconCls: 'x-edit-folder',
 				tooltip: 'Rename selected category...',
 				handler: function () {
 					var records = hierarchyTree.getSelectionModel().getSelection();
@@ -194,7 +194,7 @@ var LowerControls = (function () {
 					}
 				}
 			}, {
-				icon: '/resources/images/icons/delete.png',
+				iconCls: 'x-delete',
 				tooltip: 'Delete selected ' + elements + '...',
 				handler: function () {
 					var records = selection.getSelection();
@@ -219,7 +219,7 @@ var LowerControls = (function () {
 					}
 				}
 			}, {
-				icon: '/resources/images/icons/folder_delete.png',
+				iconCls: 'x-delete-folder',
 				tooltip: 'Delete selected category...',
 				handler: function () {
 					var records = hierarchyTree.getSelectionModel().getSelection();

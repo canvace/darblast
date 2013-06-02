@@ -325,7 +325,7 @@ function PropertyControls(container, config) {
 			sortable: false,
 			width: 48,
 			items: [{
-				icon: '/resources/images/icons/add.png',
+				iconCls: 'x-add',
 				tooltip: 'Add sub-property...',
 				handler: function (view, rowIndex, columnIndex, item, event, record) {
 					new NewPropertyDialog(record);
@@ -334,7 +334,7 @@ function PropertyControls(container, config) {
 					return !proxy || !proxy.isBound() || record.isLeaf();
 				}
 			}, {
-				icon: '/resources/images/icons/delete.png',
+				iconCls: 'x-delete',
 				tooltip: 'Delete property',
 				handler: function (view, rowIndex, columnIndex, item, event, record) {
 					record.destroy();

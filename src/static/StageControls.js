@@ -53,7 +53,7 @@ function StageControls() {
 		tbar: {
 			xtype: 'toolbar',
 			items: [{
-				icon: '/resources/images/icons/add.png',
+				iconCls: 'x-add',
 				tooltip: 'New stage...',
 				handler: function () {
 					Ext.MessageBox.prompt('Create new stage', 'Enter a new stage name:', function (button, text) {
@@ -72,7 +72,7 @@ function StageControls() {
 					}
 				}
 			}, {
-				icon: '/resources/images/icons/pencil.png',
+				iconCls: 'x-edit',
 				tooltip: 'Rename stage',
 				handler: function () {
 					var selectedNodes = tree.getSelectionModel().getSelection();
@@ -81,7 +81,7 @@ function StageControls() {
 					}
 				}
 			}, {
-				icon: '/resources/images/icons/delete.png',
+				iconCls: 'x-delete',
 				tooltip: 'Delete stage...',
 				handler: function () {
 					var selectedNodes = tree.getSelectionModel().getSelection();
@@ -123,10 +123,8 @@ function StageControls() {
 			editor: 'textfield'
 		}],
 		store: {
-			sorters: [{
-				property: 'text',
-				direction: 'ASC'
-			}]
+			sortOnLoad: true,
+			sorters: ['text']
 		},
 		rowLines: false,
 		columnLines: false,

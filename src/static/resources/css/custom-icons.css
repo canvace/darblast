@@ -2,8 +2,20 @@
 	background-image: url(../images/icons/add.png);
 }
 
+.x-edit {
+	background-image: url(../images/icons/pencil.png);
+}
+
 .x-delete {
 	background-image: url(../images/icons/delete.png);
+}
+
+.x-edit-folder {
+	background-image: url(../images/icons/folder_edit.png);
+}
+
+.x-delete-folder {
+	background-image: url(../images/icons/folder_delete.png);
 }
 
 .x-data-first {
