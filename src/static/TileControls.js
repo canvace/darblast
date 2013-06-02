@@ -81,7 +81,7 @@ function TileControls() {
 							}
 						}
 					}]
-				}, new tile.UI.Frames(), {
+				}, new FrameControls(tile), {
 					title: 'Positioning',
 					layout: 'hbox',
 					items: [{

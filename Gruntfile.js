@@ -23,6 +23,7 @@ module.exports = function (grunt) {
 					'src/static/ImageControls.js',
 					'src/static/ImageSelector.js',
 					'src/static/Elements.js',
+					'src/static/FrameControls.js',
 					'src/static/Tiles.js',
 					'src/static/TileControls.js',
 					'src/static/Entities.js',
