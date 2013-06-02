@@ -21,6 +21,12 @@ installHandler([
 					x: 0,
 					y: 0
 				},
+				box: {
+					i0: 0,
+					j0: 0,
+					iSpan: 1,
+					jSpan: 1
+				},
 				refCount: 0,
 				frames: {},
 				frameCounter: 0,
@@ -63,6 +69,14 @@ installHandler([
 		if ('offset' in request.body) {
 			entity.offset.x = parseFloat(request.body.offset.x);
 			entity.offset.x = parseFloat(request.body.offset.x);
+		}
+		if ('box' in request.body) {
+			entity.box = {
+				i0: parseFloat(request.body.box.i0),
+				j0: parseFloat(request.body.box.j0),
+				iSpan: parseFloat(request.body.box.iSpan),
+				jSpan: parseFloat(request.body.box.jSpan)
+			};
 		}
 		this.broadcast('entities', 'update', {
 			id: request.params.entityId,
