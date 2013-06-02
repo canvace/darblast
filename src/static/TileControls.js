@@ -140,7 +140,7 @@ function TileControls() {
 				}]
 			},
 			buttons: [{
-				text: 'OK',
+				text: 'Close',
 				handler: function () {
 					dialog.close();
 				}

@@ -29,6 +29,15 @@ function Elements(type, Element, ready) {
 		});
 	}
 
+	function getFrameIndex(elementId, frameId) {
+		var frames = elements[elementId].frames;
+		for (var index in frames) {
+			if (frames[index].frameId == frameId) {
+				return index;
+			}
+		}
+	}
+
 	Canvace.Ajax.get(type + '/', function (ids) {
 		var loader = new Loader(ready);
 		ids.forEach(function (id) {
@@ -160,6 +169,9 @@ function Elements(type, Element, ready) {
 				return element.frames[0].imageId;
 			}
 		};
+		this.getFrame = function (frameId) {
+			return new Frame(element.frames[getFrameIndex(id, frameId)]);
+		};
 		this.forEachFrame = function (callback) {
 			element.frames.forEach(function (frame) {
 				callback(new Frame(frame));
@@ -266,18 +278,28 @@ function Elements(type, Element, ready) {
 	});
 
 	Canvace.poller.poll(type + '/frames', 'create', function (parameters) {
+		var frame = {
+			frameId: parameters.frameId,
+			imageId: parameters.imageId
+		};
+		if ('duration' in parameters) {
+			frame.duration = parameters.duration;
+		}
+		elements[parameters.id].frames.push(frame);
 		createFramesHandlers.fire(parameters.id, function (handler) {
 			handler(parameters.frameId);
 		});
 	});
 
 	Canvace.poller.poll(type + '/frames', 'update', function (parameters) {
+		// TODO update frame
 		updateFramesHandlers.fire(parameters.id, function (handler) {
 			handler(parameters.frameId);
 		});
 	});
 
 	Canvace.poller.poll(type + '/frames', 'delete', function (parameters) {
+		delete (elements[parameters.id].frames)[getFrameIndex(parameters.id, parameters.frameId)];
 		deleteFramesHandlers.fire(parameters.id, function (handler) {
 			handler(parameters.frameId);
 		});

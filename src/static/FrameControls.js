@@ -5,8 +5,8 @@ function FrameControls(element) {
 		multiSelect: true,
 		trackOver: true,
 		overItemCls: 'x-item-over',
-		maxWidth: 250,
-		minHeight: 150,
+		width: 200,
+		height: 150,
 		resizable: true,
 		border: true,
 		style: {
@@ -14,12 +14,16 @@ function FrameControls(element) {
 			borderStyle: 'solid'
 		},
 		store: {
+			autoSync: true,
 			fields: ['frame', {
 				name: 'frameId',
 				type: 'int'
 			}, {
 				name: 'imageId',
 				type: 'string'
+			}, {
+				name: 'index',
+				type: 'int'
 			}],
 			sortOnLoad: true,
 			sorters: ['frameId'],
@@ -46,16 +50,39 @@ function FrameControls(element) {
 			'<div class="x-clear"></div>'
 		],
 		itemSelector: 'div.thumb-wrap',
-		emptyText: 'No frames'
+		emptyText: 'No frames',
+		plugins: [
+			Ext.create('Ext.ux.DataView.DragSelector', {})
+		]
 	});
+
+	var store = view.getStore();
+
+	element.onAddFrame(function (id) {
+		var frame = element.getFrame(id);
+		store.add({
+			frame: frame,
+			frameId: frame.getFrameId(),
+			imageId: frame.getImageId()
+		});
+	});
+	element.forEachFrame(function (frame) {
+		frame.onDelete(function () {
+			var record = store.find('frameId', frame.getFrameId());
+			if (record) {
+				record.destroy();
+			}
+		});
+	});
+
 	return {
 		title: 'Frames',
 		layout: 'hbox',
 		items: [{
 			xtype: 'container',
 			layout: {
-				type: 'table',
-				columns: 1
+				type: 'vbox',
+				align: 'stretch'
 			},
 			items: [view, {
 				xtype: 'toolbar',
@@ -77,6 +104,18 @@ function FrameControls(element) {
 						view.getSelectionModel().getSelection().forEach(function (record) {
 							record.get('frame')._delete();
 						});
+					},
+					listeners: {
+						render: function () {
+							var button = this;
+							view.on('selectionchange', function (selectionModel, selected) {
+								if (selected.length) {
+									button.enable();
+								} else {
+									button.disable();
+								}
+							});
+						}
 					}
 				}]
 			}]
@@ -90,6 +129,24 @@ function FrameControls(element) {
 				minValue: 0,
 				value: 100,
 				listeners: {
+					render: function () {
+						var field = this;
+						view.on('selectionchange', function (selectionModel, selected) {
+							if (selected.length != 1) {
+								field.setValue(100);
+								field.disable();
+							} else {
+								var frame = selected[0].get('frame');
+								if (frame.isLast()) {
+									field.setValue(100);
+									field.disable();
+								} else {
+									field.enable();
+									field.setValue(frame.getDuration());
+								}
+							}
+						});
+					},
 					change: function () {
 						// TODO
 					}
@@ -98,16 +155,24 @@ function FrameControls(element) {
 				xtype: 'checkbox',
 				boxLabel: 'Loop animation',
 				checked: (function () {
-					for (var i in element.frames) {
-						if (!('duration' in element.frames[i])) {
-							return false;
-						}
-					}
-					return true;
+					var loop = false;
+					element.forEachFrame(function (frame) {
+						loop = !frame.isLast();
+					});
+					return loop;
 				}()),
 				listeners: {
-					change: function () {
-						// TODO
+					change: function (field, checked) {
+						var lastFrame = null;
+						element.forEachFrame(function (frame) {
+							if (frame.isLast()) {
+								frame.setDuration(100);
+							}
+							lastFrame = frame;
+						});
+						if (!checked && lastFrame) {
+							lastFrame.setLast();
+						}
 					}
 				}
 			}]

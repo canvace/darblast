@@ -44,7 +44,7 @@ function EntityControls() {
 				}]
 			}],
 			buttons: [{
-				text: 'OK',
+				text: 'Close',
 				handler: function () {
 					dialog.close();
 				}
