@@ -5,6 +5,7 @@ function DragSelectTool() {
 			.snap(true)
 			.setTileHighlight()
 			.show();
+		Canvace.renderer.render();
 	};
 	this.deactivate = function () {
 		Canvace.cursor.hide();

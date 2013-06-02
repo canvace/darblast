@@ -4,6 +4,7 @@ function EraseEntitiesTool() {
 			.snap(false)
 			.setTileHighlight()
 			.show();
+		Canvace.renderer.render();
 	};
 	this.deactivate = function () {
 		Canvace.cursor.hide();

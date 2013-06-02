@@ -1,6 +1,12 @@
 function FloodSelectTool() {
-	this.activate = Canvace.selection.show;
-	this.deactivate = Canvace.selection.hide;
+	this.activate = function () {
+		Canvace.selection.show();
+		Canvace.renderer.render();
+	};
+	this.deactivate = function () {
+		Canvace.selection.hide();
+		Canvace.renderer.render();
+	};
 
 	var flag = false;
 	this.flag = function (on) {

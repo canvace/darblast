@@ -8,7 +8,7 @@ function StampEntityTool() {
 				Canvace.cursor
 					.snap(false)
 					.reset()
-					.addElement(entity.getFirstFrameId(), offset.x, offset.y)
+					.addElement(Canvace.images.getImage(entity.getFirstFrameId()), offset.x, offset.y)
 					.show();
 				Canvace.renderer.render();
 			}
