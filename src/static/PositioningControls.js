@@ -48,12 +48,15 @@ function PositioningControls(element) {
 				value: element.getOffsetX(),
 				listeners: {
 					render: function () {
+						var field = this;
 						element.onUpdate(function () {
-							// TODO
+							field.setValue(element.getOffsetX());
 						});
 					},
-					change: function (field, value) {
-						element.setOffsetX(parseFloat(value));
+					change: function (field, newValue, oldValue) {
+						if (newValue != oldValue) {
+							element.setOffsetX(parseFloat(newValue));
+						}
 					}
 				}
 			}, {
@@ -62,12 +65,15 @@ function PositioningControls(element) {
 				value: element.getOffsetY(),
 				listeners: {
 					render: function () {
+						var field = this;
 						element.onUpdate(function () {
-							// TODO
+							field.setValue(element.getOffsetY());
 						});
 					},
-					change: function (field, value) {
-						element.setOffsetY(parseFloat(value));
+					change: function (field, newValue, oldValue) {
+						if (newValue != oldValue) {
+							element.setOffsetY(parseFloat(newValue));
+						}
 					}
 				}
 			}, {
@@ -98,9 +104,46 @@ function PositioningControls(element) {
 		}],
 		listeners: {
 			render: function (component) {
-				var element = component.getEl();
-				element.down('.position-schema-reference').insertFirst(guidelines);
-				target = element.down('.position-schema-reference .position-schema-target');
+				var domElement = component.getEl();
+				domElement.down('.position-schema-reference').insertFirst(guidelines);
+				target = domElement.down('.position-schema-reference .position-schema-target');
+				(function () {
+					var dragging = false;
+					var x0, y0;
+					target.dom.addEventListener('mousedown', function (event) {
+						dragging = true;
+						x0 = event.clientX;
+						y0 = event.clientY;
+						event.preventDefault();
+					}, false);
+					target.dom.addEventListener('mousemove', function (event) {
+						if (dragging) {
+							target.setStyle({
+								left: (event.target.offsetLeft + event.clientX - x0) + 'px',
+								top: (event.target.offsetTop + event.clientY - y0) + 'px'
+							});
+							x0 = event.clientX;
+							y0 = event.clientY;
+							event.preventDefault();
+						}
+					}, false);
+					target.dom.addEventListener('mouseup', function (event) {
+						if (dragging) {
+							dragging = false;
+							element.setOffset({
+								x: event.target.offsetLeft,
+								y: event.target.offsetTop
+							});
+							event.preventDefault();
+						}
+					}, false);
+				}());
+				element.onUpdate(function () {
+					target.setStyle({
+						left: element.getOffsetX() + 'px',
+						top: element.getOffsetY() + 'px'
+					});
+				});
 			}
 		}
 	};

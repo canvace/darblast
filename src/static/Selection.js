@@ -113,7 +113,6 @@ function Selection() {
 		var area = new Area();
 
 		function record(adding, diff) {
-			/*jshint unused: false */
 			for (var i in diff) {
 				if (adding) {
 					Canvace.history.record({
@@ -134,6 +133,7 @@ function Selection() {
 						}
 					});
 				}
+				(function () {}(i)); // XXX silence linter
 				return;
 			}
 		}
