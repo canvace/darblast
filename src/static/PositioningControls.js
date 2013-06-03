@@ -9,23 +9,22 @@ function PositioningControls(element) {
 			layout: 'ux.center',
 			width: 250,
 			height: 250,
-			border: true,
-			style: {
-				borderColor: 'black',
-				borderStyle: 'solid'
+			resizable: {
+				pinned: true,
+				handles: 'e s se'
 			},
-			resizable: true,
-			resizaHandles: 'e s se',
 			items: [{
 				xtype: 'box',
-				width: guidelines.width,
-				height: guidelines.height,
+				floating: true,
+				shadow: false,
+				autoShow: true,
 				contentEl: guidelines
 			}, {
 				xtype: 'image',
 				src: '/images/' + element.getFirstFrameId(),
-				constrain: true,
 				floating: true,
+				shadow: false,
+				autoShow: true,
 				draggable: true
 			}]
 		}, {

@@ -7,12 +7,9 @@ function FrameControls(element) {
 		overItemCls: 'x-item-over',
 		width: 300,
 		height: 200,
-		resizable: true,
-		resizeHandles: 'e s se',
-		border: true,
-		style: {
-			borderColor: 'black',
-			borderStyle: 'solid'
+		resizable: {
+			pinned: true,
+			handles: 'e s se'
 		},
 		store: {
 			autoSync: true,
