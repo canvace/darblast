@@ -25,7 +25,7 @@ function PositioningControls(element) {
 				xtype: 'box',
 				autoEl: {
 					tag: 'div',
-					style: 'position: relative; left: 0; top: 0; overflow: hidden',
+					style: 'position: relative; left: 0px; top: 0px; overflow: hidden',
 					children: [{
 						tag: 'div',
 						cls: 'position-schema-reference',
@@ -33,7 +33,7 @@ function PositioningControls(element) {
 						children: [{
 							tag: 'img',
 							cls: 'position-schema-target',
-							style: 'position: absolute; left: ' + element.getOffsetX() + '; top: ' + element.getOffsetY() + '; opacity: 0.5',
+							style: 'position: absolute; left: ' + element.getOffsetX() + 'px; top: ' + element.getOffsetY() + 'px; opacity: 0.5',
 							src: '/images/' + element.getFirstFrameId()
 						}]
 					}]
@@ -107,12 +107,7 @@ function PositioningControls(element) {
 				var domElement = component.getEl();
 				domElement.down('.position-schema-reference').insertFirst(guidelines);
 				target = domElement.down('.position-schema-reference .position-schema-target');
-				(new DragTracker(target.dom)).onDragEnd(function (x, y) {
-					element.setOffset({
-						x: x,
-						y: y
-					});
-				});
+				(new DragTracker(target.dom)).onDragEnd(element.setOffset);
 				element.onUpdate(function () {
 					target.setStyle({
 						left: element.getOffsetX() + 'px',

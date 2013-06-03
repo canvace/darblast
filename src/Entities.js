@@ -68,7 +68,7 @@ installHandler([
 	this.entities.modifySync(request.params.entityId, function (entity) {
 		if ('offset' in request.body) {
 			entity.offset.x = parseFloat(request.body.offset.x);
-			entity.offset.x = parseFloat(request.body.offset.x);
+			entity.offset.y = parseFloat(request.body.offset.y);
 		}
 		if ('box' in request.body) {
 			entity.box = {

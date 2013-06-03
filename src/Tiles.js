@@ -80,7 +80,7 @@ installHandler([
 		}
 		if ('offset' in request.body) {
 			tile.offset.x = parseFloat(request.body.offset.x);
-			tile.offset.x = parseFloat(request.body.offset.x);
+			tile.offset.y = parseFloat(request.body.offset.y);
 		}
 		this.broadcast('tiles', 'update', {
 			id: request.params.tileId,
