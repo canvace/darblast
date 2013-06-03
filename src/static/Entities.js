@@ -41,6 +41,7 @@ function Entities(ready) {
 
 		this.updateAfterReposition = function () {
 			// TODO
+			Canvace.renderer.render();
 		};
 	}
 

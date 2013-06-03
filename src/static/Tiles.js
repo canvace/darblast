@@ -26,6 +26,7 @@ function Tiles(ready) {
 
 		this.updateAfterReposition = function () {
 			Canvace.array.updateRepositionedTile(id);
+			Canvace.renderer.render();
 		};
 	}
 
