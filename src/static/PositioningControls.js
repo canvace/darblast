@@ -107,37 +107,12 @@ function PositioningControls(element) {
 				var domElement = component.getEl();
 				domElement.down('.position-schema-reference').insertFirst(guidelines);
 				target = domElement.down('.position-schema-reference .position-schema-target');
-				(function () {
-					var dragging = false;
-					var x0, y0;
-					target.dom.addEventListener('mousedown', function (event) {
-						dragging = true;
-						x0 = event.clientX;
-						y0 = event.clientY;
-						event.preventDefault();
-					}, false);
-					target.dom.addEventListener('mousemove', function (event) {
-						if (dragging) {
-							target.setStyle({
-								left: (event.target.offsetLeft + event.clientX - x0) + 'px',
-								top: (event.target.offsetTop + event.clientY - y0) + 'px'
-							});
-							x0 = event.clientX;
-							y0 = event.clientY;
-							event.preventDefault();
-						}
-					}, false);
-					target.dom.addEventListener('mouseup', function (event) {
-						if (dragging) {
-							dragging = false;
-							element.setOffset({
-								x: event.target.offsetLeft,
-								y: event.target.offsetTop
-							});
-							event.preventDefault();
-						}
-					}, false);
-				}());
+				(new DragTracker(target.dom)).onDragEnd(function (x, y) {
+					element.setOffset({
+						x: x,
+						y: y
+					});
+				});
 				element.onUpdate(function () {
 					target.setStyle({
 						left: element.getOffsetX() + 'px',
