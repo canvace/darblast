@@ -158,7 +158,7 @@ var LowerControls = (function () {
 					handlers.fire('element/add');
 				}
 			}, {
-				icon: '/resources/images/icons/picture_add.png',
+				iconCls: 'x-add-picture',
 				tooltip: 'Load ' + element + ' sheet...',
 				handler: function () {
 					if (window.canSplitImages) {

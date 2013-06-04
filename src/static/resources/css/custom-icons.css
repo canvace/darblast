@@ -1,3 +1,7 @@
+.x-accept {
+	background-image: url(../images/icons/accept.png);
+}
+
 .x-add {
 	background-image: url(../images/icons/add.png);
 }
@@ -8,6 +12,10 @@
 
 .x-delete {
 	background-image: url(../images/icons/delete.png);
+}
+
+.x-add-picture {
+	background-image: url(../images/icons/picture_add.png);
 }
 
 .x-edit-folder {
