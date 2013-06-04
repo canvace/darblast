@@ -33,7 +33,7 @@ function Elements(type, Element, ready) {
 		var frames = elements[elementId].frames;
 		for (var index in frames) {
 			if (frames[index].frameId == frameId) {
-				return index;
+				return parseInt(index, 10);
 			}
 		}
 	}
@@ -265,10 +265,14 @@ function Elements(type, Element, ready) {
 	Canvace.poller.poll(type, 'update', function (parameters) {
 		var id = parameters.id;
 		if (id in elements) {
+			var diff = {};
 			for (var property in parameters.descriptor) {
 				elements[id][property] = parameters.descriptor[property];
+				diff[property] = true;
 			}
-			updateHandlers.fire(id);
+			updateHandlers.fire(id, function (handler) {
+				handler(diff);
+			});
 		} else {
 			loadElement(id, function (element) {
 				elements[id] = element;
@@ -299,6 +303,13 @@ function Elements(type, Element, ready) {
 		createFramesHandlers.fire(parameters.id, function (handler) {
 			handler(parameters.frameId);
 		});
+		if (elements[parameters.id].frames.length < 2) {
+			updateHandlers.fire(parameters.id, function (handler) {
+				handler({
+					firstFrameId: true
+				});
+			});
+		}
 	});
 
 	Canvace.poller.poll(type + '/frames', 'update', function (parameters) {
@@ -311,12 +322,27 @@ function Elements(type, Element, ready) {
 				delete frames[index].duration;
 			}
 			updateFramesHandlers.fire(parameters.id + '/' + parameters.frameId);
+			if (!index) {
+				updateHandlers.fire(parameters.id, function (handler) {
+					handler({
+						firstFrameId: true
+					});
+				});
+			}
 		}
 	});
 
 	Canvace.poller.poll(type + '/frames', 'delete', function (parameters) {
-		delete (elements[parameters.id].frames)[getFrameIndex(parameters.id, parameters.frameId)];
+		var index = getFrameIndex(parameters.id, parameters.frameId);
+		elements[parameters.id].frames.splice(index, 1);
 		deleteFramesHandlers.fire(parameters.id + '/' + parameters.frameId);
+		if (!index) {
+			updateHandlers.fire(parameters.id, function (handler) {
+				handler({
+					firstFrameId: true
+				});
+			});
+		}
 	});
 
 	Canvace.poller.poll(type + '/properties', 'put', function (parameters) {

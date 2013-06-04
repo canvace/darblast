@@ -21,6 +21,7 @@ var LowerControls = (function () {
 			cls: 'view',
 			autoScroll: true,
 			store: {
+				autoSync: true,
 				fields: [{
 					name: 'id'
 				}, {
@@ -33,6 +34,8 @@ var LowerControls = (function () {
 					name: 'di'
 				}, {
 					name: 'dj'
+				}, {
+					name: 'unregisterUpdateHandler'
 				}]
 			},
 			tpl: [
@@ -316,12 +319,30 @@ var LowerControls = (function () {
 			})[0];
 		};
 		this.addElement = function (id, element) {
+			var unregisterUpdateHandler = element.onUpdate(function (diff) {
+				if (diff.firstFrameId) {
+					if (element.hasFrames()) {
+						records[id].set({
+							useImage: true,
+							imageId: element.getFirstFrameId()
+						});
+					} else {
+						var layout = element.getLayout();
+						records[id].set({
+							useImage: false,
+							di: layout.span.i,
+							dj: layout.span.j
+						});
+					}
+				}
+			});
 			if (element.hasFrames()) {
 				records[id] = store.add({
 					id: id,
 					element: element,
 					useImage: true,
-					imageId: element.getFirstFrameId()
+					imageId: element.getFirstFrameId(),
+					unregisterUpdateHandler: unregisterUpdateHandler
 				})[0];
 			} else {
 				var layout = element.getLayout();
@@ -330,14 +351,19 @@ var LowerControls = (function () {
 					element: element,
 					useImage: false,
 					di: layout.span.i,
-					dj: layout.span.j
+					dj: layout.span.j,
+					unregisterUpdateHandler: unregisterUpdateHandler
 				})[0];
 			}
 		};
 
 		this.removeElement = function (id) {
 			if (id in records) {
-				store.remove(records[id]);
+				var unregisterUpdateHandler = records[id].get('unregisterUpdateHandler');
+				if (unregisterUpdateHandler) {
+					unregisterUpdateHandler();
+				}
+				records[id].destroy();
 				delete records[id];
 			}
 		};
