@@ -270,10 +270,11 @@ function Elements(type, Element, ready) {
 			}
 			updateHandlers.fire(id);
 		} else {
-			elements[id] = parameters.descriptor;
-			// TODO load frames and properties
-			createHandlers.fire(0, function (handler) {
-				handler(new Element(ElementBase, id, elements[id]));
+			loadElement(id, function (element) {
+				elements[id] = element;
+				createHandlers.fire(0, function (handler) {
+					handler(new Element(ElementBase, id, elements[id]));
+				});
 			});
 		}
 	});
