@@ -72,19 +72,22 @@ installHandler([
 	'/stages/:stageId/tiles/:tileId'
 ], 'put', function (request) {
 	this.tiles.modifySync(request.params.tileId, function (tile) {
+		var descriptor = {};
 		if ('static' in request.body) {
-			tile.static = !!request.body.static;
+			descriptor.static = tile.static = !!request.body.static;
 		}
 		if ('solid' in request.body) {
-			tile.solid = !!request.body.solid;
+			descriptor.solid = tile.solid = !!request.body.solid;
 		}
 		if ('offset' in request.body) {
-			tile.offset.x = parseFloat(request.body.offset.x);
-			tile.offset.y = parseFloat(request.body.offset.y);
+			descriptor.offset = {
+				x: tile.offset.x = parseFloat(request.body.offset.x),
+				y: tile.offset.y = parseFloat(request.body.offset.y)
+			};
 		}
 		this.broadcast('tiles', 'update', {
 			id: request.params.tileId,
-			descriptor: tile
+			descriptor: descriptor
 		});
 	});
 });

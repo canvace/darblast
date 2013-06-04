@@ -27,6 +27,7 @@ installHandler([
 					iSpan: 1,
 					jSpan: 1
 				},
+				hasPhysics: false,
 				refCount: 0,
 				frames: {},
 				frameCounter: 0,
@@ -66,21 +67,27 @@ installHandler([
 	'/stages/:stageId/entities/:entityId'
 ], 'put', function (request) {
 	this.entities.modifySync(request.params.entityId, function (entity) {
+		var descriptor = {};
 		if ('offset' in request.body) {
-			entity.offset.x = parseFloat(request.body.offset.x);
-			entity.offset.y = parseFloat(request.body.offset.y);
+			descriptor.offset = {
+				x: entity.offset.x = parseFloat(request.body.offset.x),
+				y: entity.offset.y = parseFloat(request.body.offset.y)
+			};
 		}
 		if ('box' in request.body) {
-			entity.box = {
+			descriptor.box = entity.box = {
 				i0: parseFloat(request.body.box.i0),
 				j0: parseFloat(request.body.box.j0),
 				iSpan: parseFloat(request.body.box.iSpan),
 				jSpan: parseFloat(request.body.box.jSpan)
 			};
 		}
+		if ('hasPhysics' in request.body) {
+			descriptor.hasPhysics = entity.hasPhysics = !!request.body.hasPhysics;
+		}
 		this.broadcast('entities', 'update', {
 			id: request.params.entityId,
-			descriptor: entity
+			descriptor: descriptor
 		});
 	});
 });

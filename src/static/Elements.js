@@ -265,7 +265,10 @@ function Elements(type, Element, ready) {
 	Canvace.poller.poll(type, 'update', function (parameters) {
 		var id = parameters.id;
 		if (id in elements) {
-			// TODO
+			for (var property in parameters.descriptor) {
+				elements[id][property] = parameters.descriptor[property];
+			}
+			updateHandlers.fire(id);
 		} else {
 			elements[id] = parameters.descriptor;
 			// TODO load frames and properties
