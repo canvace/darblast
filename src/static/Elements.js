@@ -65,6 +65,7 @@ function Elements(type, Element, ready) {
 		if (!(id in elements)) {
 			throw 'Invalid element ID: ' + id;
 		}
+		id = parseInt(id, 10);
 		var element = elements[id];
 
 		this.onUpdate = function (handler) {

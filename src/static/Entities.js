@@ -1,5 +1,6 @@
 function Entities(ready) {
 	function Entity(Element, id, entity) {
+		id = parseInt(id, 10);
 		Element.call(this, id);
 
 		this.hasPhysics = function () {
@@ -40,7 +41,7 @@ function Entities(ready) {
 		};
 
 		this.updateAfterReposition = function () {
-			// TODO
+			Canvace.instances.updateRepositionedEntity(id);
 			Canvace.renderer.render();
 		};
 	}

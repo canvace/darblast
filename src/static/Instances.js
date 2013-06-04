@@ -1,8 +1,7 @@
 function Instances(instances) {
 	var nextId = 0;
-	instances = (function () {
-		var set = {};
-		for (var id in Canvace.instances) {
+	(function () {
+		for (var id in instances) {
 			id = parseInt(id, 10);
 			if (id >= nextId) {
 				nextId = id + 1;
@@ -14,9 +13,7 @@ function Instances(instances) {
 				instance.k,
 				Canvace.entities.get(instance.id)
 				);
-			set[id] = instance;
 		}
-		return set;
 	}());
 
 	Canvace.entities.onDelete(function (entityId) {
@@ -164,6 +161,20 @@ function Instances(instances) {
 	this.forEach = function (action) {
 		for (var id in instances) {
 			action(new Instance(id));
+		}
+	};
+
+	this.updateRepositionedEntity = function (id) {
+		var entity = Canvace.entities.get(id);
+		for (var instanceId in instances) {
+			var instance = instances[instanceId];
+			instance.erase();
+			instance.erase = Canvace.buckets.addEntity(
+				instance.i,
+				instance.j,
+				instance.k,
+				entity
+				);
 		}
 	};
 }

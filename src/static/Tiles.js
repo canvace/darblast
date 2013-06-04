@@ -1,5 +1,6 @@
 function Tiles(ready) {
 	function Tile(Element, id, tile) {
+		id = parseInt(id, 10);
 		Element.call(this, id);
 
 		this.isStatic = function () {
