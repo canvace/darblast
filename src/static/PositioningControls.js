@@ -8,6 +8,7 @@ function PositioningControls(element) {
 	guidelines.style.top = metrics.top + 'px';
 
 	var target = null;
+	var toggleAnimation = function () {};
 
 	return {
 		title: 'Positioning',
@@ -31,11 +32,58 @@ function PositioningControls(element) {
 						cls: 'position-schema-reference',
 						style: 'position: absolute; left: 50%; top: 50%',
 						children: [{
-							tag: 'img',
+							tag: 'div',
 							cls: 'position-schema-target',
 							style: 'position: absolute; left: ' + element.getOffsetX() + 'px; top: ' + element.getOffsetY() + 'px; opacity: 0.5',
-							src: '/images/' + element.getFirstFrameId()
+							children: (function (children) {
+								var frames = [];
+								element.forEachFrame(function (frame) {
+									var id = Ext.id();
+									var frameData = {
+										id: id
+									};
+									if (!frame.isLast()) {
+										frameData.duration = frame.getDuration();
+									}
+									frames.push(frameData);
+									children.push({
+										tag: 'img',
+										id: id,
+										style: 'display: none',
+										src: '/images/' + frame.getImageId()
+									});
+								});
+								toggleAnimation = function animate() {
+									frames.forEach(function (frame) {
+										Ext.get(frame.id).setDisplayed('none');
+									});
+									var stop = false;
+									if (frames.length) {
+										(function setFrame(index) {
+											var frame = Ext.get(frames[index].id);
+											frame.setDisplayed('inline');
+											if (!stop && ('duration' in frames[index])) {
+												setTimeout(function () {
+													frame.setDisplayed('none');
+													setFrame((index + 1) % frames.length);
+												}, frames[index].duration);
+											}
+										}(0));
+									}
+									toggleAnimation = function () {
+										stop = true;
+										toggleAnimation = animate;
+										return false;
+									};
+									return true;
+								};
+								return children;
+							}([]))
 						}]
+					}, {
+						tag: 'div',
+						cls: 'position-schema-handle',
+						style: 'position: absolute; left: 0px; top: 0px; width: 100%; height: 100%'
 					}]
 				}
 			}
@@ -90,8 +138,10 @@ function PositioningControls(element) {
 				boxLabel: 'Animate',
 				checked: true,
 				listeners: {
-					change: function () {
-						// TODO
+					change: function (field, checked) {
+						if (toggleAnimation() != checked) {
+							toggleAnimation();
+						}
 					}
 				}
 			}, {
@@ -107,13 +157,16 @@ function PositioningControls(element) {
 				var domElement = component.getEl();
 				domElement.down('.position-schema-reference').insertFirst(guidelines);
 				target = domElement.down('.position-schema-reference .position-schema-target');
-				(new DragTracker(target.dom)).onDragEnd(element.setOffset);
-				element.onUpdate(function () {
-					target.setStyle({
-						left: element.getOffsetX() + 'px',
-						top: element.getOffsetY() + 'px'
-					});
+				(new DragTracker(target.dom, domElement.down('.position-schema-handle').dom)).onDragEnd(element.setOffset);
+				element.onUpdate(function (diff) {
+					if (diff.offset) {
+						target.setStyle({
+							left: element.getOffsetX() + 'px',
+							top: element.getOffsetY() + 'px'
+						});
+					}
 				});
+				toggleAnimation();
 			}
 		}
 	};

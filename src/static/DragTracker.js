@@ -1,10 +1,10 @@
-function DragTracker(target) {
+function DragTracker(target, handler) {
 	var handlers = new EventHandlers();
 
 	var dragging = false;
 	var x0, y0;
 
-	target.addEventListener('mousedown', function (event) {
+	handler.addEventListener('mousedown', function (event) {
 		handlers.fire('start');
 		dragging = true;
 		x0 = event.clientX;
@@ -12,7 +12,7 @@ function DragTracker(target) {
 		event.preventDefault();
 	}, false);
 
-	target.addEventListener('mousemove', function (event) {
+	handler.addEventListener('mousemove', function (event) {
 		if (dragging) {
 			target.style.left = (target.offsetLeft + event.clientX - x0) + 'px';
 			target.style.top = (target.offsetTop + event.clientY - y0) + 'px';
@@ -22,7 +22,7 @@ function DragTracker(target) {
 		}
 	}, false);
 
-	target.addEventListener('mouseup', function (event) {
+	handler.addEventListener('mouseup', function (event) {
 		if (dragging) {
 			dragging = false;
 			event.preventDefault();
