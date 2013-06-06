@@ -31,7 +31,7 @@ function Stages(ready) {
 			id = newId;
 		});
 
-		this.getId = function () {
+		this.getName = this.getId = function () {
 			return id;
 		};
 		this.rename = function (newId, callback) {

@@ -125,8 +125,7 @@ function History() {
 		}
 	};
 	this.erase = function () {
-		// FIXME what if we are currently nesting?
-		// TODO only erase the sub-stack
+		// XXX don't call while nesting!
 		rootStack.erase();
 		canUndoHandlers.fire(0, function (handler) {
 			handler(false);

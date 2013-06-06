@@ -65,6 +65,7 @@ module.exports = function (grunt) {
 					'src/static/CutTilesCommand.js',
 					'src/static/PasteEntityTool.js',
 					'src/static/PasteTilesTool.js',
+					'src/static/ExportWizard.js',
 					'src/static/Toolbar.js',
 					'src/static/Application.js'
 				],

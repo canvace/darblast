@@ -53,71 +53,7 @@ function Toolbar() {
 		icon: '/resources/images/tools/export.png',
 		tooltip: 'Export...',
 		handler: function () {
-			var dialog = new Ext.window.Window({
-				title: 'Export Wizard',
-				resizable: false,
-				width: 400,
-				modal: true,
-				layout: {
-					type: 'vbox',
-					align: 'stretch'
-				},
-				buttons: [{
-					text: 'Close',
-					handler: function () {
-						dialog.close();
-					}
-				}],
-				items: [{
-					xtype: 'radiogroup',
-					defaults: {
-						name: 'format'
-					},
-					items: [{
-						inputValue: 'single',
-						boxLabel: 'Single JSON file'
-					}, {
-						inputValue: 'separate',
-						boxLabel: 'Separate images',
-						checked: true
-					}]
-				}, {
-					layout: 'accordion',
-					items: [{
-						title: 'Store to backend',
-						layout: {
-							type: 'vbox',
-							align: 'stretch'
-						},
-						buttons: [{
-							text: 'Store',
-							handler: function () {
-								// TODO
-							}
-						}],
-						items: [{
-							xtype: 'textfield',
-							fieldLabel: 'Destination path'
-						}, {
-							xtype: 'directorytree',
-							height: 200,
-							listeners: {
-								directoryselect: function () {
-									// TODO
-								}
-							}
-						}]
-					}, {
-						title: 'Download to frontend',
-						buttons: [{
-							text: 'Download',
-							handler: function () {
-								// TODO submit form
-							}
-						}]
-					}]
-				}]
-			}).show();
+			new ExportWizard();
 		}
 	}, {
 		icon: '/resources/images/tools/bug.png',

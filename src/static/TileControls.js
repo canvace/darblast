@@ -2,7 +2,7 @@ function TileControls() {
 	var controls = new LowerControls('Tiles', 1, false, 'tile', 'tiles');
 
 	controls.onAddElement(function () {
-		var dialog = new Ext.window.Window({
+		var dialog = (new Ext.window.Window({
 			title: 'Create new tile',
 			modal: true,
 			resizable: false,
@@ -42,7 +42,47 @@ function TileControls() {
 					dialog.close();
 				}
 			}]
-		}).show();
+		})).show();
+	});
+
+	controls.onLoadSheet(function () {
+		var dialog = (new Ext.window.Window({
+			title: 'Create many tiles',
+			modal: true,
+			resizable: false,
+			layout: 'vbox',
+			items: [{
+				xtype: 'button',
+				text: 'Select images...',
+				handler: function () {
+					new ImageSelector(true, function (imageIds) {
+						imageIds.forEach(function () {
+							// TODO
+						});
+					});
+				}
+			}, {
+				xtype: 'numberfield',
+				fieldLabel: 'Offset X',
+				value: 0
+			}, {
+				xtype: 'numberfield',
+				fieldLabel: 'Offset Y',
+				value: 0
+			}],
+			buttons: [{
+				text: 'OK',
+				handler: function () {
+					dialog.close();
+					// TODO
+				}
+			}, {
+				text: 'Cancel',
+				handler: function () {
+					dialog.close();
+				}
+			}]
+		})).show();
 	});
 
 	controls.onActivateElement(function (id) {
