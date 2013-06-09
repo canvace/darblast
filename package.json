@@ -1,67 +1,70 @@
 {
-  "name": "canvace",
-  "version": "0.9.0",
-  "description": "The Canvace Visual Development Environment.",
-  "keywords": [
-    "canvace",
-    "darblast",
-    "devenv",
-    "visual",
-    "development",
-    "environment",
-    "html5",
-    "application",
-    "game",
-    "stage",
-    "level",
-    "design",
-    "project",
-    "sencha",
-    "extjs",
-    "socket.io"
-  ],
-  "homepage": "http://www.canvace.com/",
-  "bugs": "https://github.com/canvace/darblast/issues",
-  "licenses": [
-    "MIT",
-    "GPLv3"
-  ],
-  "author": "Alberto La Rocca <alberto.larocca@canvace.com> (https://github.com/71104)",
-  "contributors": [
-    "Daniele Cocca <daniele.cocca@canvace.com> (https://github.com/jmc-88)"
-  ],
-  "files": [
-    "bin",
-    "AUTHORS",
-    "README.md"
-  ],
-  "bin": {
-    "canvace": "./bin/canvace.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/canvace/darblast.git"
-  },
-  "dependencies": {
-    "npm": "~1.2.18",
-    "async": "~0.2.9",
-    "openurl": "~1.1.0",
-    "rwlock": "~2.1.2",
-    "multiset": "~1.0.0",
-    "express": "~3.2.0",
-    "consolidate": "~0.9.0",
-    "handlebars": "~1.0.10",
-    "socket.io": "~0.9.14"
-  },
-  "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-copy": "~0.4.1",
-    "grunt-contrib-clean": "~0.4.1",
-    "grunt-contrib-concat": "~0.2.0",
-    "grunt-contrib-jshint": "~0.4.3",
-    "grunt-contrib-uglify": "~0.2.0",
-    "grunt-lineending": "~0.1.0"
-  },
-  "preferGlobal": true,
-  "readmeFilename": "README.md"
+	"name": "canvace",
+	"version": "0.9.1",
+	"description": "The Canvace Visual Development Environment.",
+	"keywords": [
+		"canvace",
+		"darblast",
+		"devenv",
+		"visual",
+		"development",
+		"environment",
+		"html5",
+		"application",
+		"game",
+		"stage",
+		"level",
+		"design",
+		"project",
+		"sencha",
+		"extjs",
+		"socket.io"
+	],
+	"homepage": "http://www.canvace.com/",
+	"bugs": "https://github.com/canvace/darblast/issues",
+	"licenses": [
+		"MIT",
+		"GPLv3"
+	],
+	"author": "Alberto La Rocca <alberto.larocca@canvace.com> (https://github.com/71104)",
+	"contributors": [
+		"Daniele Cocca <daniele.cocca@canvace.com> (https://github.com/jmc-88)"
+	],
+	"files": [
+		"bin",
+		"AUTHORS",
+		"README.md"
+	],
+	"bin": {
+		"canvace": "./bin/canvace.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/canvace/darblast.git"
+	},
+	"scripts": {
+		"start": "node bin/canvace.js"
+	},
+	"dependencies": {
+		"npm": "~1.2.18",
+		"async": "~0.2.9",
+		"openurl": "~1.1.0",
+		"rwlock": "~2.1.2",
+		"multiset": "~1.0.0",
+		"express": "~3.2.0",
+		"consolidate": "~0.9.0",
+		"handlebars": "~1.0.10",
+		"socket.io": "~0.9.14"
+	},
+	"devDependencies": {
+		"grunt": "~0.4.1",
+		"grunt-contrib-copy": "~0.4.1",
+		"grunt-contrib-clean": "~0.4.1",
+		"grunt-contrib-concat": "~0.2.0",
+		"grunt-contrib-jshint": "~0.4.3",
+		"grunt-contrib-uglify": "~0.2.0",
+		"grunt-lineending": "~0.1.0"
+	},
+	"preferGlobal": true,
+	"readmeFilename": "README.md"
 }
