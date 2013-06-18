@@ -126,6 +126,7 @@ installSessionlessHandler('/', 'get', function (request, response) {
 					// TODO render error page
 				} else {
 					response.render('main.handlebars', {
+						version: package.version,
 						projectId: JSON.stringify(this.getProjectId()),
 						stageId: JSON.stringify(stages[index]),
 						newMinorVersion: newMinorVersion,
@@ -135,6 +136,7 @@ installSessionlessHandler('/', 'get', function (request, response) {
 			} else {
 				// TODO what if the project doesn't have any stages?
 				response.render('main.handlebars', {
+					version: package.version,
 					projectId: JSON.stringify(this.getProjectId()),
 					stageId: JSON.stringify(stages[0]),
 					newMinorVersion: newMinorVersion,
@@ -144,6 +146,7 @@ installSessionlessHandler('/', 'get', function (request, response) {
 		});
 	} else {
 		response.render('main.handlebars', {
+			version: package.version,
 			newMinorVersion: newMinorVersion,
 			newMajorVersion: newMajorVersion
 		});
