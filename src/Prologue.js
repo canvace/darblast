@@ -28,7 +28,15 @@ var express = require('express');
 var consolidate = require('consolidate');
 var http = require('http');
 
-var package = require(path.join(__dirname, '..', 'package.json'));
+var package = (function () {
+	try {
+		return require(path.join(__dirname, '..', 'package.json'));
+	} catch (e) {
+		return {
+			version: 'unknown'
+		};
+	}
+}());
 
 var configDirectory = (function (homeDirectory) {
 	var dir;
