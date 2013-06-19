@@ -20,6 +20,8 @@
 
 function TileClipboard() {
 	var tiles = {};
+	var changeHandlers = new EventHandlers();
+
 	this.copy = function () {
 		tiles = {};
 		var k = Canvace.layers.getSelected();
@@ -32,6 +34,7 @@ function TileClipboard() {
 				tiles[i][j] = entry;
 			}
 		});
+		changeHandlers.fire(0);
 	};
 	this.cut = function () {
 		tiles = {};
@@ -48,6 +51,7 @@ function TileClipboard() {
 				}
 			});
 		});
+		changeHandlers.fire(0);
 	};
 
 	function forEach(action) {
@@ -68,5 +72,9 @@ function TileClipboard() {
 				Canvace.array.set(i + di, j + dj, k, id);
 			});
 		});
+	};
+
+	this.onChange = function (handler) {
+		return changeHandlers.registerHandler(0, handler);
 	};
 }

@@ -21,22 +21,58 @@
 function PasteTilesTool() {
 	var i0 = 0;
 	var j0 = 0;
+
+	var unregisterClipboardChangeHandler;
+
 	this.activate = function () {
 		var I = 0;
 		var J = 0;
 		var count = 0;
-		Canvace.clipboard.forEach(function (i, j) {
+		Canvace.tileClipboard.forEach(function (i, j) {
 			I += i;
 			J += j;
 			count++;
 		});
 		i0 = Math.round(I / count);
 		j0 = Math.round(J / count);
-		// TODO build and show phantom
+
+		function setCursor() {
+			Canvace.cursor.reset();
+			Canvace.tileClipboard.forEach(function (i, j, k, tileId) {
+				var tile = Canvace.tiles.get(tileId);
+				if (tile.hasFrames()) {
+					var cell = Canvace.view.project(i - i0, j - j0, 0);
+					var offset = tile.getOffset();
+					Canvace.cursor.addElement(
+						Canvace.images.getImage(tile.getFirstFrameId()),
+						cell[0] + offset.x,
+						cell[1] + offset.y
+						);
+				}
+			});
+		}
+
+		unregisterClipboardChangeHandler = Canvace.tileClipboard.onChange(setCursor);
+		setCursor();
+
+		Canvace.cursor.snap(true).show();
+		Canvace.renderer.render();
 	};
+
+	this.deactivate = function () {
+		unregisterClipboardChangeHandler();
+		Canvace.cursor.hide();
+		Canvace.renderer.render();
+	};
+
+	this.mousemove = function (x, y) {
+		Canvace.cursor.moveToXY(x, y);
+		Canvace.renderer.render();
+	};
+
 	this.mouseup = function (x, y) {
 		var cell = Canvace.view.getCell(x, y, Canvace.layers.getSelected());
-		Canvace.clipboard.paste(cell.i - i0, cell.j - j0);
+		Canvace.tileClipboard.paste(cell.i - i0, cell.j - j0);
 		Canvace.renderer.render();
 	};
 }
