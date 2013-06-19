@@ -58,17 +58,41 @@ installHandler([
 				frameCounter: 0,
 				properties: {}
 			};
-			this.putJSON('tiles/' + id, tile, function () {
-				delete tile.refCount;
-				delete tile.frames;
-				delete tile.frameCounter;
-				delete tile.properties;
-				this.broadcast('tiles', 'create', {
-					id: id,
-					descriptor: tile
+			if ('static' in request.body) {
+				tile.static = !!request.body.static;
+			}
+			if ('solid' in request.body) {
+				tile.solid = !!request.body.solid;
+			}
+			if ('offset' in request.body) {
+				tile.offset.x = parseFloat(request.body.offset.x);
+				tile.offset.y = parseFloat(request.body.offset.y);
+			}
+			(function (callback) {
+				if ('firstFrameId' in request.body) {
+					var imageId = parseInt(request.body.firstFrameId, 10);
+					this.refImage(imageId, function () {
+						tile.frames[tile.frameCounter++] = {
+							id: imageId
+						};
+						callback.call(this);
+					});
+				} else {
+					callback.call(this);
+				}
+			}).call(this, function () {
+				this.putJSON('tiles/' + id, tile, function () {
+					delete tile.refCount;
+					delete tile.frames;
+					delete tile.frameCounter;
+					delete tile.properties;
+					this.broadcast('tiles', 'create', {
+						id: id,
+						descriptor: tile
+					});
+					release();
+					response.json(id);
 				});
-				release();
-				response.json(id);
 			});
 		});
 	});

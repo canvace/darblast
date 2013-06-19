@@ -68,7 +68,14 @@ function Entities(ready) {
 
 	Elements.call(this, 'entities', Entity, ready);
 
-	this.create = function () {
-		Canvace.Ajax.post('entities/');
+	this.create = function (firstFrameId, offset) {
+		if (arguments.length) {
+			Canvace.Ajax.post('entities/', {
+				offset: offset,
+				firstFrameId: firstFrameId
+			});
+		} else {
+			Canvace.Ajax.post('entities/');
+		}
 	};
 }

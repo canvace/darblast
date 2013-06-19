@@ -53,8 +53,8 @@ function Tiles(ready) {
 
 	Elements.call(this, 'tiles', Tile, ready);
 
-	this.create = function (iSpan, jSpan, i0, j0) {
-		Canvace.Ajax.post('tiles/', {
+	this.create = function (iSpan, jSpan, i0, j0, firstFrameId, offset) {
+		var data = {
 			layout: {
 				ref: {
 					i: parseInt(i0, 10),
@@ -65,6 +65,11 @@ function Tiles(ready) {
 					j: parseInt(jSpan, 10)
 				}
 			}
-		});
+		};
+		if (arguments.length > 4) {
+			data.firstFrameId = firstFrameId;
+			data.offset = offset;
+		}
+		Canvace.Ajax.post('tiles/', data);
 	};
 }

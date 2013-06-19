@@ -275,11 +275,11 @@ function Elements(type, Element, ready) {
 
 	Canvace.poller.poll(type, 'create', function (parameters) {
 		var id = parameters.id;
-		var element = (elements[id] = parameters.descriptor);
-		element.frames = [];
-		element.properties = {};
-		createHandlers.fire(0, function (handler) {
-			handler(new Element(ElementBase, id, elements[id]));
+		loadElement(id, function (element) {
+			elements[id] = element;
+			createHandlers.fire(0, function (handler) {
+				handler(new Element(ElementBase, id, elements[id]));
+			});
 		});
 	});
 

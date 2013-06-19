@@ -53,17 +53,38 @@ installHandler([
 				frameCounter: 0,
 				properties: {}
 			};
-			this.putJSON('entities/' + id, entity, function () {
-				delete entity.refCount;
-				delete entity.frames;
-				delete entity.frameCounter;
-				delete entity.properties;
-				this.broadcast('entities', 'create', {
-					id: id,
-					descriptor: entity
+			if ('hasPhysics' in request.body) {
+				entity.hasPhysics = !!request.body.hasPhysics;
+			}
+			if ('offset' in request.body) {
+				entity.offset.x = parseFloat(request.body.offset.x);
+				entity.offset.y = parseFloat(request.body.offset.y);
+			}
+			(function (callback) {
+				if ('firstFrameId' in request.body) {
+					var imageId = parseInt(request.body.firstFrameId, 10);
+					this.refImage(imageId, function () {
+						entity.frames[entity.frameCounter++] = {
+							id: imageId
+						};
+						callback.call(this);
+					});
+				} else {
+					callback.call(this);
+				}
+			}).call(this, function () {
+				this.putJSON('entities/' + id, entity, function () {
+					delete entity.refCount;
+					delete entity.frames;
+					delete entity.frameCounter;
+					delete entity.properties;
+					this.broadcast('entities', 'create', {
+						id: id,
+						descriptor: entity
+					});
+					release();
+					response.json(id);
 				});
-				release();
-				response.json(id);
 			});
 		});
 	});

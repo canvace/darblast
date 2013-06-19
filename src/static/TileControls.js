@@ -66,6 +66,11 @@ function TileControls() {
 	});
 
 	controls.onLoadSheet(function () {
+		var imageIds = [];
+		var offset = {
+			x: 0,
+			y: 0
+		};
 		var dialog = (new Ext.window.Window({
 			title: 'Create many tiles',
 			modal: true,
@@ -75,26 +80,36 @@ function TileControls() {
 				xtype: 'button',
 				text: 'Select images...',
 				handler: function () {
-					new ImageSelector(true, function (imageIds) {
-						imageIds.forEach(function () {
-							// TODO
-						});
+					new ImageSelector(true, function (selectedImageIds) {
+						imageIds = selectedImageIds;
 					});
 				}
 			}, {
 				xtype: 'numberfield',
 				fieldLabel: 'Offset X',
-				value: 0
+				value: 0,
+				listeners: {
+					change: function (field, value) {
+						offset.x = value;
+					}
+				}
 			}, {
 				xtype: 'numberfield',
 				fieldLabel: 'Offset Y',
-				value: 0
+				value: 0,
+				listeners: {
+					change: function (field, value) {
+						offset.y = value;
+					}
+				}
 			}],
 			buttons: [{
 				text: 'OK',
 				handler: function () {
 					dialog.close();
-					// TODO
+					imageIds.forEach(function (imageId) {
+						Canvace.tiles.create(1, 1, 0, 0, imageId, offset);
+					});
 				}
 			}, {
 				text: 'Cancel',
