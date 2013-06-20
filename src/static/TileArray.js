@@ -114,6 +114,7 @@ function TileArray(map) {
 			 * another one deletes something that's in his modifications.
 			 */
 			Canvace.history.erase();
+			Canvace.renderer.render();
 		}
 	});
 
