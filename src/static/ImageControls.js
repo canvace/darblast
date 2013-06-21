@@ -21,7 +21,7 @@
 function ImageControls() {
 	var controls = new LowerControls('Images', 0, true, 'image', 'images');
 
-	controls.onAddElement(function () {
+	controls.onAddElement(function (selectedLabels) {
 		var dialog = new Ext.window.Window({
 			title: 'Load new images',
 			modal: true,
@@ -45,7 +45,8 @@ function ImageControls() {
 					fieldLabel: 'Categories',
 					multiSelect: true,
 					width: 300,
-					store: Canvace.images.getAllLabels()
+					store: Canvace.images.getAllLabels(),
+					value: selectedLabels
 				}],
 				buttons: [{
 					text: 'Load',

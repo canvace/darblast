@@ -175,13 +175,27 @@ var LowerControls = (function () {
 				iconCls: 'x-add',
 				tooltip: 'Load ' + elements + '...',
 				handler: function () {
-					handlers.fire('element/add');
+					handlers.fire('element/add', function (handler) {
+						var records = hierarchyTree.getSelectionModel().getSelection();
+						if (records.length) {
+							handler(records[0].get('allLabels'));
+						} else {
+							handler([]);
+						}
+					});
 				}
 			}, {
 				iconCls: 'x-add-picture',
 				tooltip: 'Load many ' + elements + '...',
 				handler: function () {
-					handlers.fire('sheet/load');
+					handlers.fire('sheet/load', function (handler) {
+						var records = hierarchyTree.getSelectionModel().getSelection();
+						if (records.length) {
+							handler(records[0].get('allLabels'));
+						} else {
+							handler([]);
+						}
+					});
 				}
 			}, {
 				iconCls: 'x-edit',
