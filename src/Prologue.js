@@ -104,9 +104,6 @@ var users = (function () {
 		console.log('canvace help');
 		console.log('\tShows this screen.');
 		console.log('');
-		console.log('canvace config port <port>');
-		console.log('\tChanges the TCP port number where the Canvace HTTP server listens.');
-		console.log('');
 		console.log('canvace config browser <bool>');
 		console.log('\tEnables or disables the automatic launching of the browser.');
 		console.log('');
@@ -141,11 +138,8 @@ var users = (function () {
 			break;
 		case 'config':
 			requireArguments(5);
-			if (process.argv[3] !== 'port' && process.argv[3] !== 'browser') {
+			if (process.argv[3] !== 'browser') {
 				showHelp(true);
-			} else if (process.argv[3] === 'port') {
-				config.port = parseInt(process.argv[4], 10);
-				fs.writeFileSync(path.join(configDirectory, 'config.json'), JSON.stringify(config));
 			} else {
 				config.browser = (process.argv[4] === 'true');
 				fs.writeFileSync(path.join(configDirectory, 'config.json'), JSON.stringify(config));
