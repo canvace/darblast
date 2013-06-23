@@ -19,30 +19,38 @@
  */
 
 function Loader(ready) {
-	var tasks = 0;
+	var queue = [];
 	var allowReady = false;
-	this.queue = function (task, callback) {
-		tasks++;
-		task(function (response) {
-			callback && callback(response);
-			if (!--tasks && allowReady) {
-				ready();
-			}
+
+	function queueTask(task, callback) {
+		queue.push(function () {
+			task(function (response) {
+				queue.shift();
+				callback && callback(response);
+				if (queue.length) {
+					queue[0]();
+				} else if (allowReady) {
+					ready();
+				}
+			});
 		});
-	};
+		if (queue.length < 2) {
+			queue[0]();
+		}
+	}
+
+	this.queue = queueTask;
+
 	this.get = function (url, callback) {
-		tasks++;
-		Canvace.Ajax.get(url, function (response) {
-			callback(response);
-			if (!--tasks && allowReady) {
-				ready();
-			}
-		});
+		queueTask(function (callback) {
+			Canvace.Ajax.get(url, callback);
+		}, callback);
 	};
+
 	this.allQueued = function () {
 		if (!allowReady) {
 			allowReady = true;
-			if (!tasks) {
+			if (!queue.length) {
 				ready();
 			}
 		}

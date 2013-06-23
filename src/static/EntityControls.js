@@ -21,7 +21,9 @@
 function EntityControls() {
 	var controls = new LowerControls('Entities', 2, false, 'entity', 'entities');
 
-	controls.onAddElement(Canvace.entities.create);
+	controls.onAddElement(function () {
+		Canvace.entities.create();
+	});
 
 	controls.onLoadSheet(function () {
 		var imageIds = [];
