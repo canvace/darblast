@@ -181,6 +181,8 @@ function Toolbar() {
 	var registerCanvasHandler = (function (canvas) {
 		return function (eventName, callback) {
 			canvas.addEventListener(eventName, function (event) {
+				event.preventDefault();
+				event.stopPropagation();
 				var rect = canvas.getBoundingClientRect();
 				callback.call(
 					canvas,
@@ -188,6 +190,7 @@ function Toolbar() {
 					event.clientY - rect.top,
 					event
 					);
+				return false;
 			}, false);
 		};
 	}(Ext.getDom('canvas')));
