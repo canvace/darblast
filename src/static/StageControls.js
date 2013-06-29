@@ -140,6 +140,7 @@ function StageControls() {
 			hideable: false,
 			draggable: false,
 			sortable: true,
+			flex: 1,
 			editor: 'textfield'
 		}],
 		store: {

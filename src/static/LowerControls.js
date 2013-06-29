@@ -288,6 +288,7 @@ var LowerControls = (function () {
 				hideable: false,
 				draggable: false,
 				sortable: true,
+				flex: 1,
 				menuDisabled: true,
 				editor: 'textfield'
 			}],
