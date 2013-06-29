@@ -233,6 +233,11 @@ function Toolbar() {
 					toolCache = null;
 				}
 			});
+			keyboard.handleDown(KeyEvent.DOM_VK_ESCAPE, function () {
+				toolCache = null;
+				switchTool(dragTool);
+				// FIXME select right toolbar button
+			});
 		}());
 	}(new Keyboard()));
 }
