@@ -18,8 +18,21 @@
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*global KeyEvent: false */
+
 function Toolbar() {
-	var activeTool;
+	var activeTool, dragTool;
+
+	function switchTool(newTool) {
+		if (activeTool.deactivate) {
+			activeTool.deactivate();
+		}
+		var previousTool = activeTool;
+		if ((activeTool = newTool).activate) {
+			activeTool.activate();
+		}
+		return previousTool;
+	}
 
 	function bindCommandHandler(command) {
 		return command.activate;
@@ -27,12 +40,7 @@ function Toolbar() {
 
 	function bindToolHandler(tool) {
 		return function () {
-			if (activeTool.deactivate) {
-				activeTool.deactivate();
-			}
-			if ((activeTool = tool).activate) {
-				activeTool.activate();
-			}
+			switchTool(tool);
 		};
 	}
 
@@ -102,7 +110,7 @@ function Toolbar() {
 		icon: '/resources/images/tools/drag.png',
 		tooltip: 'Drag Tool',
 		pressed: true,
-		handler: bindToolHandler(activeTool = new DragTool())
+		handler: bindToolHandler(activeTool = dragTool = new DragTool())
 	}, new ToolGroup('/resources/images/tools/stamp.png', 'Stamp Tools', [{
 		text: 'Stamp Tile Tool',
 		icon: '/resources/images/tools/stamp_tile.png',
@@ -210,4 +218,21 @@ function Toolbar() {
 	});
 
 	Ext.getCmp('toolbar').add(toolButtons);
+
+	(function (keyboard) {
+		(function () {
+			var toolCache = null;
+			keyboard.handleDown(KeyEvent.DOM_VK_SPACE, function () {
+				if (!toolCache) {
+					toolCache = switchTool(dragTool);
+				}
+			});
+			keyboard.handleUp(KeyEvent.DOM_VK_SPACE, function () {
+				if (toolCache) {
+					switchTool(toolCache);
+					toolCache = null;
+				}
+			});
+		}());
+	}(new Keyboard()));
 }
