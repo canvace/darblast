@@ -37,8 +37,14 @@ function ImageControls() {
 				items: [{
 					xtype: 'filefield',
 					name: 'images',
-					fieldLabel: 'Image file(s)',
-					allowBlank: false
+					buttonOnly: true,
+					buttonText: 'Select image files...',
+					allowBlank: false,
+					listeners: {
+						afterrender: function () {
+							this.fileInputEl.dom.multiple = true;
+						}
+					}
 				}, {
 					xtype: 'combobox',
 					name: 'labels',
@@ -74,7 +80,7 @@ function ImageControls() {
 				title: 'Additional software needed',
 				msg: 'To import image sheets into Canvace you need to install Cairo and restart the environment.<br/>Do you want to open the Cairo website now? (Another browser window will open)',
 				buttons: Ext.MessageBox.YESNO,
-				icon: Ext.MessageBox.INFORMATION,
+				icon: Ext.MessageBox.INFO,
 				fn: function (button) {
 					if (button === 'yes') {
 						window.open('http://cairographics.org/');
