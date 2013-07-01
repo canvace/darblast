@@ -137,14 +137,64 @@ installHandler([
 	'/tiles/:tileId',
 	'/stages/:stageId/tiles/:tileId'
 ], 'delete', function (request, response) {
-	this.tiles.globalWriteLock(function (release) {
-		this.unlink('tiles/' + request.params.tileId, function () {
-			this.broadcast('tiles', 'delete', {
-				id: request.params.tileId
+	this.tiles.globalWriteLock(function (releaseTiles) {
+		function doDelete() {
+			this.unlink('tiles/' + request.params.tileId, function () {
+				this.broadcast('tiles', 'delete', {
+					id: request.params.tileId
+				});
+				releaseTiles();
+				response.json(true);
 			});
-			release();
-			response.json(true);
-		});
+		}
+		if (request.body.force) {
+			this.stages.globalReadLock(function (releaseStages) {
+				this.readdir('stages', function (stageIds) {
+					var count = stageIds.length;
+					stageIds.forEach(function (stageId) {
+						this.stages.modify(stageId, function (stage) {
+							for (var k in stage.map) {
+								for (var i in stage.map[k]) {
+									for (var j in stage.map[k][i]) {
+										if (stage.map[k][i][j] == request.params.tileId) {
+											throw 'Cannot delete the specified tile, it\'s used by the stage "' + stageId + '".';
+										}
+									}
+								}
+							}
+						}, function () {
+							if (!--count) {
+								releaseStages();
+								doDelete();
+							}
+						});
+					}, this);
+				});
+			});
+		} else {
+			this.stages.globalReadLock(function (releaseStages) {
+				this.readdir('stages', function (stageIds) {
+					var count = stageIds.length;
+					stageIds.forEach(function (stageId) {
+						this.getJSON('stages/' + stageId, function (stage) {
+							for (var k in stage.map) {
+								for (var i in stage.map[k]) {
+									for (var j in stage.map[k][i]) {
+										if (stage.map[k][i][j] == request.params.tileId) {
+											throw 'Cannot delete the specified tile, it\'s used by the stage "' + stageId + '".';
+										}
+									}
+								}
+							}
+							if (!--count) {
+								releaseStages();
+								doDelete();
+							}
+						});
+					}, this);
+				});
+			});
+		}
 	});
 });
 
