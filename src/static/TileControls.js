@@ -173,9 +173,9 @@ function TileControls() {
 		dialog.show();
 	});
 
-	controls.onDeleteElement(function (ids) {
+	controls.onDeleteElement(function (ids, force) {
 		ids.forEach(function (id) {
-			Canvace.tiles.get(id)._delete();
+			Canvace.tiles.get(id)._delete(force);
 		});
 	});
 

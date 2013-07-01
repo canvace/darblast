@@ -222,16 +222,19 @@ var LowerControls = (function () {
 				handler: function () {
 					var records = selection.getSelection();
 					if (records.length) {
+						var forceFieldId = Ext.id();
 						Ext.MessageBox.show({
 							title: 'Confirm deletion',
-							msg: 'Do you actually want to delete the ' + records.length + ' selected ' + elements + '?',
+							msg: 'Do you actually want to delete the ' + records.length + ' selected ' + elements + '?<br/>' +
+								'<label><input id="' + forceFieldId + '" type="checkbox"/> Also delete all of their instances in all stages</label>',
 							buttons: Ext.MessageBox.OKCANCEL,
 							icon: Ext.MessageBox.WARNING,
 							fn: function (button) {
 								if (button === 'ok') {
+									var force = Ext.getDom(forceFieldId).checked;
 									(function (ids) {
 										handlers.fire('element/delete', function (handler) {
-											handler(ids);
+											handler(ids, force);
 										});
 									}(records.map(function (record) {
 										return record.get('id');

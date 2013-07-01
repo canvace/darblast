@@ -123,9 +123,9 @@ function EntityControls() {
 		dialog.show();
 	});
 
-	controls.onDeleteElement(function (ids) {
+	controls.onDeleteElement(function (ids, force) {
 		ids.forEach(function (id) {
-			Canvace.entities.get(id)._delete();
+			Canvace.entities.get(id)._delete(force);
 		});
 	});
 
