@@ -48,7 +48,6 @@ installHandler([
 					jSpan: 1
 				},
 				hasPhysics: false,
-				refCount: 0,
 				frames: {},
 				frameCounter: 0,
 				properties: {}
@@ -74,7 +73,6 @@ installHandler([
 				}
 			}).call(this, function () {
 				this.putJSON('entities/' + id, entity, function () {
-					delete entity.refCount;
 					delete entity.frames;
 					delete entity.frameCounter;
 					delete entity.properties;
@@ -95,7 +93,6 @@ installHandler([
 	'/stages/:stageId/entities/:entityId'
 ], 'get', function (request, response) {
 	this.entities.get(request.params.entityId, function (entity) {
-		delete entity.refCount;
 		delete entity.frames;
 		delete entity.frameCounter;
 		delete entity.properties;
@@ -137,23 +134,13 @@ installHandler([
 	'/entities/:entityId',
 	'/stages/:stageId/entities/:entityId'
 ], 'delete', function (request, response) {
-	this.entities.individualReadLock(request.params.entityId, function (releaseEntity) {
-		this.getJSON('entities/' + request.params.entityId, function (entity) {
-			if (entity.refCount > 0) {
-				releaseEntity();
-				response.json(400, 'The specified entity is still in use.');
-			} else {
-				this.entities.globalWriteLock(function (releaseEntities) {
-					this.unlink('entities/' + request.params.entityId, function () {
-						this.broadcast('entities', 'delete', {
-							id: request.params.entityId
-						});
-						releaseEntities();
-						releaseEntity();
-						response.json(true);
-					});
-				});
-			}
+	this.entities.globalWriteLock(function (release) {
+		this.unlink('entities/' + request.params.entityId, function () {
+			this.broadcast('entities', 'delete', {
+				id: request.params.entityId
+			});
+			release();
+			response.json(true);
 		});
 	});
 });
