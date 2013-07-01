@@ -268,8 +268,10 @@ function Elements(type, Element, ready) {
 			return deletePropertyHandlers.registerHandler(id, handler);
 		};
 
-		this._delete = function () {
-			Canvace.Ajax._delete(type + '/' + id);
+		this._delete = function (force) {
+			Canvace.Ajax._delete(type + '/' + id, {
+				force: !!force
+			});
 		};
 	}
 
