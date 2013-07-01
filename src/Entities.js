@@ -134,14 +134,60 @@ installHandler([
 	'/entities/:entityId',
 	'/stages/:stageId/entities/:entityId'
 ], 'delete', function (request, response) {
-	this.entities.globalWriteLock(function (release) {
-		this.unlink('entities/' + request.params.entityId, function () {
-			this.broadcast('entities', 'delete', {
-				id: request.params.entityId
+	this.entities.globalWriteLock(function (releaseEntities) {
+		function doDelete() {
+			this.unlink('entities/' + request.params.entityId, function () {
+				this.broadcast('entities', 'delete', {
+					id: request.params.entityId
+				});
+				releaseEntities();
+				response.json(true);
 			});
-			release();
-			response.json(true);
-		});
+		}
+		if (request.body.force) {
+			this.stages.globalReadLock(function (releaseStages) {
+				this.readdir('stages', function (stageIds) {
+					var count = stageIds.length;
+					stageIds.forEach(function (stageId) {
+						this.stages.modify(stageId, function (stage) {
+							for (var i = 0; i < stage.instances.length; ) {
+								if (stage.instances[i].id != request.params.entityId) {
+									i++;
+								} else {
+									stage.instances.splice(i, 1);
+								}
+							}
+						}, function () {
+							if (!--count) {
+								releaseStages();
+								doDelete();
+							}
+						});
+					}, this);
+				});
+			});
+		} else {
+			this.stages.globalReadLock(function (releaseStages) {
+				this.readdir('stages', function (stageIds) {
+					var count = stageIds.length;
+					stageIds.forEach(function (stageId) {
+						this.getJSON('stages/' + stageId, function (stage) {
+							for (var i = 0; i < stage.instances.length; ) {
+								if (stage.instances[i].id != request.params.entityId) {
+									i++;
+								} else {
+									throw 'Cannot delete the specified entity, it\'s used by the stage "' + stageId + '".';
+								}
+							}
+							if (!--count) {
+								releaseStages();
+								doDelete();
+							}
+						});
+					}, this);
+				});
+			});
+		}
 	});
 });
 

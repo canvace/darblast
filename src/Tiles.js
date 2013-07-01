@@ -157,7 +157,13 @@ installHandler([
 								for (var i in stage.map[k]) {
 									for (var j in stage.map[k][i]) {
 										if (stage.map[k][i][j] == request.params.tileId) {
-											throw 'Cannot delete the specified tile, it\'s used by the stage "' + stageId + '".';
+											delete stage.map[k][i][j];
+											if (!Object.keys(stage.map[k][i]).length) {
+												delete stage.map[k][i];
+											}
+											if (!Object.keys(stage.map[k]).length) {
+												delete stage.map[k];
+											}
 										}
 									}
 								}
