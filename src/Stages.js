@@ -80,7 +80,7 @@ installHandler('/stages/:stageId', 'get', function (request, response) {
 	});
 });
 
-installHandler('/stages/:stageId', 'put', function (request, response) {
+installHandler('/stages/:stageId', 'put', function (request) {
 	function makeSet(array) {
 		var set = {};
 		array.forEach(function (id) {
@@ -128,36 +128,24 @@ installHandler('/stages/:stageId', 'put', function (request, response) {
 		return instances;
 	}
 
-	this.tiles.globalReadLock(function (releaseTiles) {
+	this.tiles.globalReadLock(function () {
 		this.readdir('tiles', function (tileIds) {
-			try {
-				var map = sanitizeMap(makeSet(tileIds));
-				this.entities.globalReadLock(function (releaseEntities) {
-					this.readdir('entities', function (entityIds) {
-						try {
-							var instances = sanitizeInstances(makeSet(entityIds));
-							this.stages.modifySync(request.params.stageId, function (stage) {
-								if ('x0' in request.body) {
-									stage.x0 = parseFloat(request.body.x0);
-								}
-								if ('y0' in request.body) {
-									stage.y0 = parseFloat(request.body.y0);
-								}
-								// FIXME unreference deleted tiles and entities and reference new ones
-								stage.map = map;
-								stage.instances = instances;
-							});
-						} catch (e) {
-							releaseEntities();
-							releaseTiles();
-							response.json(400, e.toString());
+			var map = sanitizeMap(makeSet(tileIds));
+			this.entities.globalReadLock(function () {
+				this.readdir('entities', function (entityIds) {
+					var instances = sanitizeInstances(makeSet(entityIds));
+					this.stages.modifySync(request.params.stageId, function (stage) {
+						if ('x0' in request.body) {
+							stage.x0 = parseFloat(request.body.x0);
 						}
+						if ('y0' in request.body) {
+							stage.y0 = parseFloat(request.body.y0);
+						}
+						stage.map = map;
+						stage.instances = instances;
 					});
 				});
-			} catch (e) {
-				releaseTiles();
-				response.json(400, e.toString());
-			}
+			});
 		});
 	});
 });
