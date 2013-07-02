@@ -138,7 +138,7 @@ installHandler([
 	'/stages/:stageId/tiles/:tileId'
 ], 'delete', function (request, response) {
 	this.tiles.globalWriteLock(function (releaseTiles) {
-		function doDelete() {
+		var doDelete = function () {
 			this.unlink('tiles/' + request.params.tileId, function () {
 				this.broadcast('tiles', 'delete', {
 					id: request.params.tileId
@@ -146,13 +146,13 @@ installHandler([
 				releaseTiles();
 				response.json(true);
 			});
-		}
+		}.bind(this);
 		if (request.body.force) {
 			this.stages.globalReadLock(function (releaseStages) {
 				this.readdir('stages', function (stageIds) {
 					var count = stageIds.length;
 					stageIds.forEach(function (stageId) {
-						this.stages.modify(stageId, function (stage) {
+						this.stages.modifySync(stageId, function (stage) {
 							for (var k in stage.map) {
 								for (var i in stage.map[k]) {
 									for (var j in stage.map[k][i]) {

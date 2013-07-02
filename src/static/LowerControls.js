@@ -225,8 +225,8 @@ var LowerControls = (function () {
 						var forceFieldId = Ext.id();
 						Ext.MessageBox.show({
 							title: 'Confirm deletion',
-							msg: 'Do you actually want to delete the ' + records.length + ' selected ' + elements + '?<br/>' +
-								'<label><input id="' + forceFieldId + '" type="checkbox"/> Also delete all of their instances in all stages</label>',
+							msg: '<p>Do you actually want to delete the ' + records.length + ' selected ' + elements + '?</p>' +
+								'<p><label><input id="' + forceFieldId + '" type="checkbox"/> Also delete all of their instances in all stages</label></p>',
 							buttons: Ext.MessageBox.OKCANCEL,
 							icon: Ext.MessageBox.WARNING,
 							fn: function (button) {
