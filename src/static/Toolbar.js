@@ -21,7 +21,8 @@
 /*global KeyEvent: false */
 
 function Toolbar() {
-	var activeTool, dragTool;
+	var activeTool, dragTool, pasteTilesTool;
+	var undoCommand, redoCommand, copyTilesCommand, cutTilesCommand;
 
 	function switchTool(newTool) {
 		if (activeTool.deactivate) {
@@ -96,13 +97,13 @@ function Toolbar() {
 		icon: '/resources/images/tools/undo.png',
 		tooltip: 'Undo',
 		disabled: true,
-		handler: bindCommandHandler(new UndoCommand())
+		handler: bindCommandHandler(undoCommand = new UndoCommand())
 	}, {
 		id: 'redo-button',
 		icon: '/resources/images/tools/redo.png',
 		tooltip: 'Redo',
 		disabled: true,
-		handler: bindCommandHandler(new RedoCommand())
+		handler: bindCommandHandler(redoCommand = new RedoCommand())
 	}, {
 		xtype: 'tbseparator'
 	}, {
@@ -155,15 +156,15 @@ function Toolbar() {
 	}]), new ToolGroup('/resources/images/tools/clipboard.png', 'Clipboard Tools', [{
 		text: 'Cut Tiles Command',
 		icon: '/resources/images/tools/cut_tiles.png',
-		handler: bindCommandHandler(new CutTilesCommand())
+		handler: bindCommandHandler(cutTilesCommand = new CutTilesCommand())
 	}, {
 		text: 'Copy Tiles Command',
 		icon: '/resources/images/tools/copy_tiles.png',
-		handler: bindCommandHandler(new CopyTilesCommand())
+		handler: bindCommandHandler(copyTilesCommand = new CopyTilesCommand())
 	}, {
 		text: 'Paste Tiles Tool',
 		icon: '/resources/images/tools/paste_tiles.png',
-		handler: bindToolHandler(new PasteTilesTool())
+		handler: bindToolHandler(pasteTilesTool = new PasteTilesTool())
 	}, {
 		text: 'Cut Entities Tool',
 		icon: '/resources/images/tools/cut_entities.png',
@@ -257,6 +258,25 @@ function Toolbar() {
 			if (activeTool.flag) {
 				activeTool.flag(false);
 			}
+		});
+		keyboard.handleDown(KeyEvent.DOM_VK_Z, function () {
+			if (keyboard.isShiftDown()) {
+				redoCommand.activate && redoCommand.activate();
+			} else {
+				undoCommand.activate && undoCommand.activate();
+			}
+		});
+		keyboard.handleDown(KeyEvent.DOM_VK_Y, function () {
+			redoCommand.activate && redoCommand.activate();
+		});
+		keyboard.handleDown(KeyEvent.DOM_VK_C, function () {
+			copyTilesCommand.activate && copyTilesCommand.activate();
+		});
+		keyboard.handleDown(KeyEvent.DOM_VK_X, function () {
+			cutTilesCommand.activate && cutTilesCommand.activate();
+		});
+		keyboard.handleDown(KeyEvent.DOM_VK_V, function () {
+			switchTool(pasteTilesTool);
 		});
 	}(new Keyboard()));
 }
