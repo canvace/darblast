@@ -242,5 +242,21 @@ function Toolbar() {
 				// FIXME select right toolbar button
 			});
 		}());
+		keyboard.handleDown([
+			KeyEvent.DOM_VK_SHIFT,
+			KeyEvent.DOM_VK_CONTROL
+		], function () {
+			if (activeTool.flag) {
+				activeTool.flag(true);
+			}
+		});
+		keyboard.handleUp([
+			KeyEvent.DOM_VK_SHIFT,
+			KeyEvent.DOM_VK_CONTROL
+		], function () {
+			if (activeTool.flag) {
+				activeTool.flag(false);
+			}
+		});
 	}(new Keyboard()));
 }

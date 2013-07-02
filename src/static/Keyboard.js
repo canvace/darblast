@@ -122,11 +122,16 @@ function Keyboard() {
 	var downHandlers = {};
 	var upHandlers = {};
 
+	var shiftDown = false;
+	var controlDown = false;
+
 	window.addEventListener('keydown', function (event) {
 		if (event.keyCode in downHandlers) {
 			event.preventDefault();
 			event.stopPropagation();
-			downHandlers[event.keyCode]();
+			downHandlers[event.keyCode].fastForEach(function (handler) {
+				handler();
+			});
 			return false;
 		}
 	}, false);
@@ -134,16 +139,61 @@ function Keyboard() {
 		if (event.keyCode in upHandlers) {
 			event.preventDefault();
 			event.stopPropagation();
-			upHandlers[event.keyCode]();
+			upHandlers[event.keyCode].fastForEach(function (handler) {
+				handler();
+			});
 			return false;
 		}
 	}, false);
 
-	this.handleDown = function (key, handler) {
-		downHandlers[key] = handler;
+	function registerHandler(map, key, handler) {
+		if (!(key in map)) {
+			map[key] = new MultiSet();
+		}
+		return map[key].add(handler);
+	}
+
+	registerHandler(downHandlers, window.KeyEvent.DOM_VK_SHIFT, function () {
+		shiftDown = true;
+	});
+	registerHandler(upHandlers, window.KeyEvent.DOM_VK_SHIFT, function () {
+		shiftDown = false;
+	});
+	registerHandler(downHandlers, window.KeyEvent.DOM_VK_CONTROL, function () {
+		controlDown = true;
+	});
+	registerHandler(upHandlers, window.KeyEvent.DOM_VK_CONTROL, function () {
+		shiftDown = false;
+	});
+
+	function registerMultiHandler(map, keyOrKeys, handler) {
+		if (Array.isArray(keyOrKeys)) {
+			return (function (removers) {
+				return function () {
+					removers.forEach(function (remover) {
+						remover();
+					});
+				};
+			}(keyOrKeys.map(function (key) {
+				return registerHandler(map, key, handler);
+			})));
+		} else {
+			return registerHandler(map, keyOrKeys, handler);
+		}
+	}
+
+	this.handleDown = function (keyOrKeys, handler) {
+		return registerMultiHandler(downHandlers, keyOrKeys, handler);
 	};
 
-	this.handleUp = function (key, handler) {
-		upHandlers[key] = handler;
+	this.handleUp = function (keyOrKeys, handler) {
+		return registerMultiHandler(upHandlers, keyOrKeys, handler);
+	};
+
+	this.isShiftDown = function () {
+		return shiftDown;
+	};
+	this.isControlDown = function () {
+		return controlDown;
 	};
 }

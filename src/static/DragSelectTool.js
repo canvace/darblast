@@ -44,6 +44,7 @@ function DragSelectTool() {
 			Canvace.selection.dismiss();
 		}
 		Canvace.selection.setCurrentArea(x0 = x, y0 = y, x, y);
+		Canvace.cursor.hide();
 		Canvace.renderer.render();
 	};
 	this.mousemove = function (x, y) {
@@ -57,5 +58,6 @@ function DragSelectTool() {
 	};
 	this.mouseup = function () {
 		Canvace.selection.freezeCurrentArea();
+		Canvace.cursor.show();
 	};
 }
