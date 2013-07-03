@@ -45,39 +45,41 @@ function Toolbar() {
 		};
 	}
 
+	function doSave() {
+		var origin = Canvace.view.getOrigin();
+		var map = {};
+		Canvace.array.forEach(function (i, j, k, id) {
+			if (!(k in map)) {
+				map[k] = {};
+			}
+			if (!(i in map[k])) {
+				map[k][i] = {};
+			}
+			map[k][i][j] = id;
+		});
+		var instances = [];
+		Canvace.instances.forEach(function (instance) {
+			var position = instance.getPosition();
+			instances.push({
+				id: instance.getEntity().getId(),
+				i: position.i,
+				j: position.j,
+				k: position.k,
+				properties: {} // FIXME instance properties not implemented
+			});
+		});
+		Canvace.Ajax.put('/stages/' + Canvace.stages.getCurrent().getId(), {
+			x0: origin.x,
+			y0: origin.y,
+			map: map,
+			instances: instances
+		}, Canvace.history.clearDirty);
+	}
+
 	var toolButtons = [{
 		icon: '/resources/images/tools/save.png',
 		tooltip: 'Save',
-		handler: function () {
-			var origin = Canvace.view.getOrigin();
-			var map = {};
-			Canvace.array.forEach(function (i, j, k, id) {
-				if (!(k in map)) {
-					map[k] = {};
-				}
-				if (!(i in map[k])) {
-					map[k][i] = {};
-				}
-				map[k][i][j] = id;
-			});
-			var instances = [];
-			Canvace.instances.forEach(function (instance) {
-				var position = instance.getPosition();
-				instances.push({
-					id: instance.getEntity().getId(),
-					i: position.i,
-					j: position.j,
-					k: position.k,
-					properties: {} // FIXME instance properties not implemented
-				});
-			});
-			Canvace.Ajax.put('/stages/' + Canvace.stages.getCurrent().getId(), {
-				x0: origin.x,
-				y0: origin.y,
-				map: map,
-				instances: instances
-			}, Canvace.history.clearDirty);
-		}
+		handler: doSave
 	}, {
 		icon: '/resources/images/tools/export.png',
 		tooltip: 'Export...',
@@ -259,6 +261,7 @@ function Toolbar() {
 				activeTool.flag(false);
 			}
 		});
+		keyboard.handleDown(KeyEvent.DOM_VK_S, doSave);
 		keyboard.handleDown(KeyEvent.DOM_VK_Z, function () {
 			if (keyboard.isShiftDown()) {
 				redoCommand.activate && redoCommand.activate();
