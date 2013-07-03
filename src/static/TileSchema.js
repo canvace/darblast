@@ -22,16 +22,22 @@ Ext.define('Darblast.ux.TileSchema', {
 	extend: 'Ext.Component',
 	alias: 'widget.tileschema',
 
+	iSpan: 1,
+	jSpan: 1,
+	i0: 0,
+	j0: 0,
+
 	constructor: function (config) {
 		config = config || {};
 		var containerId = Ext.id();
 		config.html = '<div id="' + containerId + '" style="padding: 24px"><div class="offset" style="position: relative; left: 0px; top: 0px"></div></div>';
 		this.callParent([config]);
 		this.containerId = containerId;
-		this.iSpan = 1;
-		this.jSpan = 1;
+		this.cursor = Canvace.view.generateTileHighlight();
+		this.cursor.style.position = 'absolute';
 		this.on('afterrender', function () {
-			this.setSpan(1, 1);
+			this.setSpan(this.iSpan, this.jSpan);
+			this.setCell(this.i0, this.j0);
 		});
 	},
 
@@ -45,20 +51,40 @@ Ext.define('Darblast.ux.TileSchema', {
 	setSpan: function (i, j) {
 		this.iSpan = i;
 		this.jSpan = j;
+
 		var container = document.querySelector('#' + this.containerId);
 		var offset = document.querySelector('#' + this.containerId + ' .offset');
+
 		var oldCanvas = document.querySelector('#' + this.containerId + ' .offset canvas');
 		var newCanvas = Canvace.view.generateBox(i, j, 0);
+
+		newCanvas.addEventListener('click', function (event) {
+			var cell = Canvace.view.getCell(event.clientX, event.clientY, 0);
+			this.setCell(cell.i, cell.j);
+		}.bind(this), false);
+
 		if (oldCanvas) {
 			offset.replaceChild(oldCanvas, newCanvas);
 		} else {
 			offset.appendChild(newCanvas);
-			var cursor = Canvace.view.generateTileHighlight();
-			cursor.style.position = 'absolute';
-			cursor.style.left = 0;
-			cursor.style.top = 0;
-			offset.appendChild(cursor);
+			offset.appendChild(this.cursor);
 		}
+
 		this.setSize(container.clientWidth, container.clientHeight);
+	},
+
+	getCell: function () {
+		return {
+			i: this.i0,
+			j: this.j0
+		};
+	},
+
+	setCell: function (i0, j0) {
+		this.i0 = i0;
+		this.j0 = j0;
+		var position = Canvace.view.project(i0, j0, 0);
+		this.cursor.style.left = position[0] + 'px';
+		this.cursor.style.top = position[1] + 'px';
 	}
 });

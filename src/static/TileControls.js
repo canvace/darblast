@@ -42,7 +42,9 @@ function TileControls() {
 					minValue: 1,
 					value: 1
 				}, {
-					xtype: 'tileschema'
+					xtype: 'tileschema',
+					iSpan: 2,
+					jSpan: 2
 				}]
 			},
 			buttons: [{
