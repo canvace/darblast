@@ -42,7 +42,7 @@ function TileControls() {
 					minValue: 1,
 					value: 1
 				}, {
-					xtype: 'box'
+					xtype: 'tileschema'
 				}]
 			},
 			buttons: [{
