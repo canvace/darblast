@@ -125,7 +125,8 @@ module.exports = function (grunt) {
 					supernew: true,
 					browser: true,
 					globals: {
-						Ext: true
+						Ext: false,
+						Darblast: false
 					}
 				},
 				files: {
