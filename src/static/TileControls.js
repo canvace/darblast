@@ -32,7 +32,6 @@ function TileControls() {
 				layout: 'vbox',
 				items: [{
 					xtype: 'numberfield',
-					id: 'i-span-field',
 					fieldLabel: 'I span',
 					minValue: 1,
 					value: 1,
@@ -44,7 +43,6 @@ function TileControls() {
 					}
 				}, {
 					xtype: 'numberfield',
-					id: 'j-span-field',
 					fieldLabel: 'J span',
 					minValue: 1,
 					value: 1,

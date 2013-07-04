@@ -67,7 +67,7 @@ Ext.define('Darblast.ux.TileSchema', {
 		newCanvas.addEventListener('click', (function (thisObject) {
 			var metrics = Canvace.view.calculateBoxMetrics(i, j, 0);
 			return function (event) {
-				var cell = Canvace.view.getCell2(event.clientX, event.clientY, 0, -metrics.left, -metrics.top);
+				var cell = Canvace.view.getCell2(event.offsetX, event.offsetY, 0, -metrics.left, -metrics.top);
 				this.setCell(cell.i, cell.j);
 			}.bind(thisObject);
 		}(this)), false);
