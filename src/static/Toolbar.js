@@ -232,12 +232,14 @@ function Toolbar() {
 				if (!toolCache) {
 					toolCache = switchTool(dragTool);
 				}
+				return false;
 			});
 			keyboard.handleUp(KeyEvent.DOM_VK_SPACE, function () {
 				if (toolCache) {
 					switchTool(toolCache);
 					toolCache = null;
 				}
+				return false;
 			});
 			keyboard.handleDown(KeyEvent.DOM_VK_ESCAPE, function () {
 				toolCache = null;
@@ -261,7 +263,10 @@ function Toolbar() {
 				activeTool.flag(false);
 			}
 		});
-		keyboard.handleDown(KeyEvent.DOM_VK_S, doSave);
+		keyboard.handleDown(KeyEvent.DOM_VK_S, function () {
+			doSave();
+			return false;
+		});
 		keyboard.handleDown(KeyEvent.DOM_VK_Z, function () {
 			if (keyboard.isShiftDown()) {
 				redoCommand.activate && redoCommand.activate();

@@ -29,10 +29,15 @@ Ext.define('Darblast.ux.TileSchema', {
 
 	constructor: function (config) {
 		config = config || {};
-		var containerId = Ext.id();
-		config.html = '<div id="' + containerId + '" style="padding: 24px"><div class="offset" style="position: relative; left: 0px; top: 0px"></div></div>';
+		var frameId = Ext.id();
+		config.html =
+			'<div id="' + frameId + '" style="padding: 24px; display: inline-block">' +
+			'	<div class="container" style="display: inline-block; position: relative; left: 0px; top: 0px">' +
+			'		<div class="offset" style="position: absolute"></div>' +
+			'	</div>' +
+			'</div>';
 		this.callParent([config]);
-		this.containerId = containerId;
+		this.frameId = frameId;
 		this.cursor = Canvace.view.generateTileHighlight();
 		this.cursor.style.position = 'absolute';
 		this.on('afterrender', function () {
@@ -52,25 +57,35 @@ Ext.define('Darblast.ux.TileSchema', {
 		this.iSpan = i;
 		this.jSpan = j;
 
-		var container = document.querySelector('#' + this.containerId);
-		var offset = document.querySelector('#' + this.containerId + ' .offset');
+		var frame = document.querySelector('#' + this.frameId);
+		var container = document.querySelector('#' + this.frameId + ' .container');
+		var offset = document.querySelector('#' + this.frameId + ' .container .offset');
 
-		var oldCanvas = document.querySelector('#' + this.containerId + ' .offset canvas');
+		var oldCanvas = document.querySelector('#' + this.frameId + ' .container canvas');
 		var newCanvas = Canvace.view.generateBox(i, j, 0);
 
-		newCanvas.addEventListener('click', function (event) {
-			var cell = Canvace.view.getCell(event.clientX, event.clientY, 0);
-			this.setCell(cell.i, cell.j);
-		}.bind(this), false);
+		newCanvas.addEventListener('click', (function (thisObject) {
+			var metrics = Canvace.view.calculateBoxMetrics(i, j, 0);
+			return function (event) {
+				var cell = Canvace.view.getCell2(event.clientX, event.clientY, 0, -metrics.left, -metrics.top);
+				this.setCell(cell.i, cell.j);
+			}.bind(thisObject);
+		}(this)), false);
 
 		if (oldCanvas) {
-			offset.replaceChild(oldCanvas, newCanvas);
+			container.replaceChild(newCanvas, oldCanvas);
 		} else {
-			offset.appendChild(newCanvas);
+			(function () {
+				var metrics = Canvace.view.calculateBoxMetrics(1, 1, 0);
+				offset.style.left = metrics.left + 'px';
+				offset.style.top = metrics.top + 'px';
+			}());
+			container.insertBefore(newCanvas, offset);
 			offset.appendChild(this.cursor);
 		}
+		this.setCell(this.i0, this.j0);
 
-		this.setSize(container.clientWidth, container.clientHeight);
+		this.setSize(frame.clientWidth, frame.clientHeight);
 	},
 
 	getCell: function () {
@@ -84,7 +99,8 @@ Ext.define('Darblast.ux.TileSchema', {
 		this.i0 = i0;
 		this.j0 = j0;
 		var position = Canvace.view.project(i0, j0, 0);
-		this.cursor.style.left = position[0] + 'px';
-		this.cursor.style.top = position[1] + 'px';
+		var metrics = Canvace.view.calculateBoxMetrics(this.iSpan, this.jSpan, 0);
+		this.cursor.style.left = (position[0] - metrics.left) + 'px';
+		this.cursor.style.top = (position[1] - metrics.top) + 'px';
 	}
 });

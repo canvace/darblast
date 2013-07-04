@@ -72,6 +72,16 @@ function View(matrix, x0, y0) {
 			k: k
 		};
 	};
+	this.getCell2 = function (x, y, k, x0, y0) {
+		var z = (k - inv[2][0] * (x - x0) - inv[2][1] * (y - y0)) / inv[2][2];
+		var i = Math.floor(inv[0][0] * (x - x0) + inv[0][1] * (y - y0) + inv[0][2] * z);
+		var j = Math.floor(inv[1][0] * (x - x0) + inv[1][1] * (y - y0) + inv[1][2] * z);
+		return {
+			i: i,
+			j: j,
+			k: k
+		};
+	};
 
 	this.calculateBoxMetrics = (function () {
 		var points = [

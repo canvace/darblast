@@ -127,22 +127,20 @@ function Keyboard() {
 
 	window.addEventListener('keydown', function (event) {
 		if (event.keyCode in downHandlers) {
-			event.preventDefault();
-			event.stopPropagation();
 			downHandlers[event.keyCode].fastForEach(function (handler) {
-				handler();
+				if (handler() === false) {
+					event.preventDefault();
+				}
 			});
-			return false;
 		}
 	}, false);
 	window.addEventListener('keyup', function (event) {
 		if (event.keyCode in upHandlers) {
-			event.preventDefault();
-			event.stopPropagation();
 			upHandlers[event.keyCode].fastForEach(function (handler) {
-				handler();
+				if (handler() === false) {
+					event.preventDefault();
+				}
 			});
-			return false;
 		}
 	}, false);
 
