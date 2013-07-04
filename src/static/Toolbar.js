@@ -264,27 +264,44 @@ function Toolbar() {
 			}
 		});
 		keyboard.handleDown(KeyEvent.DOM_VK_S, function () {
-			doSave();
-			return false;
+			if (keyboard.isControlDown()) {
+				doSave();
+				return false;
+			}
 		});
 		keyboard.handleDown(KeyEvent.DOM_VK_Z, function () {
-			if (keyboard.isShiftDown()) {
-				redoCommand.activate && redoCommand.activate();
-			} else {
-				undoCommand.activate && undoCommand.activate();
+			if (keyboard.isControlDown()) {
+				if (keyboard.isShiftDown()) {
+					redoCommand.activate && redoCommand.activate();
+				} else {
+					undoCommand.activate && undoCommand.activate();
+				}
+				return false;
 			}
 		});
 		keyboard.handleDown(KeyEvent.DOM_VK_Y, function () {
-			redoCommand.activate && redoCommand.activate();
+			if (keyboard.isControlDown()) {
+				redoCommand.activate && redoCommand.activate();
+				return false;
+			}
 		});
 		keyboard.handleDown(KeyEvent.DOM_VK_C, function () {
-			copyTilesCommand.activate && copyTilesCommand.activate();
+			if (keyboard.isControlDown()) {
+				copyTilesCommand.activate && copyTilesCommand.activate();
+				return false;
+			}
 		});
 		keyboard.handleDown(KeyEvent.DOM_VK_X, function () {
-			cutTilesCommand.activate && cutTilesCommand.activate();
+			if (keyboard.isControlDown()) {
+				cutTilesCommand.activate && cutTilesCommand.activate();
+				return false;
+			}
 		});
 		keyboard.handleDown(KeyEvent.DOM_VK_V, function () {
-			switchTool(pasteTilesTool);
+			if (keyboard.isControlDown()) {
+				switchTool(pasteTilesTool);
+				return false;
+			}
 		});
 	}(new Keyboard()));
 }
