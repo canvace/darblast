@@ -29,18 +29,28 @@ Ext.define('Darblast.ux.TileSchema', {
 
 	constructor: function (config) {
 		config = config || {};
-		var frameId = Ext.id();
-		config.html =
-			'<div id="' + frameId + '" style="padding: 24px; display: inline-block">' +
-			'	<div class="container" style="display: inline-block; position: relative; left: 0px; top: 0px">' +
-			'		<div class="offset" style="position: absolute"></div>' +
-			'	</div>' +
-			'</div>';
+		config.autoEl = {
+			tag: 'div',
+			children: [{
+				tag: 'div',
+				cls: 'frame',
+				style: 'padding: 24px; display: inline-block',
+				children: [{
+					tag: 'div',
+					cls: 'container',
+					style: 'display: inline-block; position: relative; left: 0px; top: 0px',
+					children: [{
+						tag: 'div',
+						cls: 'offset',
+						style: 'position: absolute'
+					}]
+				}]
+			}]
+		};
 		this.callParent([config]);
-		this.frameId = frameId;
 		this.cursor = Canvace.view.generateTileHighlight();
 		this.cursor.style.position = 'absolute';
-		this.on('afterrender', function () {
+		this.on('render', function () {
 			this.setSpan(this.iSpan, this.jSpan);
 			this.setCell(this.i0, this.j0);
 		});
@@ -57,11 +67,20 @@ Ext.define('Darblast.ux.TileSchema', {
 		this.iSpan = i;
 		this.jSpan = j;
 
-		var frame = document.querySelector('#' + this.frameId);
-		var container = document.querySelector('#' + this.frameId + ' .container');
-		var offset = document.querySelector('#' + this.frameId + ' .container .offset');
+		var element = this.getEl();
 
-		var oldCanvas = document.querySelector('#' + this.frameId + ' .container canvas');
+		var frame = element.down('.frame').dom;
+		var container = element.down('.frame .container').dom;
+		var offset = element.down('.frame .container .offset').dom;
+
+		var oldCanvas = (function () {
+			var canvasElement = element.down('.container canvas');
+			if (canvasElement) {
+				return canvasElement.dom;
+			} else {
+				return null;
+			}
+		}());
 		var newCanvas = Canvace.view.generateBox(i, j, 0);
 
 		newCanvas.addEventListener('click', (function (thisObject) {
@@ -96,9 +115,9 @@ Ext.define('Darblast.ux.TileSchema', {
 	},
 
 	setCell: function (i0, j0) {
-		this.i0 = i0;
-		this.j0 = j0;
-		var position = Canvace.view.project(i0, j0, 0);
+		this.i0 = Math.min(this.iSpan - 1, Math.max(0, i0));
+		this.j0 = Math.min(this.jSpan - 1, Math.max(0, j0));
+		var position = Canvace.view.project(this.i0, this.j0, 0);
 		var metrics = Canvace.view.calculateBoxMetrics(this.iSpan, this.jSpan, 0);
 		this.cursor.style.left = (position[0] - metrics.left) + 'px';
 		this.cursor.style.top = (position[1] - metrics.top) + 'px';
