@@ -74,7 +74,7 @@ function TileArray(map) {
 		var layout = tile.getLayout();
 		for (var i1 = i - layout.ref.i; i1 < i - layout.ref.i + layout.span.i; i1++) {
 			for (var j1 = j - layout.ref.j; j1 < j - layout.ref.j + layout.span.j; j1++) {
-				if ((i != i1) && (j != j1)) {
+				if ((i != i1) || (j != j1)) {
 					putValue(i1, j1, ref);
 				}
 			}
