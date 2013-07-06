@@ -19,7 +19,7 @@
  */
 
 function FullRendering() {
-	var zoom = 100;
+	var zoom = Ext.util.Cookies.get('full-rendering-zoom') || 100;
 	var renderer;
 
 	function render() {
@@ -64,7 +64,11 @@ function FullRendering() {
 			value: zoom,
 			listeners: {
 				change: function (field, value) {
-					zoom = value;
+					Ext.util.Cookies.set(
+						'full-rendering-zoom',
+						zoom = value,
+						new Date(Date.now() + 1000 * 60 * 60 * 24 * 30 * 365)
+						);
 					if (dialog) {
 						render.bind(dialog)();
 					}
