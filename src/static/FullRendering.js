@@ -45,7 +45,7 @@ function FullRendering() {
 		}],
 		listeners: {
 			render: function () {
-				// TODO
+				(new FullRenderer(this.getEl().down('canvas.canvas').dom)).render();
 			}
 		}
 	}).show();

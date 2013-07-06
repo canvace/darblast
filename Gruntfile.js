@@ -47,6 +47,7 @@ module.exports = function (grunt) {
 					'src/static/EntityClipboard.js',
 					'src/static/Cursor.js',
 					'src/static/Renderer.js',
+					'src/static/FullRenderer.js',
 					'src/static/FullRendering.js',
 					'src/static/ToolGroup.js',
 					'src/static/UndoCommand.js',
