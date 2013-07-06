@@ -59,7 +59,7 @@ function FullRenderer(canvas) {
 		}
 	}
 
-	this.render = function () {
+	this.render = function (scaleFactor) {
 		Canvace.array.forEach(function (i, j, k, id) {
 			processElement(Canvace.tiles.get(id), i, j, k);
 		});
@@ -68,9 +68,10 @@ function FullRenderer(canvas) {
 			processElement(instance, position.i, position.j, position.k);
 		});
 		if (!first) {
-			canvas.width = right - left + 1;
-			canvas.height = bottom - top + 1;
+			canvas.width = Math.ceil((right - left + 1) * scaleFactor);
+			canvas.height = Math.ceil((bottom - top + 1) * scaleFactor);
 			var context = canvas.getContext('2d');
+			context.scale(scaleFactor, scaleFactor);
 			context.translate(-left, -top);
 			for (var z = minZ; z <= maxZ; z++) {
 				if (sections[z]) {

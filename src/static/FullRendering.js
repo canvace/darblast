@@ -19,12 +19,58 @@
  */
 
 function FullRendering() {
-	var dialog = new Ext.window.Window({
+	var zoom = 100;
+	var dialog, renderer;
+
+	function render() {
+		if (dialog) {
+			if (!renderer) {
+				renderer = new FullRenderer(dialog.getEl().down('canvas.canvas').dom);
+			}
+			renderer.render(zoom / 100);
+		}
+	}
+
+	dialog = new Ext.window.Window({
 		title: 'Full rendering',
 		modal: false,
 		resizable: true,
 		width: 800,
 		height: 600,
+		tbar: [{
+			xtype: 'combobox',
+			fieldLabel: 'Zoom',
+			store: [
+				[100, '100%'],
+				[95, '95%'],
+				[90, '90%'],
+				[85, '85%'],
+				[80, '80%'],
+				[75, '75%'],
+				[70, '70%'],
+				[65, '65%'],
+				[60, '60%'],
+				[55, '55%'],
+				[50, '50%'],
+				[45, '45%'],
+				[40, '40%'],
+				[35, '35%'],
+				[30, '30%'],
+				[25, '25%'],
+				[20, '20%'],
+				[15, '15%'],
+				[10, '10%'],
+				[5, '5%'],
+				[0, '0%']
+			],
+			value: zoom,
+			listeners: {
+				change: function (field, value) {
+					zoom = value;
+					render();
+				}
+			}
+		}],
 		layout: 'fit',
 		items: {
 			xtype: 'box',
@@ -44,9 +90,7 @@ function FullRendering() {
 			}
 		}],
 		listeners: {
-			render: function () {
-				(new FullRenderer(this.getEl().down('canvas.canvas').dom)).render();
-			}
+			render: render
 		}
 	}).show();
 }
