@@ -81,6 +81,12 @@ function Toolbar() {
 		tooltip: 'Save',
 		handler: doSave
 	}, {
+		icon: '/resources/images/tools/full.png',
+		tooltip: 'Full rendering...',
+		handler: function () {
+			new FullRendering();
+		}
+	}, {
 		icon: '/resources/images/tools/export.png',
 		tooltip: 'Export...',
 		handler: function () {
