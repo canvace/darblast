@@ -20,9 +20,9 @@
 
 function PositioningControls(element) {
 	var layout = element.getLayout();
-	var metrics = Canvace.view.calculateBoxMetrics(layout.span.i, layout.span.j, 1);
+	var metrics = Canvace.view.calculateBoxMetrics(layout.span.i, layout.span.j, 1, layout.ref.i, layout.ref.j, 0);
 
-	var guidelines = Canvace.view.generateBox(layout.span.i, layout.span.j, 1);
+	var guidelines = Canvace.view.generateBox(layout.span.i, layout.span.j, 1, layout.ref.i, layout.ref.j, 0);
 	guidelines.style.position = 'absolute';
 	guidelines.style.left = metrics.left + 'px';
 	guidelines.style.top = metrics.top + 'px';

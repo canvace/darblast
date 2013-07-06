@@ -93,21 +93,24 @@ function View(matrix, x0, y0) {
 			[0, 1, 1],
 			[1, 1, 1]
 		];
-		return function (i, j, k) {
+		return function (i, j, k, i0, j0, k0) {
+			i0 = i0 || 0;
+			j0 = j0 || 0;
+			k0 = k0 || 0;
 			var result = {
 				left: 0,
 				top: 0,
 				right: 0,
 				bottom: 0
 			};
-			for (var l in points) {
-				var x = Math.round(mat[0][0] * points[l][0] * i + mat[0][1] * points[l][1] * j + mat[0][2] * points[l][2] * k);
-				var y = Math.round(mat[1][0] * points[l][0] * i + mat[1][1] * points[l][1] * j + mat[1][2] * points[l][2] * k);
+			points.forEach(function (point) {
+				var x = Math.round(mat[0][0] * (point[0] * i - i0) + mat[0][1] * (point[1] * j - j0) + mat[0][2] * (point[2] * k - k0));
+				var y = Math.round(mat[1][0] * (point[0] * i - i0) + mat[1][1] * (point[1] * j - j0) + mat[1][2] * (point[2] * k - k0));
 				result.left = Math.min(result.left, x);
 				result.top = Math.min(result.top, y);
 				result.right = Math.max(result.right, x);
 				result.bottom = Math.max(result.bottom, y);
-			}
+			});
 			result.width = result.right - result.left + 1;
 			result.height = result.bottom - result.top + 1;
 			return result;
@@ -129,15 +132,18 @@ function View(matrix, x0, y0) {
 			[0, 1, 1],
 			[1, 1, 1]
 		];
-		return function (di, dj, dk) {
+		return function (di, dj, dk, i0, j0, k0) {
+			i0 = i0 || 0;
+			j0 = j0 || 0;
+			k0 = k0 || 0;
 			var canvas = document.createElement('canvas');
 			var left = 0;
 			var top = 0;
 			var right = 0;
 			var bottom = 0;
 			points.forEach(function (point) {
-				var x = Math.round(mat[0][0] * point[0] * di + mat[0][1] * point[1] * dj + mat[0][2] * point[2] * dk);
-				var y = Math.round(mat[1][0] * point[0] * di + mat[1][1] * point[1] * dj + mat[1][2] * point[2] * dk);
+				var x = Math.round(mat[0][0] * (point[0] * di - i0) + mat[0][1] * (point[1] * dj - j0) + mat[0][2] * (point[2] * dk - k0));
+				var y = Math.round(mat[1][0] * (point[0] * di - i0) + mat[1][1] * (point[1] * dj - j0) + mat[1][2] * (point[2] * dk - k0));
 				left = Math.min(left, x);
 				top = Math.min(top, y);
 				right = Math.max(right, x);
@@ -162,14 +168,14 @@ function View(matrix, x0, y0) {
 						drawLine(i, j, 0, i, j, dk);
 					}
 				}
-			})(function (i0, j0, k0, i1, j1, k1) {
+			})(function (i1, j1, k1, i2, j2, k2) {
 				context.moveTo(
-					mat[0][0] * i0 + mat[0][1] * j0 + mat[0][2] * k0,
-					mat[1][0] * i0 + mat[1][1] * j0 + mat[1][2] * k0
+					mat[0][0] * (i1 - i0) + mat[0][1] * (j1 - j0) + mat[0][2] * (k1 - k0),
+					mat[1][0] * (i1 - i0) + mat[1][1] * (j1 - j0) + mat[1][2] * (k1 - k0)
 					);
 				context.lineTo(
-					mat[0][0] * i1 + mat[0][1] * j1 + mat[0][2] * k1,
-					mat[1][0] * i1 + mat[1][1] * j1 + mat[1][2] * k1
+					mat[0][0] * (i2 - i0) + mat[0][1] * (j2 - j0) + mat[0][2] * (k2 - k0),
+					mat[1][0] * (i2 - i0) + mat[1][1] * (j2 - j0) + mat[1][2] * (k2 - k0)
 					);
 			});
 			context.stroke();
