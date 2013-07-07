@@ -120,7 +120,7 @@ function Toolbar() {
 		tooltip: 'Drag Tool',
 		pressed: true,
 		handler: bindToolHandler(activeTool = dragTool = new DragTool())
-	}, new ToolGroup('/resources/images/tools/stamp.png', 'Stamp Tools', [{
+	}, new ToolGroup([{
 		text: 'Stamp Tile Tool',
 		icon: '/resources/images/tools/stamp_tile.png',
 		handler: bindToolHandler(new StampTileTool())
@@ -128,7 +128,7 @@ function Toolbar() {
 		text: 'Stamp Entity Tool',
 		icon: '/resources/images/tools/stamp_entity.png',
 		handler: bindToolHandler(new StampEntityTool())
-	}]), new ToolGroup('/resources/images/tools/fill.png', 'Fill Tools', [{
+	}]), new ToolGroup([{
 		text: 'Fill Area Tool',
 		icon: '/resources/images/tools/fill_area.png',
 		handler: bindToolHandler(new FillAreaTool())
@@ -141,7 +141,7 @@ function Toolbar() {
 		icon: '/resources/images/tools/move_entity.png',
 		tooltip: 'Move Entity Tool',
 		handler: bindToolHandler(new MoveEntityTool())
-	}, new ToolGroup('/resources/images/tools/erase.png', 'Erase Tools', [{
+	}, new ToolGroup([{
 		text: 'Erase Tiles Tool',
 		icon: '/resources/images/tools/erase_tiles.png',
 		handler: bindToolHandler(new EraseTilesTool())
@@ -153,7 +153,7 @@ function Toolbar() {
 		text: 'Wipe Command',
 		icon: '/resources/images/tools/wipe_tiles.png',
 		handler: bindCommandHandler(new WipeTilesCommand())
-	}]), new ToolGroup('/resources/images/tools/select.png', 'Select Tools', [{
+	}]), new ToolGroup([{
 		text: 'Drag-Select Tool',
 		icon: '/resources/images/tools/drag_select.png',
 		handler: bindToolHandler(new DragSelectTool())
@@ -161,7 +161,7 @@ function Toolbar() {
 		text: 'Flood-Select Tool',
 		icon: '/resources/images/tools/flood_select.png',
 		handler: bindToolHandler(new FloodSelectTool())
-	}]), new ToolGroup('/resources/images/tools/clipboard.png', 'Clipboard Tools', [{
+	}]), new ToolGroup([{
 		text: 'Cut Tiles Command',
 		icon: '/resources/images/tools/cut_tiles.png',
 		handler: bindCommandHandler(cutTilesCommand = new CutTilesCommand())

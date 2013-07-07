@@ -18,7 +18,7 @@
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function ToolGroup(icon, tooltip, tools) {
+function ToolGroup(tools) {
 	if (tools.length < 1) {
 		throw 'invalid tool array';
 	}
@@ -26,37 +26,32 @@ function ToolGroup(icon, tooltip, tools) {
 	var group;
 	var selectedToolIndex = 0;
 
-	var items = [];
-	for (var i in tools) {
-		items.push({
-			text: tools[i].text,
-			icon: tools[i].icon,
-			handler: (function (i) {
-				return function () {
-					selectedToolIndex = i;
-					group.setIcon(tools[i].icon).setTooltip(tools[i].text).toggle(true);
-					if (tools[i].handler) {
-						tools[i].handler();
-					}
-				};
-			}(parseInt(i, 10)))
-		});
-	}
-
 	return group = new Ext.button.Split({
 		toggleGroup: 'tool',
 		allowDepress: false,
 		scale: 'large',
-		icon: icon,
-		tooltip: tooltip,
+		icon: tools[selectedToolIndex].icon,
+		tooltip: tools[selectedToolIndex].text,
 		menuAlign: 'tl-tr?',
 		menu: {
 			hideMode: 'display',
-			items: items
+			items: tools.map(function (tool, index) {
+				return {
+					text: tool.text,
+					icon: tool.icon,
+					handler: function () {
+						selectedToolIndex = index;
+						group.setIcon(tool.icon).setTooltip(tool.text).toggle(true);
+						if (tool.handler) {
+							tool.handler();
+						}
+					}
+				};
+			})
 		},
 		toggleHandler: function (button, state) {
 			if (state) {
-				if (('activate' in tools[selectedToolIndex]) && (tools[selectedToolIndex].activate() === false)) {
+				if (('handler' in tools[selectedToolIndex]) && (tools[selectedToolIndex].handler() === false)) {
 					// TODO reselect previous tool
 				}
 			}

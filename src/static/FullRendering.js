@@ -33,6 +33,7 @@ function FullRendering() {
 		title: 'Full rendering',
 		modal: false,
 		resizable: true,
+		maximizable: true,
 		width: 800,
 		height: 600,
 		tbar: [{
