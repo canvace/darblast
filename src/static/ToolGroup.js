@@ -42,16 +42,14 @@ function ToolGroup(tools) {
 					handler: function () {
 						selectedToolIndex = index;
 						group.setIcon(tool.icon).setTooltip(tool.text).toggle(true);
-						if (tool.handler) {
-							tool.handler();
-						}
 					}
 				};
 			})
 		},
 		toggleHandler: function (button, state) {
 			if (state) {
-				if (('handler' in tools[selectedToolIndex]) && (tools[selectedToolIndex].handler() === false)) {
+				var tool = tools[selectedToolIndex];
+				if (tool.handler() === false) {
 					// TODO reselect previous tool
 				}
 			}

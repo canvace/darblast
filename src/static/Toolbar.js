@@ -36,7 +36,10 @@ function Toolbar() {
 	}
 
 	function bindCommandHandler(command) {
-		return command.activate;
+		return function () {
+			command.activate();
+			return false;
+		};
 	}
 
 	function bindToolHandler(tool) {
