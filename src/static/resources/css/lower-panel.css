@@ -1,0 +1,48 @@
+.view .thumb {
+	background: transparent;
+	margin: 3px;
+	width: 86px;
+	height: 66px;
+	text-align: center;
+}
+
+.view .thumb img,.view .thumb canvas {
+	max-height: 100%;
+	max-width: 100%;
+}
+
+.view .thumb-wrap {
+	float: left;
+	margin: 4px;
+	margin-right: 0;
+	padding: 5px;
+}
+
+.view .x-item-over {
+	border: 1px solid #DDDDDD;
+	background: #EFEFEF url('over.gif') repeat-x left top;
+	padding: 4px;
+}
+.view .x-item-selected {
+	background: #EFF5FB url('selected.gif') no-repeat right bottom;
+	border: 1px solid #99BBE8;
+	padding: 4px;
+}
+
+.x-view-selector {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 0;
+	border: 1px dotted;
+	opacity: 0.5;
+	-moz-opacity: 0.5;
+	filter: alpha(opacity=50);
+	zoom: 1;
+	background-color: #C3DAF9;
+	border-color: #3399BB;
+}
+.ext-strict .ext-ie .x-tree .x-panel-bwrap {
+	position: relative;
+	overflow: hidden;
+}
