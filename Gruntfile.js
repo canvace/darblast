@@ -7,8 +7,6 @@ module.exports = function (grunt) {
 		concat: {
 			client: {
 				src: [
-					'src/static/DirectoryTree.js',
-					'src/static/ExportWizard.js',
 					'src/static/Application.js'
 				],
 				dest: 'src/static/app.js'

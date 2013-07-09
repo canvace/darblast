@@ -20,13 +20,33 @@
 
 /*global exports: false */
 
-Ext.Loader.setConfig({
-	enabled: true,
-	paths: {
-		'Ext.ux': '/extjs/ux/'
-	}
-});
-
 exports.initGUI = function () {
-	new ExportWizard();
+	var dialog = (new Ext.window.Window({
+		title: 'Export Wizard',
+		resizable: false,
+		width: 400,
+		modal: true,
+		layout: 'fit',
+		buttons: [{
+			text: 'Close',
+			handler: function () {
+				dialog.close();
+			}
+		}],
+		items: {
+			xtype: 'container',
+			layout: {
+				type: 'accordion',
+				animate: true,
+				multi: false
+			},
+			items: [{
+				title: 'Store to backend',
+				html: 'blah blah blah'
+			}, {
+				title: 'Download to frontend',
+				html: 'trololololol'
+			}]
+		}
+	})).show();
 };
