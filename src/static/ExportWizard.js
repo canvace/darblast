@@ -59,13 +59,13 @@ function ExportWizard() {
 					type: 'string'
 				}, 'stage'],
 				data: (function (records) {
-					Canvace.stages.forEach(function (stage) {
-						records.push({
-							selected: stage.isCurrent(),
-							name: stage.getName(),
-							stage: stage
-						});
-					});
+					//Canvace.stages.forEach(function (stage) {
+					//	records.push({
+					//		selected: stage.isCurrent(),
+					//		name: stage.getName(),
+					//		stage: stage
+					//	});
+					//});
 					return records;
 				}([])),
 				sorters: [{
