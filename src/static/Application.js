@@ -21,31 +21,24 @@
 /*global exports: false */
 
 exports.initGUI = function () {
-	var dialog = (new Ext.window.Window({
-		title: 'Export Wizard',
+	(new Ext.window.Window({
+		title: 'Accordion test',
 		resizable: false,
 		width: 400,
 		modal: true,
 		layout: 'fit',
-		buttons: [{
-			text: 'Close',
-			handler: function () {
-				dialog.close();
-			}
-		}],
 		items: {
-			xtype: 'container',
 			layout: {
 				type: 'accordion',
 				animate: true,
 				multi: false
 			},
 			items: [{
-				title: 'Store to backend',
+				title: 'Panel 1',
 				html: 'blah blah blah'
 			}, {
-				title: 'Download to frontend',
-				html: 'trololololol'
+				title: 'Panel 2',
+				html: 'blah blah blah'
 			}]
 		}
 	})).show();
