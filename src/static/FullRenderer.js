@@ -65,7 +65,7 @@ function FullRenderer(canvas) {
 		});
 		Canvace.instances.forEach(function (instance) {
 			var position = instance.getPosition();
-			processElement(instance, position.i, position.j, position.k);
+			processElement(instance.getEntity(), position.i, position.j, position.k);
 		});
 		if (!first) {
 			canvas.width = Math.ceil((right - left + 1) * scaleFactor);

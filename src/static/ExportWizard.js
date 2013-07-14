@@ -19,6 +19,8 @@
  */
 
 function ExportWizard() {
+	var singleFile = false;
+	var path = '';
 	var dialog = (new Ext.window.Window({
 		title: 'Export Wizard',
 		resizable: false,
@@ -41,80 +43,69 @@ function ExportWizard() {
 			},
 			items: [{
 				inputValue: 'single',
-				boxLabel: 'Single JSON file'
+				boxLabel: 'Single JSON file',
+				listeners: {
+					change: function (field, checked) {
+						singleFile = checked;
+					}
+				}
 			}, {
 				inputValue: 'separate',
 				boxLabel: 'Separate images',
-				checked: true
-			}]
-		}, {
-			xtype: 'grid',
-			store: {
-				autoSync: true,
-				fields: [{
-					name: 'selected',
-					type: 'boolean'
-				}, {
-					name: 'name',
-					type: 'string'
-				}, 'stage'],
-				data: (function (records) {
-					Canvace.stages.forEach(function (stage) {
-						records.push({
-							selected: stage.isCurrent(),
-							name: stage.getName(),
-							stage: stage
-						});
-					});
-					return records;
-				}([])),
-				sorters: [{
-					property: 'name',
-					direction: 'ASC'
-				}]
-			},
-			header: false,
-			hideHeaders: true,
-			columns: [{
-				xtype: 'checkcolumn',
-				flex: 1,
-				dataIndex: 'selected'
-			}, {
-				flex: 4,
-				dataIndex: 'name'
-			}]
-		}, {
-			layout: 'accordion',
-			items: [{
-				title: 'Store to backend',
-				layout: {
-					type: 'vbox',
-					align: 'stretch'
-				},
-				buttons: [{
-					text: 'Store',
-					handler: function () {
-						// TODO
+				checked: true,
+				listeners: {
+					change: function (field, checked) {
+						singleFile = !checked;
 					}
-				}],
-				items: [{
-					xtype: 'textfield',
-					fieldLabel: 'Destination path'
-				}, {
-					xtype: 'directorytree',
-					height: 200,
-					listeners: {
-						directoryselect: function () {
-							// TODO
+				}
+			}]
+		}, {
+			xtype: 'tabpanel',
+			items: [(function () {
+				return {
+					title: 'Store to backend',
+					layout: {
+						type: 'vbox',
+						align: 'stretch'
+					},
+					buttons: [{
+						text: 'Store',
+						handler: function () {
+							var waitMessage = Ext.MessageBox.wait('Exporting...', '', {
+								interval: 170
+							});
+							Canvace.Ajax.get('/export', {
+								single: singleFile,
+								path: path
+							}, function () {
+								waitMessage.close();
+							});
 						}
-					}
-				}]
-			}, {
+					}],
+					items: [{
+						xtype: 'textfield',
+						id: 'path-field',
+						fieldLabel: 'Destination path'
+					}, {
+						xtype: 'directorytree',
+						height: 200,
+						listeners: {
+							directoryselect: function (selectedPath) {
+								path = selectedPath;
+							}
+						}
+					}]
+				};
+			}()), {
 				title: 'Download to frontend',
 				buttons: [{
 					text: 'Download',
 					handler: function () {
-						// TODO submit form
+						if (singleFile) {
+							window.open('/export?single=true', 'Canvace - Export project');
+						} else {
+							window.open('/export', 'Canvace - Export project');
+						}
 					}
 				}]
 			}]

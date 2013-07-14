@@ -27,12 +27,68 @@ installHandler('/stages/', 'get', function (request, response) {
 	});
 });
 
-installHandler('/stages/export', 'get', function (request) {
-	this.images.globalReadLock(function () {
-		request.query.ids.forEach(function () {
-			// TODO
+installHandler('/export', 'get', function (request, response) {
+	if (request.query.single) {
+		this.getJSON('info', function (project) {
+			var output = {
+				matrix: project.matrix,
+				images: {},
+				tiles: {},
+				entities: {},
+				stages: {}
+			};
+			function flattener(type, callback) {
+				this[type].globalReadLock(function (release) {
+					this.readdir(type, function (ids) {
+						var count = ids.length;
+						ids.forEach(function (id) {
+							this[type].get(id, function (element) {
+								output[type][id] = element;
+								if (!--count) {
+									release();
+									callback();
+								}
+							});
+						}, this);
+					});
+				});
+			}
+			(function (callback) {
+				this.images.globalReadLock(function (release) {
+					this.readdir('images', function (ids) {
+						var count = ids.length;
+						ids.forEach(function (id) {
+							this.getJSON('images/' + id + '/info', function (info) {
+								this.readFile('images/' + id + '/data', function (data) {
+									output.images[id] = {
+										info: info,
+										data: data.toString('base64')
+									};
+									if (!--count) {
+										release();
+										callback();
+									}
+								});
+							});
+						}, this);
+					});
+				});
+			}.bind(this)(flattener.bind(this, 'tiles', flattener.bind(this, 'entities', flattener.bind(this, 'stages', function () {
+				if (request.query.path) {
+					// TODO
+					response.json(true);
+				} else {
+					response.download(output, 'Project.json');
+				}
+			})))));
 		});
-	});
+	} else {
+		// TODO
+	}
+});
+
+installHandler('/import', 'post', function () {
+	// TODO
 });
 
 installHandler('/stages/', 'post', function (request, response) {

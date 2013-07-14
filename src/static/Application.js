@@ -105,6 +105,7 @@ Ext.Loader.setConfig({
 	};
 
 	exports.loadStage = function (projectId, id) {
+		var waitMessage;
 		Canvace.poller = new Poller(projectId);
 		var loader = new Loader(function () {
 			var stage;
@@ -138,6 +139,7 @@ Ext.Loader.setConfig({
 						return (event || window.event).returnValue = 'There are unsaved changes. Do you want to discard them and exit?';
 					}
 				});
+				waitMessage.close();
 				Canvace.renderer.render();
 			});
 		});
@@ -166,6 +168,9 @@ Ext.Loader.setConfig({
 			});
 		});
 		loader.allQueued();
+		waitMessage = Ext.MessageBox.wait('Loading...', '', {
+			interval: 170
+		});
 	};
 
 	Ext.define('Canvace.projection.Gripper', {
