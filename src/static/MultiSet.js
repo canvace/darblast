@@ -19,68 +19,84 @@
  */
 
 function MultiSet() {
-	var elements = {};
-	var nextId = 0;
-	var count = 0;
+	this.elements = {};
+	this.nextId = 0;
+	this.count = 0;
+	this.resetCount = 0;
+	this.fastAdd.apply(this, arguments);
+};
 
-	function add(element) {
-		var id = nextId++;
-		elements[id] = element;
-		count++;
-		return function () {
-			if (elements.hasOwnProperty(id)) {
-				delete elements[id];
-				count--;
+MultiSet.prototype.add = function (element) {
+	var id = this.nextId++;
+	this.elements[id] = element;
+	this.count++;
+	var resetCount = this.resetCount;
+	return function () {
+		if (resetCount < this.resetCount) {
+			return false;
+		} else {
+			if (this.elements.hasOwnProperty(id)) {
+				delete this.elements[id];
+				this.count--;
 				return true;
 			} else {
 				return false;
 			}
-		};
-	}
-
-	(function (elements) {
-		for (var i in elements) {
-			add(elements[i]);
 		}
-	}(arguments));
+	}.bind(this);
+};
 
-	this.add = add;
+MultiSet.prototype.fastAdd = function () {
+	for (var i in arguments) {
+		this.elements[this.nextId++] = arguments[i];
+	}
+	this.count += arguments.length;
+};
 
-	this.forEach = function (action) {
-		for (var id in elements) {
-			if (action(elements[id], (function (id) {
+MultiSet.prototype.forEach = function (action) {
+	for (var id in this.elements) {
+		if (this.elements.hasOwnProperty(id)) {
+			if (action(this.elements[id], function (id) {
+				var resetCount = this.resetCount;
 				return function () {
-					if (elements.hasOwnProperty(id)) {
-						delete elements[id];
-						count--;
-						return true;
-					} else {
+					if (resetCount < this.resetCount) {
 						return false;
+					} else {
+						if (this.elements.hasOwnProperty(id)) {
+							delete this.elements[id];
+							this.count--;
+							return true;
+						} else {
+							return false;
+						}
 					}
-				};
-			}(id))) === false) {
+				}.bind(this);
+			}.call(this, id)) === false) {
 				return true;
 			}
 		}
-		return false;
-	};
+	}
+	return false;
+};
 
-	this.fastForEach = function (action) {
-		for (var id in elements) {
-			action(elements[id]);
+MultiSet.prototype.fastForEach = function (action) {
+	for (var id in this.elements) {
+		if (this.elements.hasOwnProperty(id)) {
+			action(this.elements[id]);
 		}
-	};
+	}
+};
 
-	this.count = function () {
-		return count;
-	};
+MultiSet.prototype.count = function () {
+	return this.count;
+};
 
-	this.isEmpty = function () {
-		return !count;
-	};
+MultiSet.prototype.isEmpty = function () {
+	return !this.count;
+};
 
-	this.clear = function () {
-		elements = {};
-		count = 0;
-	};
-}
+MultiSet.prototype.clear = function () {
+	this.elements = {};
+	this.count = 0;
+	this.resetCount++;
+};
