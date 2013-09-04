@@ -24,7 +24,7 @@ function MultiSet() {
 	this.count = 0;
 	this.resetCount = 0;
 	this.fastAdd.apply(this, arguments);
-};
+}
 
 MultiSet.prototype.add = function (element) {
 	var id = this.nextId++;
